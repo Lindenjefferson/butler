@@ -53,6 +53,7 @@ Cada componente tem **uma** fonte de verdade, o próprio arquivo. Os outros docu
 - **Toda ideia passa pelo mesmo filtro:** o problema é conferido num vault de teste (de preferência com um teste que falha), não só na descrição de quem o relatou; cabe nos três princípios; tenta primeiro virar checagem do `butler.py`; e o que muda as paradas ou quem decide o quê vai para o dono decidir. Toda ideia passa pelo [roadmap](docs/roadmap.md) e termina numa versão do histórico, em "Em espera" com o sinal que a traz de volta, ou em "Recusado" com o motivo.
 - **Fonte única por componente.** Comportamento novo vai para o arquivo do componente; README e este arquivo ganham no máximo uma linha com link. A única cópia permitida são os três princípios, idênticos palavra por palavra no README; as duas cópias mudam juntas.
 - **Nada de um vault específico no que se instala** (`plugins/butler/`): nem caminho, nem nome de pessoa, nem regra. O `test_plugin_integrity.py` confere.
+- **Nenhuma dependência de outro repositório do autor** (o Foreman ou qualquer outro): o que o plugin precisa pra instalar, testar ou contribuir mora neste repositório, nem que isso duplique algo que já existe em outro lugar. Os dois são publicados e mantidos de forma independente.
 - **Enxugar ao tocar.** Ao editar um arquivo, remover o que ficou obsoleto, duplicado ou sem uso.
 - **Teste primeiro** para o `butler.py`, a `lib/`, os scripts das skills e os hooks: o teste novo falha antes da mudança. Um `estado.json` ou uma nota de regras de versões anteriores continuam legíveis, ou a quebra vai para o "Ao atualizar" da versão.
 - Sem datas no texto dos documentos: o git registra quando cada coisa mudou.
@@ -69,7 +70,7 @@ claude plugin validate .
 
 Cada arquivo de teste roda sozinho com o Python 3 (sem pytest) e imprime `ALL PASS`. Os testes criam vaults e históricos em pastas temporárias e nunca tocam a configuração da máquina (`BUTLER_CONFIG` aponta para uma cópia por teste). Não há CI: os testes rodam só localmente, antes de cada commit na `main`.
 
-Num clone novo, instale o mesmo `pre-commit` de segredos e caracteres invisíveis que o Foreman instala nos projetos: `python <foreman>/plugins/foreman/hooks/pre-commit-secret-scan.py --install-pre-commit`.
+Num clone novo, instale o `pre-commit` de segredos e caracteres invisíveis, vendorado neste repositório: `python plugins/butler/hooks/pre-commit-secret-scan.py --install-pre-commit`.
 
 ## Versão e release
 
