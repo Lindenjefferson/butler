@@ -7,6 +7,8 @@ description: Prepara um vault do Obsidian para o Butler, uma vez por máquina, o
 
 Roda na pasta do vault. `B` é o comando da skill `butler:gerente` (`sh "${CLAUDE_PLUGIN_ROOT}/hooks/python.sh" "${CLAUDE_PLUGIN_ROOT}/skills/gerente/butler.py"`). Nada aqui altera o `CLAUDE.md` nem outra nota que já existe sem o sim do usuário.
 
+Diga sempre, antes de mais nada (primeira vez ou rodando de novo, seção 4 incluída): o `butler:garimpo` só consegue **assistir vídeo** (Reels do Instagram, YouTube, TikTok) se este PC tiver o plugin `watch@claude-video` e as ferramentas externas dele instaladas (`yt-dlp`, `ffmpeg` etc.) — passo a passo em `plugins/butler/skills/garimpo/references/instalacao.md`, nesta skill. Sem isso, o garimpo ainda funciona normalmente para links de texto (artigo, repositório, PDF); só a parte de vídeo fica indisponível até instalar. É algo por máquina, não por vault: repita o aviso ao preparar noutra máquina. Não instale nada agora — só avise e, se o usuário quiser, aponte o arquivo de instalação.
+
 ## 1. Conferir antes de qualquer coisa
 
 1. `B situacao`: se o histórico já está ok, vá para a seção 4 (rodar de novo).
