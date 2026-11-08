@@ -1,6 +1,6 @@
 # Importar os Salvos do Instagram
 
-**Ainda não implementado.** São as decisões já tomadas pelo dono para o modo "importar salvos" do `garimpo`, trazidas da skill solta que veio antes do plugin. O item está no [roadmap](roadmap.md). Quando for construído, este texto vira uma referência da skill `garimpo` e sai daqui.
+**Ainda não implementado.** São as decisões já tomadas pelo dono para o modo "importar salvos" do `garimpo`, trazidas da skill solta que veio antes do plugin. O item está no [roadmap](../roadmap.md). Quando for construído, este texto vira uma referência da skill `garimpo` e sai daqui.
 
 - **Caminho:** a exportação oficial da Meta (Central de Contas → Suas informações e permissões → Baixar suas informações → só **Salvos**, formato **JSON**) dá a lista de posts. Os vídeos são baixados pelo `assistir.py`, como hoje. Nada de instaloader, gallery-dl para listar o feed, extensões ou API não oficial.
 - **Conta:** os salvos estão na conta do Instagram do dono, a mesma logada no navegador que baixa os vídeos. Sem conta secundária para baixar: o dono recusou.

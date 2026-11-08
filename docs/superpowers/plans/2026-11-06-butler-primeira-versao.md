@@ -1,5 +1,7 @@
 # Butler, primeira versão: plano de construção
 
+> Documento histórico: o plano que guiou a construção da primeira versão. Fica aqui como registro, não como documentação de uso — para isso, veja o [README](../../../README.md).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** construir o plugin `butler` do design (etapas 1 a 8 da seção 14), pronto para o GitHub no molde do Foreman, sem aplicar nada ao vault real.

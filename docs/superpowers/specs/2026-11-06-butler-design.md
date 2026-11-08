@@ -1,6 +1,8 @@
 # Butler — design
 
-Plugin privado do Claude Code que dá um gerente ao vault do Obsidian do dono.
+> Documento histórico de design, escrito antes da primeira versão existir. Fica aqui como registro do processo (as decisões e por quê), não como documentação de uso — para isso, veja o [README](../../../README.md). Nomes de projetos e de ferramentas pessoais do dono foram tirados ou generalizados antes da publicação; o que ficou (como "Wingman", o painel que o dono descreve construindo) é parte do próprio design, não dado sensível.
+
+Plugin do Claude Code que dá um gerente ao vault do Obsidian do dono.
 
 - **Data:** 2026-11-06
 - **Estado:** design fechado com as respostas do dono e, em 2026-11-06, integrado ao Wingman, o painel que vai chamar o Butler (seção 7.10). Passou por um revisor de construção, por uma checagem final, por uma revisão independente do documento inteiro e, no fim do mesmo dia, por uma revisão de coerência que separou a skill `colheita` do garimpo (seção 7.11) e fixou a independência entre o Butler e o Wingman. A integração ao Wingman e a colheita aguardam a leitura e a aprovação do dono. Nada foi construído. (superado por: a primeira versão foi construída em 2026-11-07, e no mesmo dia o dono pediu que a colheita entrasse nela, com as listas declaradas na nota de regras e o status `colhido`; seção 7.11)

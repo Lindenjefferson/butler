@@ -9,7 +9,7 @@ git clone https://github.com/Lindenjefferson/butler.git
 cd butler
 ```
 
-Você precisa de Python 3, git e o [Claude Code](https://code.claude.com) no `PATH` (no Windows, os comandos rodam no Git Bash). Instale também o `pre-commit` de segredos e caracteres invisíveis do [Foreman](https://github.com/Lindenjefferson/foreman): `python <clone do foreman>/plugins/foreman/hooks/pre-commit-secret-scan.py --install-pre-commit`.
+Você precisa de Python 3, git e o [Claude Code](https://code.claude.com) no `PATH` (no Windows, os comandos rodam no Git Bash). Instale também o `pre-commit` de segredos e caracteres invisíveis do [Foreman](https://github.com/Lindenjefferson/foreman): clone o Foreman numa pasta qualquer (`git clone https://github.com/Lindenjefferson/foreman.git`) e rode `python <pasta do clone>/plugins/foreman/hooks/pre-commit-secret-scan.py --install-pre-commit` dentro do clone do Butler.
 
 Para testar o plugin de verdade, use **uma cópia** de um vault, nunca o vault que você usa: `claude plugin marketplace add ./butler` e, na pasta da cópia, `claude plugin install butler@butler --scope local`. Rode o `preparar` com `--historico` numa pasta de teste, ou defina `BUTLER_CONFIG` para uma configuração só do teste, para não misturar com a configuração da máquina.
 
