@@ -1,0 +1,40 @@
+{
+  "description": "Dá o aviso de uma linha no início de cada sessão aberta num vault do Butler (gravando as mudanças de fora) e diz à sessão que pedidos que alteram o vault passam pelo gerente; nega a escrita no vault sem o pedido desta sessão e pergunta antes da que deixa uma nota com menos texto; solta, no fim da sessão, a trava que for dela.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/python.sh\" \"${CLAUDE_PLUGIN_ROOT}/hooks/sessao.py\" inicio",
+            "timeout": 60
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/python.sh\" \"${CLAUDE_PLUGIN_ROOT}/hooks/sessao.py\" guarda",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/python.sh\" \"${CLAUDE_PLUGIN_ROOT}/hooks/sessao.py\" fim",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

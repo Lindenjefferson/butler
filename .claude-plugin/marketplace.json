@@ -1,0 +1,14 @@
+{
+  "name": "butler",
+  "owner": {
+    "name": "Lindenjefferson"
+  },
+  "plugins": [
+    {
+      "name": "butler",
+      "source": "./plugins/butler",
+      "description": "Gerente de um vault do Obsidian: triagem, garimpo, pendências, projetos e ideias, com paradas por risco e desfazer por frase."
+    }
+  ],
+  "description": "Plugin Butler para o Claude Code."
+}
