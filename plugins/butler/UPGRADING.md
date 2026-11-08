@@ -2,6 +2,12 @@
 
 O que cada versão entregou e o que muda para quem atualiza. O arquivo vai junto com cada versão instalada: a skill `atualizar` lê o **Ao atualizar** de cada versão pulada, da mais antiga para a mais nova. Termine o pedido em andamento no vault antes de atualizar (a skill `atualizar` confere). As ideias que ainda não viraram versão estão no [roadmap](../../docs/roadmap.md). O que é major, minor e patch está no [`CLAUDE.md`](../../CLAUDE.md).
 
+## 0.3.0 — aviso do garimpo sobre vídeo no preparar
+
+- **`preparar` avisa de cara sobre o `watch@claude-video`:** antes, quem não instalava o plugin e as ferramentas externas (`yt-dlp`, `ffmpeg` etc.) só descobria a exigência ao tentar usar o `garimpo` num vídeo. Agora o `preparar` diz isso já na primeira conferência do vault (e também ao rodar de novo), apontando `garimpo/references/instalacao.md`. O `garimpo` sem vídeo (links de texto) continua funcionando normalmente sem a instalação.
+
+**Ao atualizar:** nada muda no vault. Rode o `butler:preparar` de novo (ou peça pra rodar) só para ver o aviso; sem isso, nada quebra.
+
 ## 0.2.1 — correções da segunda revisão do código da 0.2.0
 
 Do `/code-review` da 0.2.0 já na `main`. Branch `fix/achados-review-2`.
