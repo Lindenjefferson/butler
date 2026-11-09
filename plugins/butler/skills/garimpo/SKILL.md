@@ -113,6 +113,14 @@ Se o usuário pediu só um resumo, sem pedir para guardar, entregue o resumo no 
 - **Um link:** grava direto no `Inbox` (ou, se for de colheita, na lista) e mostra o que criou, com a classificação.
 - **Vários links:** antes de gravar, mostre o plano (título, tema, classificação e destino sugerido de cada nota, a lista e a linha de cada link de colheita, agrupamentos propostos, vídeos que falharam) e espere o OK. No plano, ofereça ao usuário criar também uma nota índice `Ideias do Instagram (AAAA-MM-DD)` com wikilinks por tema; crie só se ele aceitar.
 
+## Chamado por um serviço, sem ninguém na conversa
+
+Quando a entrada traz `token do gerente:` e `resultado:` (o caminho de um `resultado.json` do `assistir.py`), um serviço (como um bot) já fez o que pede o Bash: o passo 0, o passo 1, o preâmbulo do passo 7, e depois faz o ponto e o fim do passo 8 e a limpeza do passo 9. Não rode o `butler.py` nem script nenhum. Siga o resto, com estas trocas:
+- **Um link só,** o do `resultado.json`, com `status` `ok` (os outros o serviço responde sozinho). A `pessoa:` da entrada é o dono da nota.
+- **Passo 5 sem o `gh`:** pesquise pela busca na web e pelo WebFetch; o que só o `gh` diria (estrelas, datas do repositório) fica "não verificado".
+- **Toda parada vira o caminho que não perde nada,** porque ninguém responde: atualizar uma nota que já existe vira nota nova com o link em "Veja também"; colheita que pediria criar a lista ou escolher o destino vira nota no `Inbox`. A pergunta vai para `perguntas` no JSON abaixo.
+- **Resposta:** uma linha dizendo onde ficou e, por último, uma linha só com o JSON do passo 8 (`notas`, `garimpo`, `colhidos`) mais `perguntas`, sem nada depois, para o serviço gravar o ponto e responder.
+
 ## Onde cada nota vai
 
 Tudo fica no `Inbox`. Esta skill nunca altera nota fora dele, nem move arquivos: isso é da triagem. As exceções são a linha nova no registro de links e o que a skill `butler:colheita` faz: o item numa lista declarada e, com o sim, a lista nova e a linha dela na nota índice.
