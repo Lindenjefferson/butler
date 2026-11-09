@@ -25,13 +25,23 @@ Diga sempre, antes de mais nada (primeira vez ou rodando de novo, seção 4 incl
 2. Crie `Sistema/Regras do Butler.md` a partir de `${CLAUDE_PLUGIN_ROOT}/skills/preparar/templates/Regras do Butler.md`. Preencha lendo o `CLAUDE.md` do vault e a estrutura de pastas, nunca de memória:
    - **Notas protegidas:** as que deram trabalho manual para montar e que o `CLAUDE.md` trata como fonte de referência: inventários, históricos (de manutenção, de saúde), perfis. Proponha a lista e confirme com o usuário.
    - **Formato rígido:** as notas cujo formato o `CLAUDE.md` (ou a própria nota) dita: inventários, históricos, registros de links, a nota de pendências.
-   - **Caminhos:** a pasta do Inbox, a nota índice, a nota de pendências, a de registro de links (se houver) e o título da seção de links do fim das notas, como o `CLAUDE.md` os chama.
+   - **Caminhos:** a pasta do Inbox, a nota índice, a nota de pendências, a de registro de links (se houver) e o título da seção de links do fim das notas, como o `CLAUDE.md` os chama. O caminho da nuvem e as pastas fora da varredura (se houver) vêm da seção 2b, abaixo.
    - **Listas da colheita:** as listas em que o `CLAUDE.md` manda gravar direto um link de vida pessoal (filme, lugar de viagem, receita), se ele tiver essa regra. Lista que ainda não existe fica declarada assim mesmo: a colheita propõe criá-la no primeiro link daquele tipo. Sem a regra no `CLAUDE.md`, pergunte se o usuário quer a colheita; com o não, tire as linhas.
    - **Escritas toleradas do Wingman:** deixe as três do molde se o usuário usa o Wingman; senão, a seção fica com "Nenhuma".
    - **Liberações:** as que saíram da seção 1.
    - O frontmatter e o "Veja também" seguem as regras do `CLAUDE.md` do vault, inclusive os campos que o molde não traz (o de dono da nota, por exemplo): se o valor não for claro, pergunte.
 3. Crie a nota de pendências a partir de `${CLAUDE_PLUGIN_ROOT}/skills/preparar/templates/Pendências.md` no caminho que a nota de regras declara, se ela ainda não existir.
 4. `B ponto` com as duas notas e `B fim`.
+
+## 2b. Nuvem conectada
+
+Preenche o `nuvem` de Caminhos e a seção "Nuvem: pastas fora da varredura" do passo 2.2, antes de gravar a nota de regras. É uma conversa, não um script: use suas próprias ferramentas de leitura de arquivo, sem nada nos scripts desta skill.
+
+1. **Detectar.** Veja a pasta-mãe da pasta do vault. Se o nome ou algo nela (um `desktop.ini`, o padrão `Meu Drive`/`OneDrive`/`Dropbox`/`iCloud Drive`) sugere nuvem sincronizada, pergunte se é isso mesmo e se o usuário quer que o Butler aprenda essa estrutura para ajudar a organizar. Sem indício, pergunte direto se há alguma nuvem conectada (Google Drive, OneDrive, Dropbox, iCloud) além deste vault. Sem nenhuma, tire a linha `nuvem` e a seção de exclusões do molde e siga para a 3.
+2. **Privacidade.** Com a nuvem confirmada, pergunte se há pasta ou arquivo ali que o usuário prefere que o Butler nunca varra. Cada resposta vira uma linha na seção "Nuvem: pastas fora da varredura", com o caminho absoluto e o motivo que o usuário deu.
+3. **Mapear.** Liste as pastas de primeiro nível da raiz da nuvem (nome, tamanho aproximado, quantidade de itens), pulando a pasta do próprio vault e tudo que caiu nas exclusões do passo 2. Uma segunda leitura, só dentro de pastas que pareçam confusas ou muito cheias, ajuda a propor algo melhor; não entre fundo demais, é para ter uma ideia, não auditar cada arquivo.
+4. **Propor.** A partir do que achou, diga o que existe e, se fizer sentido, sugira uma estrutura mais clara (juntar pastas parecidas, separar o que está solto na raiz, nomes inconsistentes). Se já estiver bem organizado, diga isso. **Nunca mova nem crie pasta na nuvem sozinho:** é sempre proposta; o usuário decide se quer mexer agora, depois, ou deixar como está. Mover algo na nuvem não passa pelo histórico do Butler (ele só cobre o vault); confirme com o usuário do mesmo jeito antes de qualquer mudança.
+5. Grave `nuvem: <caminho absoluto da raiz>` em Caminhos. O mapeamento em si (o que tem em cada pasta) não entra na nota de regras — é feito de novo, rápido, sempre que outra rotina do Butler precisar olhar a nuvem.
 
 ## 3. Mudanças que dependem do usuário
 
@@ -52,4 +62,5 @@ Rodado num vault já preparado, ou numa máquina nova, confira e ofereça refaze
 - **O histórico,** se foi apagado ou se a máquina é outra (o `situacao` diz o motivo). Se o vault só mudou de pasta ou de nome nesta máquina, o histórico antigo serve: o `situacao` lista em `historicos_de_vaults_que_sumiram` os vaults registrados cuja pasta não existe mais. Confirme com o usuário qual é este e rode `B preparar-historico --historico <pasta dele>`, que o reaproveita. Numa máquina nova o histórico começa do zero: o antigo ficou na outra máquina. Diga isso.
 - **A nota de regras,** se sumiu: restaure-a do histórico quando ele existir (`B pedidos --nota "Sistema/Regras do Butler.md" --todos` para achar o último ponto em que ela existia, e `B desfazer --token <token> --nota "Sistema/Regras do Butler.md" --ate "<data desse ponto>"`, mostrando a versão antes de `--aplicar --aceitar`), para não perder as proteções e exceções aprendidas. Esses comandos funcionam sem a nota de regras; o `ponto`, não. Só volte ao molde se não houver histórico, e diga isso.
 - **A nota de pendências,** se sumiu, pelo mesmo caminho.
+- **A nuvem,** se a nota de regras ainda não tem `nuvem` em Caminhos: ofereça a seção 2b agora, numa Reforma pequena (preâmbulo, ponto só da nota de regras, fim). Numa máquina nova, mesmo com `nuvem` já na nota (de outra máquina), confirme se a raiz é a mesma aqui (a letra de unidade pode mudar entre PC e notebook) e corrija se não for.
 - O que a skill `butler:atualizar` disser que uma versão nova pede.

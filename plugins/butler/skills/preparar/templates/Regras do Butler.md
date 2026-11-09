@@ -48,6 +48,13 @@ Alarmes falsos e binários que você liberou para entrar no histórico: `` - `<i
 - pendencias: `Sistema/Pendências.md`
 - registro de links: `<nota do registro de links>.md` (tire a linha se o vault não tem registro)
 - veja tambem: `Veja também`
+- nuvem: `<raiz da nuvem sincronizada>` (tire a linha se o vault não está numa pasta sincronizada, ou se o usuário não quis)
+
+## Nuvem: pastas fora da varredura
+
+O que o Butler nunca varre na nuvem, por privacidade. Tire a seção se não há nuvem conectada ou nada foi excluído.
+
+- `<caminho absoluto>` — <motivo>
 
 ## Listas da colheita
 
