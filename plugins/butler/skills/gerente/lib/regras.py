@@ -14,8 +14,12 @@ pela skill. Títulos de seção, comparados sem acento e sem maiúsculas:
   libera os binários daquela pasta, nunca um dado sensível num texto. Um valor com cara de digital (hexadecimal)
   vale também como caminho, para uma pasta de nome hexadecimal não ser liberada calada pela metade.
 - `## Caminhos`: `- <nome>: \\`<caminho>\\``, com os nomes `inbox` (padrão `Inbox`), `indice` (a nota índice, sem
-  padrão), `pendencias` (sem padrão), `registro de links` (sem padrão) e `veja tambem` (o título da seção de links
-  no fim das notas, padrão `Veja também`).
+  padrão), `pendencias` (sem padrão), `registro de links` (sem padrão), `veja tambem` (o título da seção de links
+  no fim das notas, padrão `Veja também`) e `nuvem` (a raiz da nuvem sincronizada onde o vault está, sem padrão; um
+  caminho absoluto do sistema operacional, não relativo ao vault).
+- `## Nuvem: pastas fora da varredura`: cada item é `- \\`<caminho ou glob>\\` — <explicação>`, igual a `Notas
+  protegidas`, mas os caminhos são absolutos (fora do vault) e dizem o que a preparação e qualquer rotina que olhe a
+  nuvem nunca devem varrer, por privacidade.
 - `## Listas da colheita`: `- <classificação>: \\`<caminho>\\` — <explicação>`, a lista em que a skill `colheita`
   grava cada classificação do garimpo (`filme`, `viagem`, `receita`). `<destino>` no caminho quer dizer uma nota por
   destino (a nota de cada viagem). Classificação sem linha aqui vira nota no Inbox, como todo link.
@@ -43,6 +47,7 @@ class Regras:
         self.excecoes, self.liberacoes, self.caminhos = [], set(), dict(PADROES)
         self.binarios_liberados = []
         self.colheita = {}
+        self.nuvem_ignorada = []
         secao = None
         for linha in texto.splitlines():
             titulo = re.match(r"^##\s+(.+?)\s*$", linha)
@@ -64,6 +69,8 @@ class Regras:
                 continue
             if secao == "notas protegidas":
                 self.protegidas.append(codigos[0].strip())
+            elif secao == "nuvem: pastas fora da varredura":
+                self.nuvem_ignorada.append(codigos[0].strip())
             elif secao == "formato rigido":
                 self.rigidas.append(codigos[0].strip())
             elif secao == "escritas toleradas do wingman":
@@ -97,7 +104,8 @@ class Regras:
         return {"protegidas": self.protegidas, "rigidas": self.rigidas, "toleradas": self.toleradas,
                 "excecoes": [{"glob": g, "codigo": c} for g, c in self.excecoes],
                 "liberacoes": sorted(self.liberacoes),
-                "binarios_liberados": self.binarios_liberados, "caminhos": self.caminhos, "colheita": self.colheita}
+                "binarios_liberados": self.binarios_liberados, "caminhos": self.caminhos, "colheita": self.colheita,
+                "nuvem_ignorada": self.nuvem_ignorada}
 
 
 def _glob_para_regex(glob):

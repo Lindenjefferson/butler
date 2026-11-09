@@ -2,6 +2,16 @@
 
 O que cada versão entregou e o que muda para quem atualiza. O arquivo vai junto com cada versão instalada: a skill `atualizar` lê o **Ao atualizar** de cada versão pulada, da mais antiga para a mais nova. Termine o pedido em andamento no vault antes de atualizar (a skill `atualizar` confere). As ideias que ainda não viraram versão estão no [roadmap](../../docs/roadmap.md). O que é major, minor e patch está no [`CLAUDE.md`](../../CLAUDE.md).
 
+## 0.4.0 — nuvem conectada no preparar
+
+Pedido do dono, depois de usar uma sessão para vasculhar o PC e a nuvem na mão. Branch `feat/nuvem-conectada`.
+
+- **`preparar` aprende a nuvem conectada (seção 2b):** detecta se o vault vive numa pasta de nuvem sincronizada (Google Drive, OneDrive, Dropbox, iCloud) — ou pergunta direto, sem indício —, confirma com o usuário, pergunta o que fica fora da varredura por privacidade, mapeia as pastas de primeiro nível e propõe uma estrutura. Nunca move nada sozinho: é sempre proposta, e qualquer mudança na nuvem pede confirmação à parte, porque o histórico do Butler não cobre fora do vault.
+- **Nota de regras com dois campos novos:** `nuvem` em `## Caminhos` (a raiz da nuvem, caminho absoluto do sistema) e a seção `## Nuvem: pastas fora da varredura` (exclusões de privacidade, uma por linha). Os dois ficam disponíveis a qualquer skill via `situacao`.
+- **Rodar de novo** oferece a seção 2b para quem ainda não tem `nuvem` na nota, e confirma a raiz de novo numa máquina nova (a letra de unidade pode mudar entre PC e notebook).
+
+**Ao atualizar:** nada muda para quem não tem nuvem conectada ou não quer o recurso — os dois campos são opcionais, e uma nota de regras sem eles continua legível. Para ganhar o mapeamento, rode o `butler:preparar` de novo (ou peça pra rodar): ele vai oferecer a seção 2b.
+
 ## 0.3.0 — aviso do garimpo sobre vídeo no preparar
 
 - **`preparar` avisa de cara sobre o `watch@claude-video`:** antes, quem não instalava o plugin e as ferramentas externas (`yt-dlp`, `ffmpeg` etc.) só descobria a exigência ao tentar usar o `garimpo` num vídeo. Agora o `preparar` diz isso já na primeira conferência do vault (e também ao rodar de novo), apontando `garimpo/references/instalacao.md`. O `garimpo` sem vídeo (links de texto) continua funcionando normalmente sem a instalação.
