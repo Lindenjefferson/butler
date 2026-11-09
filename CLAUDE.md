@@ -29,7 +29,7 @@ Cada componente tem **uma** fonte de verdade, o próprio arquivo. Os outros docu
 | O quê | Onde |
 |---|---|
 | Medir o pedido, preâmbulo, paradas, conferência, pontos, resumo, aprender, desfazer | [`skills/gerente/SKILL.md`](plugins/butler/skills/gerente/SKILL.md); desfazer e as rotinas (revisar, registrar, remover, arquivar), em [`references/`](plugins/butler/skills/gerente/references/), um arquivo por rotina |
-| Cada rotina com skill própria | `plugins/butler/skills/<rotina>/SKILL.md` (`preparar`, `triagem`, `garimpo`, `colheita`, `pendencias`, `consultar`, `projeto`, `ideia`, `programas`, `atualizar`) |
+| Cada rotina com skill própria | `plugins/butler/skills/<rotina>/SKILL.md` (`preparar`, `triagem`, `garimpo`, `colheita`, `pendencias`, `consultar`, `projeto`, `ideia`, `ideia-para-inbox`, `programas`, `atualizar`) |
 | Subcomandos do script, códigos de saída | docstring de [`butler.py`](plugins/butler/skills/gerente/butler.py) |
 | Histórico fora do vault, configuração do git, pontos | docstring de [`lib/historico.py`](plugins/butler/skills/gerente/lib/historico.py) |
 | Onde fica o histórico de cada vault (`maquina.json`), pastas proibidas | docstring de [`lib/config.py`](plugins/butler/skills/gerente/lib/config.py) |

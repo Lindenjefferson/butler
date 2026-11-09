@@ -84,6 +84,7 @@ O vault precisa de um `CLAUDE.md` na raiz com as regras dele (pastas, frontmatte
 | [`consultar`](plugins/butler/skills/consultar/SKILL.md) | Responde "o que eu sei sobre X?" com os links das notas; só lê |
 | [`projeto`](plugins/butler/skills/projeto/SKILL.md) | Cria ou atualiza a nota curta de um projeto a partir do repositório dele |
 | [`ideia`](plugins/butler/skills/ideia/SKILL.md) | Desenvolve uma nota de ideia: pesquisa, funcionalidades, furos, veredito, promoção a projeto |
+| [`ideia-para-inbox`](plugins/butler/skills/ideia-para-inbox/SKILL.md) | Grava uma ideia curta (texto ou áudio transcrito) como nota nova no Inbox, sem pesquisar; feita para um serviço chamar, como um bot |
 | [`programas`](plugins/butler/skills/programas/SKILL.md) | Atualiza o inventário de programas da máquina e o JSON do winget |
 | [`atualizar`](plugins/butler/skills/atualizar/SKILL.md) | Atualiza o plugin e aplica as notas de cada versão |
 | [`butler.py`](plugins/butler/skills/gerente/butler.py) | O que se confere sem modelo: histórico, trava, pontos, desfazer, renomear, conferência, revisão, dado sensível, `estado.json` |
