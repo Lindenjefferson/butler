@@ -18,7 +18,7 @@ Um Lote do `butler:gerente` (preâmbulo, paradas, pontos e resumo vêm de lá; `
 
 1. `winget export -o <arquivo temporário> --include-versions --accept-source-agreements` numa pasta temporária, nunca por cima do JSON do vault. Se o winget não existir ou o export falhar, pare: diga o erro em uma linha e não mude a nota nem o JSON. Um levantamento só pelo registro do Windows deixaria o JSON sem a fonte de reinstalação.
 2. `sh "${CLAUDE_PLUGIN_ROOT}/hooks/python.sh" "${CLAUDE_PLUGIN_ROOT}/skills/programas/comparar_winget.py" "<JSON do vault>" "<export novo>"` devolve `novos`, `sumidos` e `versao_mudou`.
-3. O export só vê o que o winget conhece. Para o resto (instalado pelo site, sem instalador, da loja), siga o levantamento da skill `liberar-espaco`, se ela existir nesta máquina; senão, o registro do Windows (chaves Uninstall) e `Get-AppxPackage`.
+3. O export só vê o que o winget conhece. Para o resto (instalado pelo site, sem instalador, da loja), rode o `auditar-programas.ps1` da skill `programas-sem-uso`, se ela existir nesta máquina: o `programas.csv` traz as chaves Uninstall e os programas portáteis, e a seção da Store do `programas.txt` traz os apps da loja. O UAC que ele pede serve só às datas de uso; recusado, o levantamento continua valendo. Sem essa skill, use o registro do Windows (chaves Uninstall), `Get-AppxPackage` e as pastas de programas portáteis.
 4. **Um `sumido` não quer dizer desinstalado:** o export deixa de fora o programa cuja versão instalada não está no catálogo. Confira se ele ainda está na máquina antes de tratar como desinstalado.
 
 ## Aplicar

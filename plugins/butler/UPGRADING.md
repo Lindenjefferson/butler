@@ -2,6 +2,14 @@
 
 O que cada versão entregou e o que muda para quem atualiza. O arquivo vai junto com cada versão instalada: a skill `atualizar` lê o **Ao atualizar** de cada versão pulada, da mais antiga para a mais nova. Termine o pedido em andamento no vault antes de atualizar (a skill `atualizar` confere). As ideias que ainda não viraram versão estão no [roadmap](../../docs/roadmap.md). O que é major, minor e patch está no [`CLAUDE.md`](../../CLAUDE.md).
 
+## 0.4.1 — levantamento de programas fora do winget
+
+A skill pessoal `liberar-espaco` foi dividida em três (`liberar-espaco`, `programas-sem-uso` e `desinstalar-limpo`), e o levantamento de programas que a `programas` usava saiu dela. Branch `fix/programas-levantamento`.
+
+- **`programas` passa a usar o `auditar-programas.ps1` da skill `programas-sem-uso`** para o que o winget não vê (chaves Uninstall, portáteis e apps da loja). Antes, apontava para um levantamento da `liberar-espaco` que não existe mais. Sem a skill, a alternativa continua a mesma, agora com as pastas de programas portáteis.
+
+**Ao atualizar:** nada muda.
+
 ## 0.4.0 — nuvem conectada no preparar
 
 Pedido do dono, depois de usar uma sessão para vasculhar o PC e a nuvem na mão. Branch `feat/nuvem-conectada`.
