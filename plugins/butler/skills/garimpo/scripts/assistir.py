@@ -2,18 +2,15 @@
 """Assiste a uma lista de links de vídeo com o plugin claude-video e deixa tudo pronto para virar nota.
 
 Para cada link: busca os metadados (autor, título, duração, URL canônica) com o yt-dlp, sem baixar o
-vídeo, e roda o watch.py do plugin com os cookies do navegador. Dois motores (--engine):
-- gemini (padrão): o Gemini assiste ao vídeo e responde a uma pergunta fixa (nomes exatos do que
-  aparece na tela e resumo com tempos), mais a do usuário (--pergunta). O vídeo vai ao Google: a URL,
-  se for do YouTube; senão, o arquivo baixado, apagado de lá depois da resposta. Sem frames.
-- local: frames e transcrição local WhisperX, nada sai da máquina (vídeo privado). Poucos frames,
-  largura 768 para ler o texto da tela.
+vídeo, e roda o watch.py do plugin com os cookies do navegador, motor local: frames e transcrição
+WhisperX, tudo na máquina, nada sai dela. Poucos frames, largura 768 para ler o texto da tela.
+(O motor Gemini foi removido: na prática sempre retornava erro de alta demanda do serviço.)
 Só vídeos: se o post não tem vídeo (carrossel de imagens), o status fica "sem_video" e quem chamou decide.
 No fim grava <saida>/resultado.json e imprime o mesmo JSON, com os links na ordem recebida.
 Sai com código 1 se nenhum link deu certo e 2 se faltar ferramenta do plugin.
 
-Uso: python assistir.py URL [URL ...] [--saida PASTA] [--engine gemini|local] [--pergunta TEXTO]
-                        [--pausa 25] [--navegador firefox] [--max-frames 12] [--timeout 900]
+Uso: python assistir.py URL [URL ...] [--saida PASTA] [--pausa 25] [--navegador firefox]
+                        [--max-frames 12] [--resolucao 768] [--timeout 900]
 """
 import argparse
 import glob
@@ -28,13 +25,6 @@ import time
 from urllib.parse import urlsplit, urlunsplit
 
 SEM_VIDEO = ("No video formats found", "There is no video in this post")
-RESPOSTA_GEMINI = "## Answer (from Gemini)"
-PERGUNTA_PADRAO = (
-    "Responda em português do Brasil. Primeiro, liste os nomes exatos, com a grafia que aparece na tela, "
-    "de toda ferramenta, aplicativo, site, repositório (dono/nome), comando, preço e número citado; "
-    "copie também o texto relevante que aparece na tela (legendas, títulos, código, READMEs). "
-    "Depois, faça um resumo com o timestamp de cada ponto principal, separando o que é mostrado do que é dito. "
-    "Se um nome só é falado e não aparece na tela, diga isso.")
 
 
 def achar_scripts_plugin():
@@ -98,16 +88,9 @@ def metadados(url, navegador, executar=subprocess.run):
     return m
 
 
-def pergunta_gemini(pergunta):
-    pergunta = (pergunta or "").strip()
-    return PERGUNTA_PADRAO + ("\n\nPergunta do usuário: " + pergunta if pergunta else "")
-
-
 def comando_watch(scripts, url, a, pasta):
-    cmd = [sys.executable, os.path.join(scripts, "watch.py"), url, "--engine", a.engine,
+    cmd = [sys.executable, os.path.join(scripts, "watch.py"), url, "--engine", "local",
            "--cookies-from-browser", a.navegador, "--out-dir", pasta]
-    if a.engine == "gemini":
-        return cmd + ["--question", pergunta_gemini(a.pergunta)]
     # --whisper whisperx: sem isso, com GROQ/OPENAI_API_KEY no ambiente ou num .env, o áudio iria à nuvem.
     return cmd + ["--whisper", "whisperx", "--max-frames", str(a.max_frames), "--resolution", str(a.resolucao)]
 
@@ -143,22 +126,19 @@ def processar(n, url, a, scripts, env, pasta):
     frames.sort(key=os.path.getmtime, reverse=True)
     item = {
         "n": n, "url": url, "url_canonica": meta.get("url_canonica") or url_canonica(pasta, url),
-        "pasta": pasta, "engine": a.engine, "relatorio": os.path.join(pasta, "relatorio.md"),
+        "pasta": pasta, "relatorio": os.path.join(pasta, "relatorio.md"),
         "frames": frames[0] if frames else None,
-        # o relatório do motor local também traz esses campos; o do Gemini, não
         "autor": meta.get("autor") or campo(out, "Uploader"), "titulo": meta.get("titulo") or campo(out, "Title"),
         "duracao": meta.get("duracao") or campo(out, "Duration"),
-        # é o estado da transcrição ("N segments (via ...)", "failed", "no speech"...), não o texto dela;
-        # vazio no motor Gemini, que não transcreve
+        # é o estado da transcrição ("N segments (via ...)", "failed", "no speech"...), não o texto dela
         "transcricao_status": campo(out, "Transcript"),
         "status": "ok", "erro": None,
     }
-    ok = RESPOSTA_GEMINI in out if a.engine == "gemini" else bool(frames)
-    if codigo != 0 or not ok:
-        # o Gemini põe o erro no relatório, no primeiro item de "## Unavailable evidence", não no stderr
-        gemini = re.search(r"^## Unavailable evidence\s+- (.+)$", out, re.M)
+    if codigo != 0 or not frames:
+        # watch.py põe o erro no relatório, no primeiro item de "## Unavailable evidence", não no stderr
+        evidencia = re.search(r"^## Unavailable evidence\s+- (.+)$", out, re.M)
         linhas = [l for l in err.splitlines() if "ERROR" in l or "failed" in l]
-        erro = gemini.group(1).strip() if gemini else (linhas[-1] if linhas else err.strip()[-300:])
+        erro = evidencia.group(1).strip() if evidencia else (linhas[-1] if linhas else err.strip()[-300:])
         item["erro"] = "timeout" if estourou else (erro or "sem detalhe")
         item["status"] = "sem_video" if any(m in err + out for m in SEM_VIDEO) else "falhou"
     return item
@@ -168,14 +148,11 @@ def argumentos():
     ap = argparse.ArgumentParser()
     ap.add_argument("urls", nargs="+")
     ap.add_argument("--saida", default=None)
-    ap.add_argument("--engine", choices=["gemini", "local"], default="gemini",
-                    help="gemini (padrão; o vídeo vai ao Google) ou local (vídeo privado: nada sai da máquina)")
-    ap.add_argument("--pergunta", default=None, help="pergunta do usuário, somada à pergunta fixa do Gemini")
     ap.add_argument("--pausa", type=int, default=25, help="segundos entre links do Instagram")
     ap.add_argument("--navegador", default="firefox")
     ap.add_argument("--max-frames", type=int, default=12,
-                    help="só no motor local: 12 para Reels; 40 a 60 para vídeos longos")
-    ap.add_argument("--resolucao", type=int, default=768, help="só no motor local")
+                    help="12 para Reels; 40 a 60 para vídeos longos")
+    ap.add_argument("--resolucao", type=int, default=768)
     ap.add_argument("--timeout", type=int, default=900, help="segundos por vídeo antes de desistir")
     return ap.parse_args()
 
