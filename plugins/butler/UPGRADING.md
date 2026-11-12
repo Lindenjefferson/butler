@@ -2,6 +2,15 @@
 
 O que cada versão entregou e o que muda para quem atualiza. O arquivo vai junto com cada versão instalada: a skill `atualizar` lê o **Ao atualizar** de cada versão pulada, da mais antiga para a mais nova. Termine o pedido em andamento no vault antes de atualizar (a skill `atualizar` confere). As ideias que ainda não viraram versão estão no [roadmap](../../docs/roadmap.md). O que é major, minor e patch está no [`CLAUDE.md`](../../CLAUDE.md).
 
+## 0.4.2 — garimpo sem o motor Gemini
+
+Pedido do dono: o motor Gemini do `garimpo` nunca funcionou para ele, sempre voltando com erro de alta demanda do serviço (HTTP 503).
+
+- **`assistir.py` só tem o motor local:** removidas as flags `--engine` e `--pergunta`; o script sempre roda frames + transcrição WhisperX na máquina, nada vai ao Google. O campo `engine` também saiu do `resultado.json`.
+- **`SKILL.md` e `references/instalacao.md` do `garimpo`** não citam mais o motor Gemini nem `GEMINI_API_KEY` como caminho padrão.
+
+**Ao atualizar:** quem já usava `--engine local` não muda nada. Quem usava o motor Gemini (padrão antigo) passa a usar sempre o local — mais lento por vídeo, mas sem depender do Google. Se tinha `GEMINI_API_KEY` só para o garimpo, pode remover do `.env`.
+
 ## 0.4.1 — levantamento de programas fora do winget
 
 A skill pessoal `liberar-espaco` foi dividida em três (`liberar-espaco`, `programas-sem-uso` e `desinstalar-limpo`), e o levantamento de programas que a `programas` usava saiu dela. Branch `fix/programas-levantamento`.

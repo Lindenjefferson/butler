@@ -2,7 +2,7 @@
 
 A skill `butler:garimpo` vem com o plugin Butler e depende do plugin do `/watch` (`watch@claude-video`, repositório github.com/bradautomates/claude-video), que faz o Claude **assistir a um vídeo**: baixa com o `yt-dlp`, extrai frames com o `ffmpeg`, transcreve o áudio e lê tudo. Funciona em sessões do Claude Code (aba Code do Claude Desktop, terminal ou VS Code), não no Chat nem no Cowork.
 
-O `scripts/assistir.py` da skill chama o `watch.py` do plugin com `--engine gemini` por padrão (o Gemini assiste ao vídeo: ele vai ao Google e é apagado de lá depois da resposta; precisa de `GEMINI_API_KEY`) e `--cookies-from-browser firefox`. Com `--engine local` (vídeo privado), passa `--whisper whisperx`: frames e transcrição na máquina, nada vai ao Google, à Groq nem à OpenAI. O WhisperX só é preciso para esse motor.
+O `scripts/assistir.py` da skill chama o `watch.py` do plugin com `--engine local` e `--cookies-from-browser firefox`: frames e transcrição (`--whisper whisperx`) na própria máquina, nada vai ao Google, à Groq nem à OpenAI. É o único motor da skill — o motor Gemini (vídeo enviado ao Google) foi removido por dar sempre erro de alta demanda do serviço. O WhisperX é preciso para rodar a skill.
 
 Pré-requisitos: Windows 10 ou 11, Claude Code instalado e `winget`. O Python precisa ser 3.10 ou mais novo: confira com `py -3 --version`. Se `python` abrir a Microsoft Store, é o alias do Windows, não um Python instalado (desligue em Configurações → Aplicativos → Aliases de execução de aplicativo).
 
@@ -15,7 +15,7 @@ Instale neste PC Windows as ferramentas da skill butler:garimpo e o plugin do /w
 2. Instale o que faltar com winget: Python.Python.3.12, Gyan.FFmpeg, yt-dlp.yt-dlp, DenoLand.Deno, astral-sh.uv, GitHub.cli e, se eu for ler Reels do Instagram, Mozilla.Firefox. Depois disso, abra um terminal novo para o PATH valer. O gh precisa de login: me peça para rodar "gh auth login" eu mesmo.
 3. Instale o plugin: claude plugin marketplace add bradautomates/claude-video e claude plugin install watch@claude-video.
 4. Transcrição local com WhisperX (sem chave de API): ache o setup.py do plugin em %USERPROFILE%\.claude\plugins\cache\claude-video\watch\<versão>\skills\watch\scripts\ (se houver mais de uma versão, a maior) e rode-o com --install-whisperx, SEM a flag -I do Python (senão ele não acha os módulos vizinhos). Se o uv falhar com "Missing expected target directory for Python minor version link", rode "uv python install 3.12" e o setup de novo; não crie o ambiente à mão, porque o setup apaga e recria o dele.
-5. Em %USERPROFILE%\.config\watch\.env deixe WATCH_WHISPER_BACKEND="whisperx", WATCH_WHISPERX_MODEL="small", WATCH_WHISPERX_LANGUAGE=pt e WATCH_ENGINE=local. A GEMINI_API_KEY (motor padrão do garimpo) eu mesmo ponho nesse arquivo: me diga onde criar a chave (aistudio.google.com), mas nunca imprima nem me peça chaves.
+5. Em %USERPROFILE%\.config\watch\.env deixe WATCH_WHISPER_BACKEND="whisperx", WATCH_WHISPERX_MODEL="small", WATCH_WHISPERX_LANGUAGE=pt e WATCH_ENGINE=local.
 6. Rode o setup.py com --check e me mostre o resultado.
 7. Teste o plugin com um vídeo público do YouTube e me mostre transcrição, o que aparece na tela e um resumo de 3 linhas.
 
@@ -76,13 +76,7 @@ WATCH_WHISPERX_LANGUAGE=pt
 WATCH_ENGINE=local
 ```
 
-`WATCH_ENGINE=local` e `WATCH_WHISPER_BACKEND="whisperx"` garantem que o `/watch` usado direto não envie vídeo ao Gemini nem áudio à Groq ou à OpenAI, mesmo que exista uma chave dessas no ambiente (os padrões do plugin são `auto`, que usam a nuvem quando acham a chave). O `assistir.py` do garimpo passa o motor explicitamente, então essas linhas não mudam o garimpo.
-
-Para o motor padrão do garimpo, acrescente você mesmo, no mesmo arquivo, a chave criada em aistudio.google.com (nunca cole a chave no chat):
-
-```text
-GEMINI_API_KEY=<sua chave>
-```
+`WATCH_ENGINE=local` e `WATCH_WHISPER_BACKEND="whisperx"` garantem que o `/watch` usado direto não envie vídeo ao Gemini nem áudio à Groq ou à OpenAI, mesmo que exista uma chave dessas no ambiente (os padrões do plugin são `auto`, que usam a nuvem quando acham a chave). O `assistir.py` do garimpo passa `--engine local` explicitamente, então essas linhas não mudam o garimpo — valem só para quem também usa o `/watch` direto.
 
 6. Conferir a instalação (sai com código 0 se estiver tudo certo e 2 se faltar ferramenta):
 
