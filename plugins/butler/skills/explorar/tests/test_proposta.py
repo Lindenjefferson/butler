@@ -429,6 +429,17 @@ def test_aprovado_volta_a_pendente():
         assert c.proposta(r["id"])["itens"][0]["estado"] == "pendente"
         lista = c.rodar("listar")["propostas"][0]
         assert lista["aprovados"] == 0 and lista["pendentes"] == 1, lista
+        # só um item aprovado volta a pendente: os outros estados são recusados
+        for estado in ("aplicado", "recusado"):
+            c.rodar("marcar", "--id", r["id"], "--itens", "1", "--estado", estado)
+            c.rodar("marcar", "--id", r["id"], "--itens", "1", "--estado", "pendente", esperado=2)
+            assert c.proposta(r["id"])["itens"][0]["estado"] == estado
+            p = c.proposta(r["id"])
+            p["itens"][0]["estado"] = "pendente"
+            with open(os.path.join(c.pasta(r["id"]), "proposta.json"), "w", encoding="utf-8") as f:
+                json.dump(p, f, ensure_ascii=False)
+        # pendente -> pendente também é recusado (não era aprovado)
+        c.rodar("marcar", "--id", r["id"], "--itens", "1", "--estado", "pendente", esperado=2)
     finally:
         c.fechar()
 

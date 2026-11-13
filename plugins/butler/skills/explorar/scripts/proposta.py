@@ -14,9 +14,9 @@ Subcomandos (`python proposta.py <vault> <subcomando>`), todos imprimem JSON:
   itens que continuam (mesmo tipo e destino); item novo ganha o próximo número. Avisos de entrada ignorada:
   `alvo_vazio: <nota>` (`linha` ou `fundir` sem alvo) e `fundir_em_si: <nota>`.
 - `bloco --id <id> --n <N>`: os itens do bloco N (até 10).
-- `marcar --id <id> --itens 1,3 --estado pendente|aprovado|aplicado|recusado`: `pendente` devolve ao
-  estado inicial um item refeito que já estava aprovado (só se aplica depois de um novo ok); recusar marca como `bloqueado` os itens
-  pendentes ou aprovados que dependem dele (em cadeia).
+- `marcar --id <id> --itens 1,3 --estado pendente|aprovado|aplicado|recusado`: `pendente` só vale para item
+  `aprovado` (devolve um item refeito, que só se aplica depois de um novo ok; outro estado sai com erro);
+  recusar marca como `bloqueado` os itens pendentes ou aprovados que dependem dele (em cadeia).
 - `conferir --id <id> [--itens 1,3]`: recalcula as digitais das origens e dos destinos de cada item;
   `{"mudou": [n...], "ok": [n...]}`. Item que mudou não se aplica: a sessão refaz só ele e chama `redigitar`.
   Marcar `aplicado` atualiza a digital do destino do item, que os outros itens com o mesmo destino conferem.
@@ -404,6 +404,10 @@ def marcar(vault, args):
     pasta, proposta = carregar(vault, args.id)
     pedidos = numeros(args.itens, proposta["itens"])
     por_n = {i["n"]: i for i in proposta["itens"]}
+    if args.estado == "pendente":
+        fora = [n for n in pedidos if por_n[n]["estado"] != "aprovado"]
+        if fora:
+            raise Erro(f"só item aprovado volta a pendente: {fora}")
     for n in pedidos:
         por_n[n]["estado"] = args.estado
         if args.estado == "aplicado":
