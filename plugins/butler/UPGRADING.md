@@ -2,6 +2,15 @@
 
 O que cada versão entregou e o que muda para quem atualiza. O arquivo vai junto com cada versão instalada: a skill `atualizar` lê o **Ao atualizar** de cada versão pulada, da mais antiga para a mais nova. Termine o pedido em andamento no vault antes de atualizar (a skill `atualizar` confere). As ideias que ainda não viraram versão estão no [roadmap](../../docs/roadmap.md). O que é major, minor e patch está no [`CLAUDE.md`](../../CLAUDE.md).
 
+## 0.8.0 — explorar: enxugar e organizar um pedaço já triado
+
+Pedido do dono: o `triagem` só cuida do Inbox; faltava uma rotina para voltar a um pedaço do vault já triado (uma pasta, algumas notas ou um tema), pesquisar mais sobre cada nota e propor como enxugar e organizar.
+
+- **Skill nova `explorar`:** monta o alvo (`scripts/alvo.py`), reassiste as fontes que são listas de vídeos, lança um subagente por grupo de notas para pesquisar e propor, e consolida tudo numa proposta (`scripts/proposta.py`, com teste). A proposta tem itens numerados (juntar notas pequenas em listas por tema, cortar o que sobra, descartar, acrescentar o que a pesquisa trouxe, sempre com fonte e confiança), é mostrada em blocos de até 10, e só o que o usuário aprovar é aplicado, como Reforma do `gerente`. Até o aval, é só leitura; a digital de cada nota detecta mudança no meio do caminho, e o item refeito volta a `pendente` para só se aplicar depois de um novo ok. Sem argumento, lista as propostas pendentes.
+- **Chamada pelo `gerente`:** `butler:explorar` entra na lista de skills por assunto (§11).
+
+**Ao atualizar:** nada muda; skill nova.
+
 ## 0.7.0 — modo sem supervisão: trava com prazo, perguntas que não se perdem, diário de pedidos
 
 Pedido do dono, na mesma rodada da revisão do Fable (0.6.1): pensando em rodar o Butler sem ninguém no terminal por longos períodos (um serviço de pé, tipo um bot do Duet), pediu para desenhar e construir o que fosse possível dos pontos que mudam "quem decide o quê" sem comprometer "parar pelo risco" — deixando o que precisa mesmo da decisão dele, caso a caso, documentado no [roadmap](../../docs/roadmap.md).
