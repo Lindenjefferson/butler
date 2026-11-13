@@ -5,7 +5,9 @@ essas mudanças num ponto próprio, antes de o pedido começar, e relata o que m
 linhas ou foi apagada, cópia de conflito nova, mudança no `CLAUDE.md` ou nas regras e nome em NFD. Arquivo com dado
 sensível e binário (imagem, PDF) ficam fora do ponto, a menos que a impressão digital esteja liberada nas regras, e
 voltam a aparecer a cada pedido até a pessoa decidir. Arquivo que o git não consegue ler fica fora e é relatado; o
-histórico continua funcionando.
+histórico continua funcionando. Na retomada de um pedido (`inicio` chamado de novo no meio dele), o que está sem
+ponto pode ser trabalho do próprio pedido ou uma mudança real de fora, e o git não distingue uma coisa da outra;
+`ignorar` tira do cálculo os caminhos que quem chama (o `--continuando` do `inicio`) já sabe que são do pedido.
 
 **Desfazer um pedido** é uma mescla de três vias por arquivo (`git merge-file`): parte da versão atual e tira dela
 só o que o pedido mudou. Uma mudança posterior em outro trecho da mesma nota (outra triagem no `Início.md`) fica; um
@@ -29,9 +31,11 @@ from . import notas, sensivel
 from .regras import SEMPRE_PROTEGIDAS
 
 
-def registrar_fora(hist, regras, rotulo, pedido):
+def registrar_fora(hist, regras, rotulo, pedido, ignorar=None):
+    """`ignorar` tira do que se conta como mudança de fora os caminhos que quem chama já sabe que são do próprio
+    pedido (ainda sem ponto): eles continuam sem ponto, sem entrar no relato nem no commit de fora."""
     liberadas = regras.liberacoes if regras else set()
-    itens = hist.mudancas()
+    itens = [item for item in hist.mudancas() if item[1] not in (ignorar or ())]
     fora, avisos = set(), {"protegidas_com_remocao": [], "copias_conflito": [], "regras_mudaram": [],
                            "fora_do_historico": [], "nomes_nfd": []}
     for estado, caminho in itens:

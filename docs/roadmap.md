@@ -6,7 +6,13 @@ Toda ideia passa pelo filtro do [`CLAUDE.md`](../CLAUDE.md) e termina numa desta
 
 ## Não triadas
 
-Nenhuma no momento.
+- **Modo sem supervisão síncrona** (revisão do Fable pensando em uso autônomo, tipo o plugin de pé num Duet/bot, sem ninguém no terminal aprovando cada parada): achou, e eu confirmei no código, que hoje só `garimpo` e `ideia-para-inbox` têm esse caminho pensado; o resto pressupõe alguém respondendo. Quatro pontos, todos mudando quem decide o quê ou as paradas, por isso aqui e não direto no Backlog:
+  - A trava não tem como saber se quem a pegou ainda está "de pé" (não há processo da sessão para checar — cada chamada do `butler.py` já termina sozinha; confirmei isso rodando o cenário). Uma queda deixa o vault travado até alguém mandar `liberar-trava --forcar`. Precisa de uma política (um prazo declarado nas regras do vault, por exemplo) para decidir quando uma trava "velha" pode ser tratada como abandonada sem um sim explícito — é decisão do dono, não checagem de script.
+  - `fim` substitui as `perguntas` do `estado.json` pelas do pedido que terminou agora; as de um pedido anterior, ainda sem resposta, saem da foto que o painel lê (a nota com a dúvida continua no vault, só não aparece mais ali). Combinado com paradas sem humano síncrono, perguntas se perdem de vista. Precisa decidir se `estado.json` passa a acumular pendentes por pedido (fila com id) e como alguém responde fora de uma conversa corrida.
+  - Nada registra, fora da conversa, o que falhou ou foi recusado num pedido (trava ocupada, sem histórico, dado sensível recusado, pedido que caiu antes do `fim`). Hoje só existe na tela; sem alguém olhando na hora, não sobra rastro. Precisa decidir se entra um diário só de acréscimo na pasta de estado (fora do vault) e o que vai nele.
+  - "Pedido explícito já é o aval" (gerente, §4) não distingue canal nem identidade de quem pediu — pensado para o dono corrigindo na hora. Num bot (Telegram, por exemplo), qualquer mensagem que chegar é "o usuário nesta conversa". Precisa de um modo declarado com lista fechada do que ele pode fazer sozinho, sem o resto das permissões de hoje.
+  
+  Esforço: G (é desenho, não só código). Ver também, ainda da mesma revisão, mas menor: `fila` não guarda por quanto tempo o Instagram bloqueou, então um agendador pode bater de novo assim que "o próximo lote" for pedido — Esforço: P, mecânico, mas depende de onde esse estado mora (mesma decisão de cima sobre o diário fora do vault).
 
 ## Backlog
 
