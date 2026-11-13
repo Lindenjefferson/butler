@@ -82,6 +82,42 @@ def test_mudanca_de_fora_vira_ponto_proprio_antes_do_pedido():
         amb.fechar()
 
 
+def test_continuando_tira_o_trabalho_do_proprio_pedido_da_varredura_de_fora():
+    amb = Ambiente()
+    try:
+        amb.preparar()
+        primeiro = amb.inicio("triagem", sessao="s-a")
+        amb.escrever("Inbox/Nova.md", nota("Nova"))
+        # a mesma sessão retoma antes do ponto (compactação), avisando que já sabe do que escreveu
+        args = ["inicio", "--rotulo", "triagem", "--sessao", "s-a", "--continuando", "Inbox/Nova.md"]
+        retomada = amb.rodar(*args)
+        assert retomada["retomada"] and retomada["mudancas_de_fora"]["arquivos"] == []
+        assert amb.git("status", "--porcelain").strip() != ""  # Inbox/Nova.md continua sem ponto, não "fora"
+        ponto = amb.rodar("ponto", "--token", retomada["token"], "--rotulo", "triagem: Nova", "Inbox/Nova.md")
+        assert ponto["gravados"] == ["Inbox/Nova.md"]
+        amb.rodar("fim", "--token", retomada["token"])
+        outro = amb.inicio("desfazer")
+        desfeito = amb.rodar("desfazer", "--token", outro["token"], "--pedido", primeiro["pedido"])
+        assert desfeito["ok"] and desfeito["plano"]["itens"][0]["acao"] == "apagar"
+    finally:
+        amb.fechar()
+
+
+def test_sem_continuando_a_retomada_continua_varrendo_tudo_como_fora():
+    amb = Ambiente()
+    try:
+        amb.preparar()
+        amb.escrever("Casa/A.md", nota("A", "linha 1"))
+        inicio = amb.inicio("pedido", sessao="s1")
+        amb.escrever("Casa/B.md", nota("B"))  # "Obsidian" escreve algo sem relação, sem `--continuando`
+        retomada = amb.inicio("pedido", sessao="s1")
+        assert retomada["retomada"]
+        assert {"estado": "novo", "arquivo": "Casa/B.md"} in retomada["mudancas_de_fora"]["arquivos"]
+        assert amb.rodar("fim", "--token", inicio["token"])["ok"]  # Casa/B.md não fica "sem ponto"
+    finally:
+        amb.fechar()
+
+
 def test_ponto_grava_so_os_arquivos_listados():
     amb = Ambiente()
     try:

@@ -295,9 +295,16 @@ def cmd_inicio(args):
                 "historico_ok": ctx.ok, "motivo": ctx.motivo, "mudancas_de_fora": None}
     if ctx.ok:
         ctx.hist.limpar_index_lock()
+        # Na retomada (compactação, ou um serviço que chama `inicio` de novo no meio do próprio pedido), o que
+        # está sem ponto pode ser trabalho do próprio pedido (escreveu e ainda não apontou) ou uma mudança
+        # genuína de fora (a trava impede outra sessão do Claude de escrever, mas não o Obsidian): o git não
+        # distingue uma coisa da outra. Quem está retomando e sabe o que escreveu e ainda não apontou avisa em
+        # `--continuando`; só esses caminhos ficam de fora da varredura (continuam sem ponto, não "fora"). Sem
+        # `--continuando`, o comportamento é o de sempre: tudo o que está sem ponto vira um ponto de "fora".
+        ignorar = {ctx.relativo(a) for a in (args.continuando or [])}
         try:
             resposta["mudancas_de_fora"] = operacoes.registrar_fora(ctx.hist, ctx.regras, args.rotulo,
-                                                                    atual["pedido"])
+                                                                    atual["pedido"], ignorar=ignorar)
         except (ErroGit, OSError) as erro:
             ctx.motivo = f"não deu para gravar as mudanças de fora ({erro})"
             resposta.update(historico_ok=False, motivo=ctx.motivo)
@@ -601,6 +608,7 @@ def main(argv=None):
     p = novo("inicio", cmd_inicio)
     p.add_argument("--rotulo", required=True)
     p.add_argument("--sessao")
+    p.add_argument("--continuando", nargs="*")
     p = novo("ponto", cmd_ponto)
     p.add_argument("--token", required=True)
     p.add_argument("--rotulo", required=True)
