@@ -79,6 +79,29 @@ def test_duvida_gravada_volta_na_retomada_e_no_fim():
         amb.fechar()
 
 
+def test_pergunta_pendente_sobrevive_ao_fim_do_pedido_seguinte():
+    amb = Ambiente()
+    try:
+        amb.preparar()
+        amb.escrever("Inbox/X.md", nota("X"))
+        token = amb.inicio("triagem", sessao="s")["token"]
+        amb.rodar("duvida", "--token", token, "--pergunta", "De quem é a nota X?", "--proposta", "compartilhada",
+                  "--nota", "Inbox/X.md")
+        amb.rodar("fim", "--token", token)
+        assert [p["nota"] for p in amb.estado()["perguntas"]] == ["Inbox/X.md"]
+        # um pedido seguinte, sem nenhuma dúvida própria, não apaga a pergunta ainda sem resposta
+        outro = amb.inicio("outro pedido", sessao="s")["token"]
+        amb.rodar("fim", "--token", outro)
+        assert [p["nota"] for p in amb.estado()["perguntas"]] == ["Inbox/X.md"]
+        # a nota deixa de existir (foi fichada, fundida ou apagada): a pergunta sobre ela sai da lista
+        amb.apagar("Inbox/X.md")
+        terceiro = amb.inicio("mais um pedido", sessao="s")["token"]
+        amb.rodar("fim", "--token", terceiro)
+        assert amb.estado()["perguntas"] == []
+    finally:
+        amb.fechar()
+
+
 def test_duvida_com_token_errado_e_recusada():
     amb = Ambiente()
     try:

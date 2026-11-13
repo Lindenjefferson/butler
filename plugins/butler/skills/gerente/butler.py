@@ -16,11 +16,13 @@ Subcomandos:
       Só lê: histórico ok ou o motivo, trava, quantas mudanças de fora esperam, Inbox, pendências e os pontos do
       pedido em andamento (para dizer onde um Lote parou). Num vault sem histórico nesta máquina, lista em
       `historicos_de_vaults_que_sumiram` os vaults registrados cuja pasta não existe mais (um vault movido).
-  inicio --rotulo R [--sessao ID]
+  inicio --rotulo R [--sessao ID] [--continuando ARQUIVO ...]
       Pega a trava (a mesma sessão retoma a dela) e grava o ponto das mudanças de fora. Devolve `token`, `pedido`,
       `historico_ok`, `motivo` e `mudancas_de_fora`, com os avisos que o aviso do início da sessão já tinha gravado
       e nenhum pedido mostrou ainda. Sem histórico, pega a trava do mesmo jeito e diz o motivo. Numa retomada, traz
-      também `pontos_do_pedido` e as `duvidas` já anotadas.
+      também `pontos_do_pedido` e as `duvidas` já anotadas; `--continuando` tira da varredura de mudança de fora os
+      arquivos que já são sabidamente do próprio pedido, ainda sem ponto. Trava ocupada mais velha do que o prazo
+      de `## Modo sem supervisão` (nota de regras) é liberada sozinha; a resposta traz `trava_abandonada_por_prazo`.
   ponto --token T --rotulo R ARQUIVO...
       Grava um ponto com só esses arquivos (um apagado ou movido entra pelo caminho antigo e pelo novo). Recusa
       pasta, arquivo ilegível, arquivo com dado sensível e binário, e os devolve em `recusados`. Cada ponto leva o
@@ -62,10 +64,13 @@ Subcomandos:
       A conferência no vault inteiro, mais a árvore de pastas, pastas vazias, cópias de conflito, nomes em NFD,
       notas fora do índice, links quebrados citados por várias notas, possíveis duplicatas e se o vault usa links
       em Markdown (ver lib/conferencia.py).
+  diario [--limite N]
+      Os últimos N eventos do diário de pedidos (ver lib/diario.py): o que não virou nota (trava ocupada, trava
+      abandonada por prazo, `fim` recusado por `sem_ponto`) e o início/fim de cada pedido. Só lê.
 
 As regras de cada parte estão nas docstrings de lib/: historico.py (o git fora do vault), trava.py, estado.py (o
-formato que o Wingman lê), regras.py (a nota de regras do vault), sensivel.py, conferencia.py e operacoes.py
-(mudanças de fora, desfazer, renomear).
+formato que o Wingman lê), regras.py (a nota de regras do vault), sensivel.py, conferencia.py, operacoes.py
+(mudanças de fora, desfazer, renomear) e diario.py (o que fica registrado fora de uma nota).
 """
 import argparse
 import json
@@ -74,7 +79,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from lib import config, conferencia, estado, notas, operacoes, regras as regras_mod, sensivel, trava  # noqa: E402
+from lib import config, conferencia, diario, estado, notas, operacoes, regras as regras_mod, sensivel, trava  # noqa: E402
 from lib.historico import ErroGit, Historico  # noqa: E402
 
 OK, USO, OCUPADA, SEM_HISTORICO, TOKEN, SEM_PONTO = 0, 2, 3, 4, 5, 6
@@ -287,12 +292,34 @@ def cmd_situacao(args):
 
 def cmd_inicio(args):
     ctx = Contexto(args.vault)
+    abandonada = None
     try:
         atual = trava.pegar(ctx.pasta_estado, args.rotulo, args.sessao)
     except trava.Ocupada as ocupada:
-        return saida({"ok": False, "trava_ocupada": trava.descrever(ocupada.trava)}, OCUPADA)
+        descrita = trava.descrever(ocupada.trava)
+        prazo = ctx.regras.prazo_trava_abandonada() if ctx.regras else None
+        # `## Modo sem supervisão` declarado nas regras do vault: sem ninguém para dar o sim de `--forcar`, uma
+        # trava mais velha que o prazo é tratada como abandonada e liberada sozinha. Sem a seção (prazo None),
+        # nada muda: continua exigindo o sim de sempre. `corrompida` nunca entra nessa conta (idade não confiável).
+        if prazo is not None and not descrita.get("corrompida") and (descrita.get("minutos_parada") or 0) >= prazo:
+            trava.forcar(ctx.pasta_estado)
+            abandonada = descrita
+            diario.registrar(ctx.pasta_estado, quando=trava.agora(), evento="trava_abandonada_por_prazo",
+                             rotulo=args.rotulo, sessao=args.sessao, trava_anterior=descrita)
+            try:
+                atual = trava.pegar(ctx.pasta_estado, args.rotulo, args.sessao)
+            except trava.Ocupada as segunda:
+                return saida({"ok": False, "trava_ocupada": trava.descrever(segunda.trava)}, OCUPADA)
+        else:
+            diario.registrar(ctx.pasta_estado, quando=trava.agora(), evento="trava_ocupada", rotulo=args.rotulo,
+                             sessao=args.sessao, trava_ocupada=descrita)
+            return saida({"ok": False, "trava_ocupada": descrita}, OCUPADA)
+    if not atual["retomada"]:
+        diario.registrar(ctx.pasta_estado, quando=atual["inicio"], evento="inicio", pedido=atual["pedido"],
+                         rotulo=atual["rotulo"], sessao=args.sessao)
     resposta = {"ok": True, "token": atual["token"], "pedido": atual["pedido"], "retomada": atual["retomada"],
-                "historico_ok": ctx.ok, "motivo": ctx.motivo, "mudancas_de_fora": None}
+                "historico_ok": ctx.ok, "motivo": ctx.motivo, "mudancas_de_fora": None,
+                "trava_abandonada_por_prazo": abandonada}
     if ctx.ok:
         ctx.hist.limpar_index_lock()
         # Na retomada (compactação, ou um serviço que chama `inicio` de novo no meio do próprio pedido), o que
@@ -362,6 +389,8 @@ def cmd_fim(args):
     atual = _token(ctx, args)
     sem_ponto = _sem_ponto(ctx)
     if sem_ponto and not args.sem_ponto_ok:
+        diario.registrar(ctx.pasta_estado, quando=trava.agora(), evento="fim_recusado_sem_ponto",
+                         pedido=atual["pedido"], rotulo=atual["rotulo"], sem_ponto=sem_ponto)
         return saida({"ok": False, "sem_ponto": sem_ponto,
                       "erro": "há arquivo mudado sem ponto: grave o ponto do que o pedido tocou e rode o fim de "
                               "novo, ou use --sem-ponto-ok se o resto mudou por fora"}, SEM_PONTO)
@@ -381,11 +410,26 @@ def cmd_fim(args):
     perguntas = list(atual.get("duvidas") or [])
     for pergunta in resumo.get("perguntas") if isinstance(resumo.get("perguntas"), list) else []:
         trava.somar_duvida(perguntas, pergunta)
+    # As perguntas de um pedido anterior que ainda esperam resposta não saem de vista só porque este pedido
+    # terminou: continuam, enquanto a nota que elas citam ainda existir (resolvida ou não, se a nota some, a
+    # pergunta sobre ela deixou de fazer sentido).
+    for pergunta in estado.ler(ctx.pasta_estado).get("perguntas") or []:
+        nota_citada = pergunta.get("nota") if isinstance(pergunta, dict) else None
+        if nota_citada is None or os.path.isfile(notas.absoluto(ctx.vault, nota_citada)):
+            trava.somar_duvida(perguntas, pergunta)
     trava.soltar(ctx.pasta_estado, args.token)
     gravado = ctx.gravar_estado(trava=None, ultimo_pedido=ultimo, perguntas=perguntas,
                                 avisos={chave: [] for chave in AVISOS})
-    return saida({"ok": True, "pedido": atual["pedido"], "pontos": len(_pontos_do_pedido(ctx, atual["pedido"])),
-                  "sem_ponto": sem_ponto, "estado_gravado": gravado})
+    pontos = len(_pontos_do_pedido(ctx, atual["pedido"]))
+    diario.registrar(ctx.pasta_estado, quando=ultimo["fim"], evento="fim", pedido=atual["pedido"],
+                     rotulo=atual["rotulo"], pontos=pontos, perguntas_pendentes=len(perguntas))
+    return saida({"ok": True, "pedido": atual["pedido"], "pontos": pontos, "sem_ponto": sem_ponto,
+                  "estado_gravado": gravado})
+
+
+def cmd_diario(args):
+    ctx = Contexto(args.vault)
+    return saida({"eventos": diario.ler(ctx.pasta_estado, limite=args.limite)})
 
 
 def _linha_aviso(ctx, fora, ocupada, sessao=None):
@@ -650,6 +694,8 @@ def main(argv=None):
         p = novo(nome, funcao)
         p.add_argument("arquivos", nargs="+")
     novo("revisar", cmd_revisar)
+    p = novo("diario", cmd_diario)
+    p.add_argument("--limite", type=int, default=50)
     args = parser.parse_args(argv)
     try:
         return args.funcao(args)

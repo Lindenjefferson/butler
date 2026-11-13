@@ -27,7 +27,10 @@ guarda conteúdo de nota nem dado sensível: só caminhos, títulos, vereditos e
       }
     }
 
-As `perguntas` do `fim` são as `duvidas` anotadas na trava durante o pedido, mais as do resumo. Os `avisos` se acumulam do aviso do início da sessão até o `fim` do pedido seguinte, que os limpa depois de o pedido
+As `perguntas` do `fim` são as `duvidas` anotadas na trava durante o pedido, mais as do resumo, mais as de um
+pedido anterior que ainda não foram respondidas: elas se acumulam de um `fim` para o outro (sem repetir a mesma
+pergunta sobre a mesma nota) e só saem da lista quando a nota que citam deixa de existir no vault (foi fichada,
+fundida, apagada ou renomeada). Os `avisos` se acumulam do aviso do início da sessão até o `fim` do pedido seguinte, que os limpa depois de o pedido
 os mostrar.
 
 `trava.json` é a fonte da trava; aqui ela é uma cópia. Um leitor que precise da trava exata lê o `trava.json` ao lado.

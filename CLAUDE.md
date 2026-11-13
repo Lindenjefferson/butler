@@ -38,6 +38,7 @@ Cada componente tem **uma** fonte de verdade, o próprio arquivo. Os outros docu
 | Formato da nota de regras do vault | docstring de [`lib/regras.py`](plugins/butler/skills/gerente/lib/regras.py); o molde, em [`skills/preparar/templates/`](plugins/butler/skills/preparar/templates/) |
 | O que conta como dado sensível | docstring de [`lib/sensivel.py`](plugins/butler/skills/gerente/lib/sensivel.py) |
 | Achados da conferência e da revisão | docstring de [`lib/conferencia.py`](plugins/butler/skills/gerente/lib/conferencia.py) |
+| O que não virou nota (trava ocupada, abandonada por prazo, `fim` recusado por `sem_ponto`) | docstring de [`lib/diario.py`](plugins/butler/skills/gerente/lib/diario.py) |
 | Mudanças de fora, desfazer, renomear | docstring de [`lib/operacoes.py`](plugins/butler/skills/gerente/lib/operacoes.py) |
 | Hooks de sessão | docstring de [`hooks/sessao.py`](plugins/butler/hooks/sessao.py), registrados em [`hooks/hooks.json`](plugins/butler/hooks/hooks.json) |
 | Testes | `plugins/butler/skills/*/tests/`, `plugins/butler/hooks/tests/` |

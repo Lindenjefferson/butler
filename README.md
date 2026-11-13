@@ -89,7 +89,7 @@ O vault precisa de um `CLAUDE.md` na raiz com as regras dele (pastas, frontmatte
 | [`ideia-para-inbox`](plugins/butler/skills/ideia-para-inbox/SKILL.md) | Grava uma ideia curta (texto ou áudio transcrito) como nota nova no Inbox, sem pesquisar; feita para um serviço chamar, como um bot |
 | [`programas`](plugins/butler/skills/programas/SKILL.md) | Atualiza o inventário de programas da máquina e o JSON do winget |
 | [`atualizar`](plugins/butler/skills/atualizar/SKILL.md) | Atualiza o plugin e aplica as notas de cada versão |
-| [`butler.py`](plugins/butler/skills/gerente/butler.py) | O que se confere sem modelo: histórico, trava, pontos, desfazer, renomear, conferência, revisão, dado sensível, `estado.json` |
+| [`butler.py`](plugins/butler/skills/gerente/butler.py) | O que se confere sem modelo: histórico, trava, pontos, desfazer, renomear, conferência, revisão, dado sensível, `estado.json`, diário de pedidos |
 | [`hooks`](plugins/butler/hooks/hooks.json) | Aviso de uma linha no início da sessão num vault do Butler; guarda que nega escrita no vault fora de um pedido do gerente e pergunta antes da que perde linhas; trava solta no fim |
 
 ## O que sai da sua máquina
@@ -98,7 +98,7 @@ Nada além do que o Claude Code já envia na conversa. O histórico do vault fic
 
 ## Painel
 
-O Butler funciona sozinho, pelo terminal. Um painel (o autor usa o dele, o Wingman) pode mostrar o vault lendo o `estado.json` que o Butler grava na pasta do histórico (o formato está na docstring de [`lib/estado.py`](plugins/butler/skills/gerente/lib/estado.py)) e chamar as skills pelo nome (`/butler:triagem`, `/butler:garimpo <links>`, `/butler:consultar <pergunta>`, `/butler:gerente arquiva <nota>`).
+O Butler funciona sozinho, pelo terminal. Um painel (o autor usa o dele, o Wingman) pode mostrar o vault lendo o `estado.json` que o Butler grava na pasta do histórico (o formato está na docstring de [`lib/estado.py`](plugins/butler/skills/gerente/lib/estado.py)), ler `B diario` para o que não virou nota (trava ocupada, abandonada por prazo, `fim` recusado) e chamar as skills pelo nome (`/butler:triagem`, `/butler:garimpo <links>`, `/butler:consultar <pergunta>`, `/butler:gerente arquiva <nota>`).
 
 ## Para onde vai
 

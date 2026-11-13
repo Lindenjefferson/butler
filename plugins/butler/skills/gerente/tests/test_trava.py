@@ -1,11 +1,21 @@
 """Um pedido por vez: trava atômica, retomada pela mesma sessão, token, fim e estado.json."""
+import datetime
 import json
 import os
 import subprocess
 import sys
 import threading
 
-from apoio import BUTLER, Ambiente, rodar_testes
+from apoio import BUTLER, REGRAS, Ambiente, rodar_testes
+
+
+def _envelhecer_trava(amb, minutos):
+    caminho = os.path.join(amb.historico, "trava.json")
+    with open(caminho, encoding="utf-8") as arquivo:
+        dados = json.load(arquivo)
+    dados["atualizado"] = (datetime.datetime.now().astimezone() - datetime.timedelta(minutes=minutos)).isoformat()
+    with open(caminho, "w", encoding="utf-8") as arquivo:
+        json.dump(dados, arquivo)
 
 
 def test_segunda_sessao_acha_a_trava_e_nao_forca():
@@ -49,6 +59,60 @@ def test_dois_inicios_em_paralelo_so_um_pega():
         for linha in linhas:
             linha.join()
         assert sorted(codigos) == [0, 3, 3, 3], codigos
+    finally:
+        amb.fechar()
+
+
+def test_trava_abandonada_por_prazo_libera_sozinha_com_o_modo_declarado():
+    amb = Ambiente()
+    try:
+        amb.escrever("Sistema/Regras do Butler.md", REGRAS.replace(
+            "## Caminhos", "## Modo sem supervisão\n\n- trava abandonada depois de: `30 min`\n\n## Caminhos"))
+        amb.preparar()
+        amb.inicio("triagem", sessao="a")
+        _envelhecer_trava(amb, 31)
+        resposta = amb.inicio("garimpo", sessao="b")
+        assert resposta["ok"] and resposta["trava_abandonada_por_prazo"]["rotulo"] == "triagem"
+    finally:
+        amb.fechar()
+
+
+def test_trava_ainda_dentro_do_prazo_nao_libera_sozinha():
+    amb = Ambiente()
+    try:
+        amb.escrever("Sistema/Regras do Butler.md", REGRAS.replace(
+            "## Caminhos", "## Modo sem supervisão\n\n- trava abandonada depois de: `30 min`\n\n## Caminhos"))
+        amb.preparar()
+        amb.inicio("triagem", sessao="a")
+        _envelhecer_trava(amb, 10)
+        resposta = amb.inicio("garimpo", sessao="b", esperado=3)
+        assert resposta["trava_ocupada"]["rotulo"] == "triagem"
+    finally:
+        amb.fechar()
+
+
+def test_trava_abandonada_sem_o_modo_declarado_continua_exigindo_forcar():
+    amb = Ambiente()
+    try:
+        amb.preparar()
+        amb.inicio("triagem", sessao="a")
+        _envelhecer_trava(amb, 300)
+        resposta = amb.inicio("garimpo", sessao="b", esperado=3)
+        assert resposta["trava_ocupada"]["rotulo"] == "triagem"
+    finally:
+        amb.fechar()
+
+
+def test_trava_corrompida_nao_entra_na_conta_do_prazo():
+    amb = Ambiente()
+    try:
+        amb.escrever("Sistema/Regras do Butler.md", REGRAS.replace(
+            "## Caminhos", "## Modo sem supervisão\n\n- trava abandonada depois de: `30 min`\n\n## Caminhos"))
+        amb.preparar()
+        with open(os.path.join(amb.historico, "trava.json"), "w") as arquivo:
+            arquivo.write("{meio")
+        resposta = amb.inicio("garimpo", sessao="b", esperado=3)
+        assert resposta["trava_ocupada"]["corrompida"] is True
     finally:
         amb.fechar()
 
