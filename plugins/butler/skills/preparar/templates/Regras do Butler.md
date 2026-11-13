@@ -56,9 +56,9 @@ O que o Butler nunca varre na nuvem, por privacidade. Tire a seção se não há
 
 - `<caminho absoluto>` — <motivo>
 
-## Listas da colheita
+## Listas para fichar
 
-Onde um link de vida pessoal entra direto, em uma linha, sem nota no Inbox: o garimpo classifica o link e a colheita grava o item na lista daquela classificação. `<destino>` no caminho quer dizer uma nota por destino (a de cada viagem). Classificação sem linha aqui vira nota no Inbox, como todo link. Tire as linhas que não quiser.
+Onde um item entra direto, no lugar do destino normal de uma nota: o garimpo classifica o link e grava a nota no Inbox, como de costume; na triagem, a `butler:fichar` grava o item no destino daquela classificação e apaga a nota do Inbox. Caminho sem `<destino>` é uma lista compartilhada (um item por linha); caminho com `<destino>` é uma nota por assunto (ganha uma seção inteira, não uma linha — a de cada viagem, por exemplo). Vale para qualquer classificação do garimpo, não só as do exemplo abaixo — acrescente outras linhas se fizer sentido (um jogo, uma ferramenta). Classificação sem linha aqui segue o destino normal da triagem, como qualquer nota. Tire as linhas que não quiser.
 
 - filme: `<pasta>/<lista de filmes>.md` — um item por filme para assistir
 - viagem: `<pasta>/<destino>.md` — a nota da viagem com o mesmo destino

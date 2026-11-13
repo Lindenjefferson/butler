@@ -20,9 +20,11 @@ pela skill. Títulos de seção, comparados sem acento e sem maiúsculas:
 - `## Nuvem: pastas fora da varredura`: cada item é `- \\`<caminho ou glob>\\` — <explicação>`, igual a `Notas
   protegidas`, mas os caminhos são absolutos (fora do vault) e dizem o que a preparação e qualquer rotina que olhe a
   nuvem nunca devem varrer, por privacidade.
-- `## Listas da colheita`: `- <classificação>: \\`<caminho>\\` — <explicação>`, a lista em que a skill `colheita`
-  grava cada classificação do garimpo (`filme`, `viagem`, `receita`). `<destino>` no caminho quer dizer uma nota por
-  destino (a nota de cada viagem). Classificação sem linha aqui vira nota no Inbox, como todo link.
+- `## Listas para fichar` (ou `## Listas da colheita`, o título antigo, ainda aceito): `- <classificação>: \\`<caminho>\\`
+  — <explicação>`, a lista em que a skill `fichar` grava cada classificação do garimpo, qualquer uma, não só `filme`,
+  `viagem` ou `receita`. `<destino>` no caminho quer dizer uma nota por destino (a nota de cada viagem). Classificação
+  sem linha aqui vira nota no Inbox, como todo link. A chave no dicionário devolvido por `situacao` continua
+  `colheita`, por compatibilidade com quem já lê esse campo (ex.: o Wingman).
 
 O `CLAUDE.md` da raiz e a própria nota de regras são sempre protegidos, estejam ou não na lista.
 """
@@ -59,7 +61,7 @@ class Regras:
                 continue
             corpo = item.group(1)
             codigos = _CODIGO.findall(corpo)
-            if secao in ("caminhos", "listas da colheita"):
+            if secao in ("caminhos", "listas para fichar", "listas da colheita"):
                 par = re.match(r"^([^:`]+):\s*`([^`]+)`", corpo)
                 if par:
                     destino = self.caminhos if secao == "caminhos" else self.colheita

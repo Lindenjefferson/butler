@@ -12,9 +12,9 @@ Com `--registro` (o caminho, relativo ao vault, da nota de registro de links que
 trecho depois de `/p/`, `/reel/` ou `/reels/`, com maiúsculas e minúsculas contando). Um link registrado aparece
 mesmo que a nota de destino tenha sido apagada, movida ou renomeada.
 
-Cada `--lista` (um caminho de `## Listas da colheita`, com `<destino>` valendo qualquer nome) faz a busca ler também o
-corpo daquelas notas, onde a colheita guarda a URL de cada item: assim um link de fora do Instagram, que não tem linha
-no registro, também aparece como repetido.
+Cada `--lista` (um caminho de `## Listas para fichar`, com `<destino>` valendo qualquer nome) faz a busca ler também o
+corpo daquelas notas, onde a skill `fichar` guarda a URL de cada item: assim um link de fora do Instagram, que não tem
+linha no registro, também aparece como repetido.
 
 Imprime um JSON com, para cada URL pedida, a lista de notas (caminho relativo ao vault) que já têm o mesmo
 conteúdo no frontmatter e, se o registro tiver o link, `registro` com `status` e `destino`. Só lê: não altera nenhuma
@@ -60,7 +60,7 @@ def frontmatter(texto):
 
 
 def indice(vault, listas=()):
-    """Mapa de chave → notas. O frontmatter de toda nota conta; o corpo, só nas listas da colheita (`listas`: caminhos
+    """Mapa de chave → notas. O frontmatter de toda nota conta; o corpo, só nas listas para fichar (`listas`: caminhos
     relativos ao vault, com `<destino>` valendo qualquer nome), que guardam a URL na linha do item."""
     padroes = [re.compile("^" + re.escape(l.replace("\\", "/")).replace(re.escape("<destino>"), "[^/]+") + "$",
                           re.IGNORECASE) for l in listas]

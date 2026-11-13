@@ -44,7 +44,7 @@ def test_nota_com_bom():
         assert rodar(vault, "https://www.youtube.com/watch?v=abc123")[0]["notas"] == ["Nota.md"]
 
 
-def test_url_no_corpo_de_uma_lista_da_colheita():
+def test_url_no_corpo_de_uma_lista_para_fichar():
     with tempfile.TemporaryDirectory() as vault:
         os.makedirs(os.path.join(vault, "Lazer"))
         with open(os.path.join(vault, "Lazer", "Filmes.md"), "w", encoding="utf-8") as arquivo:
@@ -60,5 +60,5 @@ def test_url_no_corpo_de_uma_lista_da_colheita():
 if __name__ == "__main__":
     test_registro_e_frontmatter()
     test_nota_com_bom()
-    test_url_no_corpo_de_uma_lista_da_colheita()
+    test_url_no_corpo_de_uma_lista_para_fichar()
     print("ALL PASS")

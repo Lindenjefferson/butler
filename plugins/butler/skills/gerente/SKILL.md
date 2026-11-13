@@ -60,7 +60,7 @@ Todo pedido que altera o vault começa aqui, venha da conversa, do nome de uma s
 - preencher ou completar frontmatter;
 - acrescentar link em "Veja também";
 - registrar item novo num inventário, num histórico ou num registro;
-- acrescentar um item numa lista que já existe pela skill `butler:colheita`;
+- acrescentar um item numa lista que já existe pela skill `butler:fichar`;
 - mover uma nota do Inbox para uma pasta de destino clara e já prevista no `CLAUDE.md`;
 - atualizar a nota índice e o campo `updated`;
 - criar nota nova no Inbox.
@@ -68,7 +68,7 @@ Todo pedido que altera o vault começa aqui, venha da conversa, do nome de uma s
 **Para e mostra antes:**
 
 1. **Nota protegida:** trocar, remover ou reescrever um dado que já está nela. Acrescentar não para.
-2. **Perda de informação ou de sentido em qualquer nota:** apagar uma nota, unir duas, sobrescrever conteúdo, substituir um dado confirmado. A única nota apagada sem parada é o arquivo de atualização do Inbox depois de aplicado, porque o `CLAUDE.md` manda apagar e o conteúdo já está na original.
+2. **Perda de informação ou de sentido em qualquer nota:** apagar uma nota, unir duas, sobrescrever conteúdo, substituir um dado confirmado. Duas notas são apagadas sem parada, porque o conteúdo delas já está condensado no destino: o arquivo de atualização do Inbox depois de aplicado (o `CLAUDE.md` manda apagar) e a nota do Inbox que a `butler:fichar` acabou de gravar numa lista, dentro da triagem.
 3. **Dúvida de dono ou de destino:** o dono da nota (campo de pessoa, se o vault usa) ambíguo, ou pasta de destino incerta.
 4. **Achado estranho na conferência** (seção 5).
 5. **O que o `CLAUDE.md` já manda avisar:** dado contraditório ou ambíguo, senha ou documento numa nota, cópia de conflito.
@@ -122,7 +122,7 @@ Antes de gravar, confira se a nota mudou desde que você a leu (o usuário pode 
   ```
 
   `acao` é `criada`, `alterada`, `movida`, `renomeada` ou `apagada`; `movida` e `renomeada` levam `de` e `para`, `criada` e `alterada` levam `para`, `apagada` leva `de`. Em `perguntas`, `proposta` é o que você faria (numa triagem, o destino sugerido); as anotadas com `B duvida` já entram sozinhas, sem repetir aqui.
-- **Saída 6 do `fim`, `sem_ponto`:** algum arquivo do vault mudou desde o último ponto e a trava continua com o pedido. O que você tocou e esqueceu de gravar (a nota índice, o registro), grave com `B ponto` e rode o `fim` de novo. O que você não tocou mudou por fora (o usuário no Obsidian): rode `B fim ... --sem-ponto-ok`, e isso entra no próximo pedido como mudança de fora. O `garimpo` acrescenta `garimpo` e `colhidos` (ver a skill dele e a `colheita`). Só caminhos, títulos e decisões: nunca conteúdo de nota nem dado sensível. É disso que o Wingman tira o resultado e os avisos. Se `estado_gravado` vier `false`, diga em uma linha que o painel não foi atualizado.
+- **Saída 6 do `fim`, `sem_ponto`:** algum arquivo do vault mudou desde o último ponto e a trava continua com o pedido. O que você tocou e esqueceu de gravar (a nota índice, o registro), grave com `B ponto` e rode o `fim` de novo. O que você não tocou mudou por fora (o usuário no Obsidian): rode `B fim ... --sem-ponto-ok`, e isso entra no próximo pedido como mudança de fora. O `garimpo` acrescenta `garimpo`; a `triagem` acrescenta `colhidos` quando a `butler:fichar` grava algo (ver a skill de cada uma). Só caminhos, títulos e decisões: nunca conteúdo de nota nem dado sensível. É disso que o Wingman tira o resultado e os avisos. Se `estado_gravado` vier `false`, diga em uma linha que o painel não foi atualizado.
 - **Quando rodar o `fim`:** logo depois do resumo, antes de esperar as respostas das perguntas, e também quando o pedido parar no meio. Assim a trava nunca fica presa esperando uma resposta. Aplicar as respostas é um pedido novo, com o preâmbulo, o rótulo "<pedido>: respostas" e as mesmas paradas.
 - **Pergunta sem resposta:** se o usuário seguir para outro assunto sem responder, ou disser "depois", a pergunta vira uma linha da nota de pendências pela skill `butler:pendencias`. Enquanto a conversa ainda está nela, não vira.
 
