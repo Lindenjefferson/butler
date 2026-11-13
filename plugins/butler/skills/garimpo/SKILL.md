@@ -86,9 +86,11 @@ Se o usuário pediu só um resumo, sem pedir para guardar, entregue o resumo no 
 
 7. **Gravar sempre no Inbox** (regras abaixo em "Onde cada nota vai"), **pedir o dono da nota** (o campo de pessoa, se o vault usa) se não estiver claro, e gravar:
    - **Antes da primeira escrita** (uma nota no Inbox, uma linha do registro), rode o preâmbulo do `butler:gerente`: `B inicio --rotulo "garimpo de <n> link(s)" --sessao "${CLAUDE_SESSION_ID}"` (trava, ponto das mudanças de fora e checagem do histórico). As paradas do garimpo continuam as desta skill: o plano antes de gravar vários links, a pergunta sobre atualizar um link que já está no vault, a do dono e a oferta da nota índice. Sem histórico, diga em uma linha e siga o modo sem histórico do gerente: criar a nota no Inbox segue; antes de alterar uma nota que já existe (o registro de links, uma nota do Inbox que o link atualiza, a nota índice), mostre a mudança e espere o sim.
-   - **Registro de links:** cada link do Instagram processado ganha a sua linha na tabela do registro, com o código, o status, o destino em texto (sem link) e a data. Status: `triado` (virou nota no Inbox; o destino traz o título — vale também para a classificação filme, viagem ou receita, porque a `butler:fichar` ainda não rodou), `falhou` (com o erro em poucas palavras) ou `carrossel pendente` (`sem_video` à espera de prints ou do Chrome). O status `colhido` só é escrito depois, pela triagem, quando a nota de fato é fichada numa lista. Se a lista de status da nota do registro não tiver algum desses, use o mais próximo dela e diga no resumo que a nota precisa do status. Linha do registro nunca é removida. Escrever uma linha é acréscimo e segue direto.
+   - **Registro de links:** cada link do Instagram processado ganha a sua linha na tabela do registro, com o código, o status, o destino em texto (sem link) e a data. O status para "virou nota no Inbox, ainda não triada" é o que a nota do registro definir para isso (ex.: `no Inbox`); se ela não distinguir esse estado de "já triada", use `triado` (o nome mais antigo, ainda comum). Outros status deste passo: `falhou` (com o erro em poucas palavras) ou `carrossel pendente` (`sem_video` à espera de prints ou do Chrome). O status de "virou item de lista" (ex.: `colhido`) só é escrito depois, pela triagem, quando a `butler:fichar` de fato grava a nota num destino declarado — nunca aqui. Se a lista de status da nota do registro não tiver um status parecido com nenhum desses, use o mais próximo dela e diga no resumo que a nota precisa do status. Linha do registro nunca é removida. Escrever uma linha é acréscimo e segue direto.
 
-8. **Gravar o ponto e fechar o pedido:** `B ponto --token <token> --rotulo "garimpo: <n> link(s)" <cada nota criada ou alterada no Inbox> <nota índice, se mudou> <registro>` e `B fim --token <token> --resumo -`, com o JSON do gerente mais a lista `garimpo`, um item por nota nova:
+8. **Gravar um ponto por nota, logo após escrevê-la:** `B ponto --token <token> --rotulo "garimpo: <título>" <nota no Inbox> <nota índice, se mudou nesta nota> <registro, se a linha desta nota já foi escrita>`. Isso faz o progresso do lote sobreviver a uma queda no meio (cada nota concluída já tem seu ponto; "desfaz o último garimpo" desfaz nota por nota, não o lote inteiro) e segue a regra geral do gerente, "um ponto por nota concluída" (seção 6 dele) — este passo não é uma exceção a ela. Numa ida só ao registro para fechar linhas que não dava para gravar antes (ex.: o plano do lote inteiro), um ponto cobrindo só o registro também vale.
+
+9. **Fechar o pedido:** depois da última nota, `B fim --token <token> --resumo -`, com o JSON do gerente mais a lista `garimpo`, um item por nota do lote:
 
    ```json
    {"notas": [{"acao": "criada", "para": "Inbox/<título>.md"},
@@ -97,11 +99,11 @@ Se o usuário pediu só um resumo, sem pedir para guardar, entregue o resumo no 
                  "classificacao": "ferramenta", "destino_sugerido": "<pasta>"}]}
    ```
 
-   `veredito` é ✅, 🤔 ou ❌, o mesmo do "Vale investigar?". É daí que o Wingman mostra o resultado do lote. "Desfaz o último garimpo" volta este ponto.
+   `veredito` é ✅, 🤔 ou ❌, o mesmo do "Vale investigar?". É daí que o Wingman mostra o resultado do lote.
 
-9. **Limpar.** Apague a pasta temporária do passo 1 (os vídeos baixados) quando as notas estiverem gravadas.
+10. **Limpar.** Apague a pasta temporária do passo 1 (os vídeos baixados) quando as notas estiverem gravadas.
 
-10. **Resumo final curto:** quantos links foram lidos, quais já estavam no vault, quais falharam e por quê, quais ficaram sem transcrição, onde ficaram as notas e com que classificação, o que a pesquisa confirmou, contradisse ou não conseguiu verificar, e, se for um lote, as 3 ideias que mais valem testar primeiro.
+11. **Resumo final curto:** quantos links foram lidos, quais já estavam no vault, quais falharam e por quê, quais ficaram sem transcrição, onde ficaram as notas e com que classificação, o que a pesquisa confirmou, contradisse ou não conseguiu verificar, e, se for um lote, as 3 ideias que mais valem testar primeiro.
 
 ## Um link ou vários
 
@@ -110,11 +112,11 @@ Se o usuário pediu só um resumo, sem pedir para guardar, entregue o resumo no 
 
 ## Chamado por um serviço, sem ninguém na conversa
 
-Quando a entrada traz `token do gerente:` e `resultado:` (o caminho de um `resultado.json` do `assistir.py`), um serviço (como um bot) já fez o que pede o Bash: o passo 0, o passo 1, o preâmbulo do passo 7, e depois faz o ponto e o fim do passo 8 e a limpeza do passo 9. Não rode o `butler.py` nem script nenhum. Siga o resto, com estas trocas:
+Quando a entrada traz `token do gerente:` e `resultado:` (o caminho de um `resultado.json` do `assistir.py`), um serviço (como um bot) já fez o que pede o Bash: o passo 0, o passo 1, o preâmbulo do passo 7, e depois faz o ponto do passo 8, o fim do passo 9 e a limpeza do passo 10. Não rode o `butler.py` nem script nenhum. Siga o resto, com estas trocas:
 - **Um link só,** o do `resultado.json`, com `status` `ok` (os outros o serviço responde sozinho). A `pessoa:` da entrada é o dono da nota.
 - **Passo 5 sem o `gh`:** pesquise pela busca na web e pelo WebFetch; o que só o `gh` diria (estrelas, datas do repositório) fica "não verificado".
 - **Toda parada vira o caminho que não perde nada,** porque ninguém responde: atualizar uma nota que já existe vira nota nova com o link em "Veja também". A pergunta vai para `perguntas` no JSON abaixo.
-- **Resposta:** uma linha dizendo onde ficou e, por último, uma linha só com o JSON do passo 8 (`notas`, `garimpo`) mais `perguntas`, sem nada depois, para o serviço gravar o ponto e responder.
+- **Resposta:** uma linha dizendo onde ficou e, por último, uma linha só com o JSON do passo 9 (`notas`, `garimpo`) mais `perguntas`, sem nada depois, para o serviço gravar o ponto e responder.
 
 ## Onde cada nota vai
 
@@ -124,7 +126,7 @@ Tudo fica no `Inbox`, qualquer que seja a classificação, inclusive filme, viag
 2. **Mesmo assunto já na nota do `Inbox`:** acrescente uma seção nova nela, sem data no texto (o `CLAUDE.md` pede que a data da mudança fique só no `updated`), adicione a URL ao `source` (vira lista) e atualize `updated`. Isso evita notas soltas sobre o mesmo tema.
 3. **Mesmo assunto já numa nota fora do `Inbox`:** crie nota nova no `Inbox`, com o campo `relacionada: "[[Nome da nota]]"` no frontmatter (como o `CLAUDE.md` define) e o link em "Veja também". Assim a triagem decide se une as duas e remove o campo.
 4. **Em caso de dúvida se é o mesmo assunto:** crie nota separada. Fundir por engano apaga distinções, e separar depois dá mais trabalho.
-5. **Vários vídeos do mesmo assunto no mesmo lote:** viram uma nota só, com uma seção por vídeo (link, autor, duração e pontos-chave) e todos os links em `source`.
+5. **Vários vídeos do mesmo assunto no mesmo lote:** viram uma nota só, com uma seção por vídeo (link, autor, duração e pontos-chave) e todos os links em `source`. Passando de uns 10 vídeos pelo mesmo assunto (ex.: dezenas de reels do mesmo tipo de lugar), uma seção por vídeo fica longa demais para ler: troque para uma linha por item (nome, o essencial, fonte), no formato de lista, dentro da nota — mais perto do que a `butler:fichar` grava numa lista do que de uma seção cheia por vídeo.
 
 ## Formato da nota
 
@@ -178,6 +180,7 @@ O que a investigação (passo 5) confirmou, com a fonte: repositório com estrel
   - **Só a fonte original diz:** nenhuma outra fonte trata do assunto, e o vídeo ou a página é a única origem;
   - **Não verificado:** não deu para procurar ou as fontes não permitem concluir.
   A linha "Confiança geral" resume: **alta** quando o que pesa na decisão de testar está confirmado; **média** quando parte está confirmada e o resto só a fonte original diz; **baixa** quando há contradição no que importa ou quase nada foi verificado. O "Vale investigar?" leva a confiança em conta.
+  - **Conteúdo pessoal** (receita, treino, viagem, casa, filme) quase nunca tem o que confirmar fora do próprio vídeo (uma receita é a receita; um treino é o treino). Nesses casos, a seção "Aprofundamento" fica curta ou some (só "Conteúdo original" e "Vale investigar?"), em vez de forçar as quatro etiquetas sem ter nada de fato pesquisado para rotular. Use as etiquetas só quando houver mesmo uma afirmação que peça verificação (preço, prazo, segurança).
 - **"Vale investigar?"** é sempre a primeira linha do conteúdo original, uma frase só, com o veredito (sim, talvez, não) e o motivo. É ela que o modo "Resumo do Inbox" e a triagem leem.
 - **Subseções do aprofundamento conforme o tipo** (use só as que tiverem conteúdo):
   - ferramenta ou repositório: `### Como instalar no Windows`, `### Riscos e permissões`, `### Alternativas`;
@@ -190,7 +193,7 @@ O que a investigação (passo 5) confirmou, com a fonte: repositório com estrel
 - **`relacionada`:** só quando houver nota do mesmo assunto fora do `Inbox` (regra 3 acima).
 - **Dono da nota:** se não estiver claro de quem é, pergunte; reaproveite a resposta que o usuário já deu na conversa.
 - **Frontmatter completo,** sem `version`.
-- **Veja também:** só notas que existem de fato. Quando o tema tiver perfil no vault (receita, viagem, idioma: o `CLAUDE.md` diz quais perfis existem), ligue-o.
+- **Veja também:** só notas que existem de fato. Quando o tema tiver perfil no vault (receita, viagem, idioma: o `CLAUDE.md` diz quais perfis existem), ligue-o. Sem nenhuma nota relacionada, deixe só o título da seção, sem bullet nem frase tipo "nenhuma relacionada" — isso não é um link, e a seção existe para quando houver um.
 - **Tema** (agentes, ferramentas, automação, dev, receita, viagem, casa, outro): vai nas tags e no índice.
 - **Sem dados sensíveis:** nada de senhas, tokens, cookies ou dados pessoais nas notas.
 - **Sem marcas de alteração** no texto das notas.

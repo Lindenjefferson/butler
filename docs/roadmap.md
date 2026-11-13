@@ -10,7 +10,7 @@ Nenhuma no momento.
 
 ## Backlog
 
-- **Melhoria — salvos do Instagram** (a skill `garimpo` antes do plugin): ler a exportação dos salvos e garimpar o que ainda não está no registro de links. As decisões já tomadas estão em [`salvos-do-instagram.md`](superpowers/salvos-do-instagram.md). Ficou de fora da 0.1.0 porque falta uma decisão do dono: como ler os posts sem vídeo (carrosséis). Esforço: M.
+- **Melhoria — salvos do Instagram** (a skill `garimpo` antes do plugin): ler a exportação dos salvos e garimpar o que ainda não está no registro de links. As decisões já tomadas estão em [`salvos-do-instagram.md`](superpowers/salvos-do-instagram.md). Ficou de fora da 0.1.0 porque falta uma decisão do dono: como ler os posts sem vídeo (carrosséis). A skill `fila` (0.6.0) já cobre o outro lado disso, conduzir o lote depois que a fila existe como nota — falta só a leitura da exportação em si. Esforço: M.
 
 ## Em espera (voltam com um sinal)
 

@@ -63,7 +63,8 @@ Todo pedido que altera o vault começa aqui, venha da conversa, do nome de uma s
 - acrescentar um item numa lista que já existe pela skill `butler:fichar`;
 - mover uma nota do Inbox para uma pasta de destino clara e já prevista no `CLAUDE.md`;
 - atualizar a nota índice e o campo `updated`;
-- criar nota nova no Inbox.
+- criar nota nova no Inbox;
+- criar ou tirar uma subpasta dentro do Inbox (organização temporária de notas ainda não triadas, nunca estrutura definitiva do vault).
 
 **Para e mostra antes:**
 
@@ -76,7 +77,7 @@ Todo pedido que altera o vault começa aqui, venha da conversa, do nome de uma s
 7. **Veredito de uma ideia:** só o usuário dá.
 8. **Plano de uma Reforma.** O que aparecer fora do plano durante a execução para de novo.
 
-**O que não está em nenhuma das duas listas para.** Mover uma nota que não está no Inbox, criar uma subpasta, criar fora do Inbox uma lista que não existia: mostre antes.
+**O que não está em nenhuma das duas listas para.** Mover uma nota que não está no Inbox, criar uma subpasta fora do Inbox, criar fora do Inbox uma lista que não existia: mostre antes. Subpasta dentro do Inbox é a exceção já listada em "Segue sem perguntar".
 
 **O que conta como acréscimo numa nota protegida:**
 
