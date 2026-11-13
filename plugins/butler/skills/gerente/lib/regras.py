@@ -25,6 +25,11 @@ pela skill. Títulos de seção, comparados sem acento e sem maiúsculas:
   `viagem` ou `receita`. `<destino>` no caminho quer dizer uma nota por destino (a nota de cada viagem). Classificação
   sem linha aqui vira nota no Inbox, como todo link. A chave no dicionário devolvido por `situacao` continua
   `colheita`, por compatibilidade com quem já lê esse campo (ex.: o Wingman).
+- `## Modo sem supervisão`: ausente, nada muda (uma trava de outra sessão só sai com `--forcar` depois de um sim,
+  como sempre). Presente, com `- trava abandonada depois de: \\`<N> min\\``: uma trava mais velha que `<N>` minutos
+  (pela `atualizado`) é tratada como abandonada e liberada sozinha pelo próprio `inicio`, sem pedir sim — pensado
+  para quando não há ninguém para responder esse sim (um serviço de pé). Trava `corrompida` nunca entra nessa conta
+  (a idade não é confiável): continua exigindo `--forcar`. Vale só para a trava; não muda nenhuma outra parada.
 
 O `CLAUDE.md` da raiz e a própria nota de regras são sempre protegidos, estejam ou não na lista.
 """
@@ -50,6 +55,7 @@ class Regras:
         self.binarios_liberados = []
         self.colheita = {}
         self.nuvem_ignorada = []
+        self.sem_supervisao = {}
         secao = None
         for linha in texto.splitlines():
             titulo = re.match(r"^##\s+(.+?)\s*$", linha)
@@ -61,10 +67,11 @@ class Regras:
                 continue
             corpo = item.group(1)
             codigos = _CODIGO.findall(corpo)
-            if secao in ("caminhos", "listas para fichar", "listas da colheita"):
+            if secao in ("caminhos", "listas para fichar", "listas da colheita", "modo sem supervisao"):
                 par = re.match(r"^([^:`]+):\s*`([^`]+)`", corpo)
                 if par:
-                    destino = self.caminhos if secao == "caminhos" else self.colheita
+                    destino = (self.caminhos if secao == "caminhos" else
+                               self.sem_supervisao if secao == "modo sem supervisao" else self.colheita)
                     destino[sem_acento(par.group(1))] = par.group(2).strip().strip("/")
                 continue
             if not codigos:
@@ -102,12 +109,18 @@ class Regras:
     def caminho(self, nome):
         return self.caminhos.get(nome)
 
+    def prazo_trava_abandonada(self):
+        """Minutos declarados em `## Modo sem supervisão` para liberar uma trava sozinho, ou None sem a seção."""
+        valor = self.sem_supervisao.get("trava abandonada depois de")
+        numero = re.match(r"^\s*(\d+)", valor or "")
+        return int(numero.group(1)) if numero else None
+
     def como_dict(self):
         return {"protegidas": self.protegidas, "rigidas": self.rigidas, "toleradas": self.toleradas,
                 "excecoes": [{"glob": g, "codigo": c} for g, c in self.excecoes],
                 "liberacoes": sorted(self.liberacoes),
                 "binarios_liberados": self.binarios_liberados, "caminhos": self.caminhos, "colheita": self.colheita,
-                "nuvem_ignorada": self.nuvem_ignorada}
+                "nuvem_ignorada": self.nuvem_ignorada, "sem_supervisao": self.sem_supervisao}
 
 
 def _glob_para_regex(glob):

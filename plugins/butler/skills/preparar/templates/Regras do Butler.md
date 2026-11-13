@@ -64,6 +64,12 @@ Onde um item entra direto, no lugar do destino normal de uma nota: o garimpo cla
 - viagem: `<pasta>/<destino>.md` — a nota da viagem com o mesmo destino
 - receita: `<pasta>/<lista de receitas>.md` — um item por receita para testar
 
+## Modo sem supervisão
+
+Só para quem roda o Butler sem ninguém para responder o sim de `--forcar` (um serviço de pé). Tire a seção se alguém acompanha os pedidos, que é o caso comum: sem ela, uma trava de outra sessão só sai depois de um sim, como sempre.
+
+- trava abandonada depois de: `<N> min` — uma trava mais velha que isso é liberada sozinha pelo próximo `inicio`
+
 ## Veja também
 
 - [[<nota índice>]]
