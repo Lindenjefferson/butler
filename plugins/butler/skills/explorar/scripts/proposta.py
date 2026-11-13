@@ -10,13 +10,18 @@ Subcomandos (`python proposta.py <vault> <subcomando>`), todos imprimem JSON:
   digital (sha256 do conteúdo) de cada nota dos grupos. Imprime `{"id", "pasta", "grupos": [{"id", "saida"}]}`;
   `saida` é o caminho que vai no prompt do subagente do grupo.
 - `consolidar --id <id>`: lê os `g*.json`, junta por destino e grava `itens`. Imprime
-  `{"itens": N, "blocos": M, "faltam_grupos": [...], "avisos": [...]}`. Refazer mantém o número e o estado dos
-  itens que continuam (mesmo tipo e destino); item novo ganha o próximo número. Avisos de entrada ignorada:
-  `alvo_vazio: <nota>` (`linha` ou `fundir` sem alvo) e `fundir_em_si: <nota>`.
+  `{"itens": N, "blocos": M, "faltam_grupos": [...], "avisos": [...], "refeitos": [n...], "bloqueados": [n...]}`.
+  Refazer mantém o número e o estado dos itens que continuam (mesmo tipo e destino); item novo ganha o próximo
+  número. Item `aprovado` ou `bloqueado` cujas origens, operações ou detalhes mudaram volta a `pendente` e vem em
+  `refeitos` (o ok era para o item como ele era). Item `aplicado` ou `recusado` fica com as origens que tinha: origem
+  nova no mesmo destino vira item novo. Item aberto que depende de um recusado ou bloqueado vem em `bloqueados`.
+  Avisos de entrada ignorada: `alvo_vazio: <nota>` (`linha` ou `fundir` sem alvo), `fundir_em_si: <nota>` e
+  `linha_em_si: <nota>` (a lista seria apagada depois de ganhar a linha).
 - `bloco --id <id> --n <N>`: os itens do bloco N (até 10).
-- `marcar --id <id> --itens 1,3 --estado pendente|aprovado|aplicado|recusado`: `pendente` só vale para item
-  `aprovado` (devolve um item refeito, que só se aplica depois de um novo ok; outro estado sai com erro);
-  recusar marca como `bloqueado` os itens pendentes ou aprovados que dependem dele (em cadeia).
+- `marcar --id <id> --itens 1,3 --estado pendente|aprovado|aplicado|recusado`: só a partir de, respectivamente,
+  `aprovado` (devolve um item refeito), `pendente`, `aprovado` e `pendente|aprovado|bloqueado` (ou o próprio
+  estado, exceto `pendente`); um item fora disso faz o pedido inteiro sair com erro, sem marcar nenhum. Recusar
+  marca como `bloqueado` os itens pendentes ou aprovados que dependem dele (em cadeia).
 - `conferir --id <id> [--itens 1,3]`: recalcula as digitais das origens e dos destinos de cada item;
   `{"mudou": [n...], "ok": [n...]}`. Item que mudou não se aplica: a sessão refaz só ele e chama `redigitar`.
   Marcar `aplicado` atualiza a digital do destino do item, que os outros itens com o mesmo destino conferem.
@@ -44,9 +49,9 @@ pasta comum das origens. `mover` e `arquivar` recebem uma pasta (a nota mantém 
 (renomeia); `arquivar` sem alvo vai para `Arquivo/<caminho>`. `descartar` não tem alvo; `detalhe` sem alvo fica
 na própria nota; `linha` e `fundir` sem alvo são ignorados com aviso.
 
-Item consolidado: um por destino e tipo, numerado na ordem dos blocos (listas, notas de detalhe e fusões, movidos,
-descartes e arquivados) no primeiro `consolidar`; o número não muda depois (item que chega num `consolidar`
-seguinte vai para o fim):
+Item consolidado: um aberto por destino e tipo, numerado na ordem dos blocos (listas, notas de detalhe e fusões,
+movidos, descartes e arquivados) no primeiro `consolidar`; o número não muda depois (item que chega num
+`consolidar` seguinte vai para o fim):
 
     {"n", "destino", "tipo", "origens": [...], "operacoes": [...], "depende_de": [n...],
      "links_de_entrada": {origem: [notas que linkam]}, "avisos": [...], "detalhes": {origem: {...}},
@@ -82,6 +87,10 @@ ORDEM = {"linha": (0, 0), "detalhe": (1, 0), "fundir": (1, 1), "mover": (2, 0), 
          "arquivar": (3, 1)}
 CRIAM = ("linha", "detalhe")
 ESTADOS_ABERTOS = ("pendente", "aprovado")
+FECHADOS = ("aplicado", "recusado")
+# estado pedido -> estados de onde ele pode vir; fora disso o `marcar` sai com erro e não muda nada
+VEM_DE = {"pendente": ("aprovado",), "aprovado": ("pendente", "aprovado"), "aplicado": ("aprovado", "aplicado"),
+          "recusado": ("pendente", "aprovado", "bloqueado", "recusado")}
 INVALIDOS = set(':*?"<>|/\\')
 ID = re.compile(r"^\d{8}-\d{6}-[0-9a-f]{4}$")
 WIKILINK = re.compile(r"\[\[([^\]|#\n]+)(?:[#|][^\]\n]*)?\]\]")
@@ -310,13 +319,20 @@ def consolidar(vault, args):
     existentes = notas_do_vault(vault)
     existe = {norm(n) for n in existentes}
     resolver(entradas, temas, existentes)
-    for e in [e for e in entradas if e["tipo"] == "fundir" and norm(e["destino"]) == norm(e["nota"])]:
-        avisos.append(f"fundir_em_si: {e['nota']}")
+    for e in [e for e in entradas if e["tipo"] in ("fundir", "linha") and norm(e["destino"]) == norm(e["nota"])]:
+        avisos.append(f"{e['tipo']}_em_si: {e['nota']}")
         entradas.remove(e)
 
+    # item aplicado ou recusado fica com as origens que tinha (chave com o número dele); origem nova no mesmo
+    # destino vira outro item, nunca herda o estado de um item fechado
+    fechados = {}
+    for i in proposta.get("itens", []):
+        if i["estado"] in FECHADOS:
+            for o in i["origens"]:
+                fechados[(i["tipo"], norm(i["destino"]), o)] = i["n"]
     juntos, ordem = {}, []
     for e in entradas:
-        chave = (e["tipo"], norm(e["destino"]))
+        chave = (e["tipo"], norm(e["destino"]), fechados.get((e["tipo"], norm(e["destino"]), e["nota"]), 0))
         if chave not in juntos:
             juntos[chave] = {"destino": e["destino"], "tipo": e["tipo"], "origens": [], "detalhes": {}}
             ordem.append(chave)
@@ -330,9 +346,10 @@ def consolidar(vault, args):
     por_nome = {}
     for nota in existentes:
         por_nome.setdefault(norm(stem(nota)), []).append(nota)
-    antigos = {(i["tipo"], norm(i["destino"])): i for i in proposta.get("itens", [])}
+    antigos = {(i["tipo"], norm(i["destino"]), i["n"] if i["estado"] in FECHADOS else 0): i
+               for i in proposta.get("itens", [])}
     proximo = max((i["n"] for i in antigos.values()), default=0) + 1
-    itens = []
+    itens, refeitos = [], []
     for chave in chaves:
         if chave in antigos:
             n = antigos[chave]["n"]
@@ -354,13 +371,18 @@ def consolidar(vault, args):
             avisos_item.append("pasta_nova")
         if regras and any(regras.protegida(p) for p in origens + [destino]):
             avisos_item.append("protegida")
-        itens.append({
+        novo = {
             "n": n, "destino": destino, "tipo": tipo, "origens": origens,
             "operacoes": operacoes(tipo, destino, origens, destino_existe, item["detalhes"]),
             "depende_de": [],
             "links_de_entrada": {o: sorted(x for x in links.get(norm(stem(o)), ()) if x != o) for o in some},
             "avisos": avisos_item, "detalhes": item["detalhes"],
-            "estado": antigos[chave]["estado"] if chave in antigos else "pendente"})
+            "estado": antigos[chave]["estado"] if chave in antigos else "pendente"}
+        if novo["estado"] in ("aprovado", "bloqueado") and mudou_o_item(antigos[chave], novo):
+            # o ok valia para o item como ele era: refeito, ajustado ou com origem nova, volta a pendente
+            novo["estado"] = "pendente"
+            refeitos.append(n)
+        itens.append(novo)
         if destino not in proposta["digitais"]:
             proposta["digitais"][destino] = digital(vault, destino)
     for item in itens:
@@ -368,9 +390,30 @@ def consolidar(vault, args):
                               and norm(o["destino"]) == norm(item["destino"])
                               and ORDEM[o["tipo"]] < ORDEM[item["tipo"]]]
     itens.sort(key=lambda i: i["n"])
+    bloqueados = propagar_bloqueio(itens)
     proposta["itens"], proposta["temas"] = itens, temas
     gravar_json(os.path.join(pasta, "proposta.json"), proposta)
-    return {"itens": len(itens), "blocos": -(-len(itens) // BLOCO), "faltam_grupos": faltam, "avisos": avisos}
+    return {"itens": len(itens), "blocos": -(-len(itens) // BLOCO), "faltam_grupos": faltam, "avisos": avisos,
+            "refeitos": sorted(n for n in refeitos if n not in bloqueados), "bloqueados": bloqueados}
+
+
+def mudou_o_item(antigo, novo):
+    return any(antigo.get(k) != novo[k] for k in ("origens", "operacoes", "detalhes"))
+
+
+def propagar_bloqueio(itens):
+    """Item aberto que depende de um recusado ou bloqueado fica `bloqueado` (em cadeia). Devolve os números."""
+    estado = {i["n"]: i for i in itens}
+    bloqueados, mudou = [], True
+    while mudou:
+        mudou = False
+        for i in itens:
+            if i["estado"] in ESTADOS_ABERTOS and any(
+                    estado[d]["estado"] in ("recusado", "bloqueado") for d in i["depende_de"] if d in estado):
+                i["estado"] = "bloqueado"
+                bloqueados.append(i["n"])
+                mudou = True
+    return sorted(bloqueados)
 
 
 # -- bloco, marcar, conferir, listar, remover ------------------------------------------------------------------------
@@ -404,10 +447,10 @@ def marcar(vault, args):
     pasta, proposta = carregar(vault, args.id)
     pedidos = numeros(args.itens, proposta["itens"])
     por_n = {i["n"]: i for i in proposta["itens"]}
-    if args.estado == "pendente":
-        fora = [n for n in pedidos if por_n[n]["estado"] != "aprovado"]
-        if fora:
-            raise Erro(f"só item aprovado volta a pendente: {fora}")
+    fora = [f"{n} ({por_n[n]['estado']})" for n in pedidos if por_n[n]["estado"] not in VEM_DE[args.estado]]
+    if fora:
+        raise Erro(f"{args.estado} só vale para item {' ou '.join(VEM_DE[args.estado])}; nada marcado: "
+                   + ", ".join(fora))
     for n in pedidos:
         por_n[n]["estado"] = args.estado
         if args.estado == "aplicado":
@@ -415,16 +458,7 @@ def marcar(vault, args):
             destino = norm(por_n[n]["destino"])
             for nota in [p for p in proposta["digitais"] if norm(p) == destino]:
                 proposta["digitais"][nota] = digital(vault, nota)
-    bloqueados = []
-    if args.estado == "recusado":
-        fila = list(pedidos)
-        while fila:
-            atual = fila.pop()
-            for i in proposta["itens"]:
-                if atual in i["depende_de"] and i["estado"] in ESTADOS_ABERTOS:
-                    i["estado"] = "bloqueado"
-                    bloqueados.append(i["n"])
-                    fila.append(i["n"])
+    bloqueados = propagar_bloqueio(proposta["itens"]) if args.estado == "recusado" else []
     gravar_json(os.path.join(pasta, "proposta.json"), proposta)
     return {"marcados": pedidos, "estado": args.estado, "bloqueados": sorted(bloqueados)}
 

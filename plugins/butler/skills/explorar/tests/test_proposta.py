@@ -328,6 +328,7 @@ def test_aplicado_atualiza_digital_do_destino():
         linha = [i for i in itens if i["tipo"] == "linha"][0]["n"]
         fundir = [i for i in itens if i["tipo"] == "fundir"][0]["n"]
         c.escrever("V/Lista.md", "# Lista\n\n- A\n")
+        c.rodar("marcar", "--id", r["id"], "--itens", str(linha), "--estado", "aprovado")
         c.rodar("marcar", "--id", r["id"], "--itens", str(linha), "--estado", "aplicado")
         s = c.rodar("conferir", "--id", r["id"], "--itens", str(fundir))
         assert s == {"mudou": [], "ok": [fundir]}, s
@@ -402,6 +403,7 @@ def test_listar_e_remover():
         r2 = c.iniciar([["Viagens/A.md"]], rotulo="dois")
         c.responder(r2["grupos"][0]["saida"], "g1", [item("Viagens/A.md", "descartar", "")])
         c.rodar("consolidar", "--id", r2["id"])
+        c.rodar("marcar", "--id", r2["id"], "--itens", "1", "--estado", "aprovado")
         c.rodar("marcar", "--id", r2["id"], "--itens", "1", "--estado", "aplicado")
         lista = c.rodar("listar")
         assert [p["id"] for p in lista["propostas"]] == [r1["id"]], lista
@@ -431,6 +433,8 @@ def test_aprovado_volta_a_pendente():
         assert lista["aprovados"] == 0 and lista["pendentes"] == 1, lista
         # só um item aprovado volta a pendente: os outros estados são recusados
         for estado in ("aplicado", "recusado"):
+            if estado == "aplicado":
+                c.rodar("marcar", "--id", r["id"], "--itens", "1", "--estado", "aprovado")
             c.rodar("marcar", "--id", r["id"], "--itens", "1", "--estado", estado)
             c.rodar("marcar", "--id", r["id"], "--itens", "1", "--estado", "pendente", esperado=2)
             assert c.proposta(r["id"])["itens"][0]["estado"] == estado
@@ -440,6 +444,138 @@ def test_aprovado_volta_a_pendente():
                 json.dump(p, f, ensure_ascii=False)
         # pendente -> pendente também é recusado (não era aprovado)
         c.rodar("marcar", "--id", r["id"], "--itens", "1", "--estado", "pendente", esperado=2)
+    finally:
+        c.fechar()
+
+
+def test_marcar_respeita_transicoes():
+    """Aprovar só vale para pendente; aplicar só para aprovado; nada volta de aplicado. Erro não muda nada."""
+    c = Caso()
+    try:
+        for n in ("V/A.md", "V/B.md", "V/C.md"):
+            c.escrever(n)
+        r = c.iniciar([["V/A.md", "V/B.md", "V/C.md"]])
+        c.responder(r["grupos"][0]["saida"], "g1", [item("V/A.md", "detalhe", "Roteiro"),
+                                                     item("V/B.md", "fundir", "Roteiro"),
+                                                     item("V/C.md", "descartar", "")])
+        c.rodar("consolidar", "--id", r["id"])
+        itens = c.proposta(r["id"])["itens"]
+        criador = [i for i in itens if i["tipo"] == "detalhe"][0]["n"]
+        dependente = [i for i in itens if i["tipo"] == "fundir"][0]["n"]
+        solto = [i for i in itens if i["tipo"] == "descartar"][0]["n"]
+        s = c.rodar("marcar", "--id", r["id"], "--itens", str(criador), "--estado", "recusado")
+        assert s["bloqueados"] == [dependente], s
+
+        def estados():
+            return {i["n"]: i["estado"] for i in c.proposta(r["id"])["itens"]}
+        # "tudo menos o criador": o dependente bloqueado não volta a aprovado, e o pedido inteiro não muda nada
+        c.rodar("marcar", "--id", r["id"], "--itens", f"{solto},{dependente}", "--estado", "aprovado", esperado=2)
+        assert estados() == {criador: "recusado", dependente: "bloqueado", solto: "pendente"}, estados()
+        c.rodar("marcar", "--id", r["id"], "--itens", str(criador), "--estado", "aprovado", esperado=2)
+        c.rodar("marcar", "--id", r["id"], "--itens", str(solto), "--estado", "aplicado", esperado=2)
+        assert estados()[solto] == "pendente", estados()
+        c.rodar("marcar", "--id", r["id"], "--itens", str(solto), "--estado", "aprovado")
+        c.rodar("marcar", "--id", r["id"], "--itens", str(solto), "--estado", "aplicado")
+        for estado in ("aprovado", "recusado", "pendente"):
+            c.rodar("marcar", "--id", r["id"], "--itens", str(solto), "--estado", estado, esperado=2)
+        # o bloqueado pode ser recusado (o dono desistiu dele na dúvida)
+        c.rodar("marcar", "--id", r["id"], "--itens", str(dependente), "--estado", "recusado")
+        assert estados() == {criador: "recusado", dependente: "recusado", solto: "aplicado"}, estados()
+        assert c.rodar("listar")["propostas"] == []
+    finally:
+        c.fechar()
+
+
+def test_refazer_que_junta_em_aprovado_volta_a_pendente():
+    """Item refeito que cai no destino de um item aprovado não herda o ok dele."""
+    c = Caso()
+    try:
+        c.escrever("L/Lista.md", "# Lista\n")
+        c.escrever("L/C.md")
+        c.escrever("L/D.md")
+        r = c.iniciar([["L/C.md"], ["L/D.md"]])
+        c.responder(r["grupos"][0]["saida"], "g1", [item("L/C.md", "linha", "Lista", "- C")])
+        c.responder(r["grupos"][1]["saida"], "g2", [item("L/D.md", "descartar", "")])
+        s = c.rodar("consolidar", "--id", r["id"])
+        assert s["refeitos"] == [], s
+        lista = por_destino(c.proposta(r["id"])["itens"], "L/Lista.md")["n"]
+        c.rodar("marcar", "--id", r["id"], "--itens", str(lista), "--estado", "aprovado")
+        # consolidar de novo sem mudança mantém o ok
+        assert c.rodar("consolidar", "--id", r["id"])["refeitos"] == []
+        assert por_destino(c.proposta(r["id"])["itens"], "L/Lista.md")["estado"] == "aprovado"
+        # D refeito: agora vira linha da mesma lista
+        c.responder(r["grupos"][1]["saida"], "g2", [item("L/D.md", "linha", "Lista", "- D")])
+        s = c.rodar("consolidar", "--id", r["id"])
+        it = por_destino(c.proposta(r["id"])["itens"], "L/Lista.md")
+        assert it["origens"] == ["L/C.md", "L/D.md"], it
+        assert it["estado"] == "pendente" and s["refeitos"] == [lista], (it, s)
+        # ajuste só do texto de um item aprovado também pede um novo ok
+        c.rodar("marcar", "--id", r["id"], "--itens", str(lista), "--estado", "aprovado")
+        c.responder(r["grupos"][0]["saida"], "g1", [item("L/C.md", "linha", "Lista", "- C, ajustada")])
+        s = c.rodar("consolidar", "--id", r["id"])
+        assert s["refeitos"] == [lista], s
+        assert por_destino(c.proposta(r["id"])["itens"], "L/Lista.md")["estado"] == "pendente"
+    finally:
+        c.fechar()
+
+
+def test_refazer_no_destino_de_item_fechado_vira_item_novo():
+    """Item aplicado ou recusado não ganha origem nova: ela vira outro item, pendente."""
+    c = Caso()
+    try:
+        c.escrever("L/Lista.md", "# Lista\n")
+        c.escrever("L/C.md")
+        c.escrever("L/D.md")
+        r = c.iniciar([["L/C.md"], ["L/D.md"]])
+        c.responder(r["grupos"][0]["saida"], "g1", [item("L/C.md", "linha", "Lista", "- C")])
+        c.responder(r["grupos"][1]["saida"], "g2", [item("L/D.md", "descartar", "")])
+        c.rodar("consolidar", "--id", r["id"])
+        lista = por_destino(c.proposta(r["id"])["itens"], "L/Lista.md")["n"]
+        c.rodar("marcar", "--id", r["id"], "--itens", str(lista), "--estado", "aprovado")
+        c.rodar("marcar", "--id", r["id"], "--itens", str(lista), "--estado", "aplicado")
+        c.responder(r["grupos"][1]["saida"], "g2", [item("L/D.md", "linha", "Lista", "- D")])
+        c.rodar("consolidar", "--id", r["id"])
+        itens = [i for i in c.proposta(r["id"])["itens"] if i["destino"] == "L/Lista.md"]
+        assert [(i["n"], i["origens"], i["estado"]) for i in itens] == \
+            [(lista, ["L/C.md"], "aplicado"), (3, ["L/D.md"], "pendente")], itens
+        assert c.rodar("consolidar", "--id", r["id"])["itens"] == 2
+        assert [i["n"] for i in c.proposta(r["id"])["itens"] if i["destino"] == "L/Lista.md"] == [lista, 3]
+    finally:
+        c.fechar()
+
+
+def test_item_novo_que_depende_de_recusado_nasce_bloqueado():
+    c = Caso()
+    try:
+        for n in ("V/A.md", "V/B.md", "V/C.md"):
+            c.escrever(n)
+        r = c.iniciar([["V/A.md", "V/B.md"], ["V/C.md"]])
+        c.responder(r["grupos"][0]["saida"], "g1", [item("V/A.md", "detalhe", "Roteiro"),
+                                                     item("V/B.md", "descartar", "")])
+        c.rodar("consolidar", "--id", r["id"])
+        criador = [i for i in c.proposta(r["id"])["itens"] if i["tipo"] == "detalhe"][0]["n"]
+        c.rodar("marcar", "--id", r["id"], "--itens", str(criador), "--estado", "recusado")
+        c.responder(r["grupos"][1]["saida"], "g2", [item("V/C.md", "fundir", "Roteiro")])
+        s = c.rodar("consolidar", "--id", r["id"])
+        novo = [i for i in c.proposta(r["id"])["itens"] if i["tipo"] == "fundir"][0]
+        assert novo["depende_de"] == [criador] and novo["estado"] == "bloqueado", novo
+        assert s["bloqueados"] == [novo["n"]], s
+    finally:
+        c.fechar()
+
+
+def test_linha_em_si_rejeitada():
+    """Uma lista proposta como linha dela mesma seria apagada depois de ganhar a linha."""
+    c = Caso()
+    try:
+        c.escrever("L/Jogos.md", "# Jogos\n")
+        r = c.iniciar([["L/Jogos.md"]])
+        c.responder(r["grupos"][0]["saida"], "g1", [item("L/Jogos.md", "linha", "Jogos", "- Jogos")])
+        s = c.rodar("consolidar", "--id", r["id"])
+        assert s["itens"] == 0 and "linha_em_si: L/Jogos.md" in s["avisos"], s
+        c.responder(r["grupos"][0]["saida"], "g1", [item("L/Jogos.md", "linha", "L/Jogos.md", "- Jogos")])
+        s = c.rodar("consolidar", "--id", r["id"])
+        assert s["itens"] == 0 and "linha_em_si: L/Jogos.md" in s["avisos"], s
     finally:
         c.fechar()
 

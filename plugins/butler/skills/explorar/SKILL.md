@@ -44,20 +44,20 @@ Um subagente `general-purpose` por grupo, em ondas de até 5 lançadas na mesma 
 
 ## 5. Consolidar (§4)
 
-`P consolidar --id <id>`. Grupo em `faltam_grupos`: relance o subagente dele uma vez; faltando de novo, vira aviso no bloco 1. Os `avisos` de entrada ignorada (`alvo_vazio`, `fundir_em_si`) também vão para o bloco 1.
+`P consolidar --id <id>`. Grupo em `faltam_grupos`: relance o subagente dele uma vez; faltando de novo, vira aviso no bloco 1. Os `avisos` de entrada ignorada (`alvo_vazio`, `fundir_em_si`, `linha_em_si`) também vão para o bloco 1.
 
 ## 6. Mostrar um bloco (§5)
 
 `P bloco --id <id> --n <N>`. Por item, numerado: origens → destino (tipo), as operações, o que corta, o esboço curto, os acréscimos com fonte e confiança, a atenção. Em destaque: `pasta_nova` (parada 6, aval à parte), `protegida` (só acréscimo), `nome_invalido`, `nome_repetido`. Acréscimo `nao_verificado` aparece marcado como "fica fora, salvo pedido". O último bloco fecha com a tabela nota original → destino.
 
-O usuário responde "aplica tudo", "aplica 1, 3 e 5", "tudo menos o 4" ou ajusta um item. Ajuste: grave-o no `g*.json` do grupo, rode `consolidar` de novo (número e estado se mantêm) e mostre o item outra vez.
+O usuário responde "aplica tudo", "aplica 1, 3 e 5", "tudo menos o 4" ou ajusta um item. Ajuste: grave-o no `g*.json` do grupo, rode `consolidar` de novo e mostre o item outra vez, mais os `refeitos` (itens que tinham ok e mudaram, de volta a `pendente`). Se o número do item ajustado sumiu, ele foi parar noutro item do mesmo destino: é esse que se mostra de novo.
 
 ## 7. Aplicar o bloco aprovado (§6, revisão do construtor)
 
 1. `P marcar --id <id> --itens <...> --estado recusado` para o que ele recusou. Os dependentes de um recusado ficam `bloqueado`.
 2. Preâmbulo do gerente com o rótulo `explorar: <alvo> (bloco N)`. `regras_mudaram`: releia as regras e confira contra elas os itens aceitos.
-3. `P conferir --id <id> --itens <n...>` com **todos os `aprovado`** da proposta e os aceitos agora. Item em `mudou` não se aplica agora, nem no passo 5: releia as notas, refaça só ele (como no ajuste), rode `P redigitar --id <id> --itens <n>`, marque-o de volta `pendente` (`P marcar --estado pendente`) para só se aplicar depois de um novo ok, e mostre-o de novo depois deste bloco.
-4. `P marcar --id <id> --itens <os aceitos agora cujo `conferir` deu `ok`> --estado aprovado` (nunca um que o passo 3 devolveu a `pendente`).
+3. `P conferir --id <id> --itens <n...>` com **todos os `aprovado`** da proposta e os aceitos agora. Item em `mudou` não se aplica agora, nem no passo 5: releia as notas, refaça só ele (como no ajuste) e rode `P redigitar --id <id> --itens <n>` com o item em que a nota ficou. Os `refeitos` do `consolidar` já voltaram a `pendente`; se o item ainda estiver `aprovado` (um de bloco anterior cuja proposta não mudou), `P marcar --estado pendente` nele. Os aceitos agora ainda estão `pendente`, sem marcar. Todos só se aplicam depois de um novo ok: mostre-os de novo depois deste bloco.
+4. `P marcar --id <id> --itens <os aceitos agora cujo `conferir` deu `ok`> --estado aprovado` (nunca um que o passo 3 devolveu a `pendente`, nem um `bloqueado` ou `recusado` do passo 1: em "tudo menos o 4", os dependentes do 4 ficam de fora). Um item fora de `pendente` faz o `marcar` inteiro sair com erro, sem marcar nenhum.
 5. Aplique cada item `aprovado` da proposta (deste bloco ou de um anterior) cujo `depende_de` esteja todo `aplicado`; o número e a posição no bloco não garantem a ordem, então repita até não sobrar nenhum pronto. O que espera quem cria o destino num bloco seguinte fica `aprovado` e entra no resumo como "esperando o bloco N". Item por item, o plano é exatamente as `operacoes` dele:
    - `B conferir` em cada nota antes de tocar.
    - Lista ou nota de detalhe nova: o frontmatter do vault, as linhas no formato das listas dele e o "Veja também". Acréscimos entram como texto direto com a fonte como link, sem etiqueta de confiança nem data.
