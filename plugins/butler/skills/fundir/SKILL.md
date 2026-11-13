@@ -12,7 +12,7 @@ Quando o `butler:garimpo` acha, ao escrever uma nota nova, que o mesmo assunto j
 
 ## Por que isso nunca é automático
 
-A `butler:fichar` grava direto, sem perguntar, porque o destino de cada classificação já está declarado de antemão em `## Listas para fichar` — não há julgamento a fazer, só aplicar a regra. Aqui é diferente: "mesmo assunto" é uma leitura de conteúdo, por busca de nome (regra 1 de "Onde cada nota vai" do garimpo), que pode estar errada — duas notas podem parecer do mesmo assunto e não serem, ou serem do mesmo assunto mas merecerem ficar separadas (histórico diferente, pessoa diferente, nível de detalhe diferente). Por isso a regra do gerente trata unir como "perda de sentido": **sempre para antes.**
+A `butler:fichar` grava direto, sem perguntar, porque o destino de cada classificação já está declarado de antemão em `## Listas para fichar` — não há julgamento a fazer, só aplicar a regra. Aqui é diferente: "mesmo assunto" é uma leitura de conteúdo, por busca de nome (regra 1 de "Onde cada nota vai" do garimpo), que pode estar errada — duas notas podem parecer do mesmo assunto e não serem, ou serem do mesmo assunto mas merecerem ficar separadas (histórico diferente, pessoa diferente, nível de detalhe diferente). Por isso a regra do gerente trata unir como "perda de sentido": **sempre para antes** — a não ser que o usuário já tenha confirmado esse exato tipo de fusão antes e isso esteja em `## Exceções aprendidas` na nota de regras do vault (ex.: sempre unir notas `relacionada: "[[X]]"` a X, sem perguntar de novo); uma exceção aprendida vale como esse "sempre" já dado.
 
 ## Quando entra
 

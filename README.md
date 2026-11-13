@@ -79,6 +79,7 @@ O vault precisa de um `CLAUDE.md` na raiz com as regras dele (pastas, frontmatte
 | [`preparar`](plugins/butler/skills/preparar/SKILL.md) | Cria o histórico, a nota de regras e a de pendências; refaz só o que falta |
 | [`triagem`](plugins/butler/skills/triagem/SKILL.md) | Tria o Inbox pelas regras do vault, nota por nota |
 | [`garimpo`](plugins/butler/skills/garimpo/SKILL.md) | Assiste ao vídeo ou lê a página de um link, investiga o que ele cita e grava a nota no Inbox |
+| [`fila`](plugins/butler/skills/fila/SKILL.md) | Conduz uma fila grande de links pelo garimpo, lote por lote, com progresso e triagem periódica |
 | [`fichar`](plugins/butler/skills/fichar/SKILL.md) | Chamada pela triagem: grava um filme, uma receita ou outra classificação com destino declarado — uma linha numa lista compartilhada, ou uma seção inteira numa nota por assunto (viagem) — e apaga a nota do Inbox |
 | [`fundir`](plugins/butler/skills/fundir/SKILL.md) | Chamada pela triagem: decide, com o usuário, se uma nota do Inbox entra como seção nova numa nota já existente do mesmo assunto (achada por busca, não declarada) |
 | [`pendencias`](plugins/butler/skills/pendencias/SKILL.md) | Guarda o que ficou para depois e responde o que está pendente |
