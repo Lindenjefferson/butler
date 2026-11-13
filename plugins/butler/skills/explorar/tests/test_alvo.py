@@ -124,6 +124,72 @@ def test_alvo_invalido_sai_com_2():
         assert codigo == 2, codigo
 
 
+def test_numero_so_no_titulo_e_nas_listas_nao_na_prosa():
+    with tempfile.TemporaryDirectory() as vault:
+        escrever(vault, "Casa/Bolo.md", "---\ntitle: Bolo\nsource: https://www.instagram.com/reel/Z/\n---\n"
+                 "Bata 3 ovos por 10 minutos.\n")
+        codigo, r = rodar(vault, "--pasta", "Casa")
+        assert r["reassistir"] == [], r["reassistir"]
+    assert alvo.sinais_de_lista("Bolo", "bata 3 ovos") == []
+    assert alvo.sinais_de_lista("Bolo", "- 3 ovos") == ["numero_no_titulo"]
+
+
+def test_excluir_campo_sem_valor_sai_com_2():
+    with tempfile.TemporaryDirectory() as vault:
+        escrever(vault, "A/N.md")
+        assert rodar(vault, "--pasta", "A", "--excluir-campo", "type")[0] == 2
+        assert rodar(vault, "--pasta", "A", "--excluir-valor", "ideia")[0] == 2
+
+
+def test_tema_ordena_titulo_antes_de_corpo():
+    with tempfile.TemporaryDirectory() as vault:
+        escrever(vault, "Viagens/Bagagem de mao.md", "---\ntitle: Bagagem de mão\ntags: [viagem]\n---\nTexto.\n")
+        escrever(vault, "Viagens/Dicas.md", "---\ntitle: Dicas\ntags: [bagagem, voo]\n---\nTexto.\n")
+        escrever(vault, "Viagens/Aeroporto.md", "---\ntitle: Aeroporto\ntags:\n  - voo\n---\nLeve a bagagem.\n")
+        escrever(vault, "Viagens/Outra.md", "---\ntitle: Outra\n---\nNada.\n")
+        codigo, r = rodar(vault, "--tema", "bagagem")
+        assert codigo == 0, r
+        assert r["tema_candidatos"] == [
+            {"nota": "Viagens/Bagagem de mao.md", "onde": "titulo", "pontos": 3},
+            {"nota": "Viagens/Dicas.md", "onde": "tags", "pontos": 2},
+            {"nota": "Viagens/Aeroporto.md", "onde": "corpo", "pontos": 1}], r["tema_candidatos"]
+        assert r["grupos"][0]["notas"] == ["Viagens/Aeroporto.md", "Viagens/Bagagem de mao.md", "Viagens/Dicas.md"]
+        assert r["alvo"] == {"tipo": "tema", "valor": "bagagem"}
+
+
+def test_tema_soma_pontos_de_titulo_tags_e_corpo():
+    with tempfile.TemporaryDirectory() as vault:
+        escrever(vault, "V/A.md", "---\ntitle: Bagagem\ntags: [bagagem]\n---\nbagagem\n")
+        codigo, r = rodar(vault, "--tema", "bagagem")
+        assert r["tema_candidatos"] == [{"nota": "V/A.md", "onde": "titulo", "pontos": 6}], r["tema_candidatos"]
+
+
+def test_tema_ignora_acento_e_caixa():
+    with tempfile.TemporaryDirectory() as vault:
+        escrever(vault, "V/A.md", "---\ntitle: BAGAGEM\n---\n")
+        escrever(vault, "V/B.md", "---\ntitle: Onibus\n---\n")
+        escrever(vault, "V/C.md", "---\ntitle: ÔNIBUS urbano\n---\n")
+        assert [c["nota"] for c in rodar(vault, "--tema", "Bagagem")[1]["tema_candidatos"]] == ["V/A.md"]
+        assert [c["nota"] for c in rodar(vault, "--tema", "Ônibus")[1]["tema_candidatos"]] == ["V/B.md", "V/C.md"]
+        assert [c["nota"] for c in rodar(vault, "--tema", "onibus")[1]["tema_candidatos"]] == ["V/B.md", "V/C.md"]
+
+
+def test_tema_respeita_exclusoes():
+    with tempfile.TemporaryDirectory() as vault:
+        escrever(vault, "Inbox/Bagagem.md", "---\ntitle: Bagagem\n---\n")
+        escrever(vault, "Viagens/Bagagem.md", "---\ntitle: Bagagem\n---\n")
+        codigo, r = rodar(vault, "--tema", "bagagem")
+        assert r["fora"] == [{"nota": "Inbox/Bagagem.md", "motivo": "inbox"}], r["fora"]
+        assert r["grupos"][0]["notas"] == ["Viagens/Bagagem.md"]
+
+
+def test_tema_sem_resultado_sai_com_1():
+    with tempfile.TemporaryDirectory() as vault:
+        escrever(vault, "V/A.md", "---\ntitle: A\n---\n")
+        codigo, r = rodar(vault, "--tema", "zzz")
+        assert codigo == 1 and r["tema_candidatos"] == [], (codigo, r)
+
+
 if __name__ == "__main__":
     for nome, funcao in sorted(globals().items()):
         if nome.startswith("test_") and callable(funcao):

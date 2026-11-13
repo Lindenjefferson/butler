@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Monta o alvo de uma exploração: grupos de notas, o que fica fora e as fontes de vídeo a reassistir.
 
-Subcomando `montar`: recebe o alvo (`--pasta` ou `--notas`; `--tema` é da tarefa seguinte e por ora sai com 2),
+Subcomando `montar`: recebe o alvo (`--pasta`, `--notas` ou `--tema`),
 separa em `fora` as notas que não entram e agrupa as demais em grupos de até `--tamanho` (padrão 10).
 
 Fora, com o `motivo`: `nao_existe` (nota da lista que não existe), `nfd` (nome com acento decomposto),
@@ -15,6 +15,10 @@ Reassistir: toda fonte de vídeo (instagram reel/p, youtube, youtu.be, tiktok) v
 links no corpo cujo item (a linha, nas listas de um item por linha; senão título + corpo) tem sinal de lista
 incompleta: `numero_no_titulo`, `lista_de`, `os_outros`, `nao_identificado`, `nao_confirmado`, `provavelmente`,
 `varios_nomes` (3 ou mais nomes em negrito na mesma linha). Sem acento nem maiúsculas.
+
+Tema: busca o termo (sem acento nem caixa) no vault todo, título 3 pontos, tags 2, corpo 1 (somados); `tema_candidatos`
+vem ordenado por pontos e os grupos só têm esses candidatos, com as mesmas exclusões. O número só conta como sinal
+no título e nos itens de lista, não na prosa.
 
 Imprime JSON: alvo, grupos, fora, reassistir, tema_candidatos. Só lê o vault.
 Saída: 0 ok, 1 alvo vazio (nenhum grupo), 2 alvo inválido.
@@ -80,9 +84,14 @@ def agrupar(notas, tamanho):
 
 def sinais_de_lista(titulo, texto):
     """Ids dos sinais de lista incompleta no título e no texto, na ordem fixa."""
-    negrito = max((len(NEGRITO.findall(l)) for l in texto.splitlines()), default=0)
+    linhas = texto.splitlines()
+    negrito = max((len(NEGRITO.findall(l)) for l in linhas), default=0)
     limpo = regras_lib.sem_acento(URL.sub(" ", f"{titulo}\n{texto}"))
-    achados = [nome for nome, padrao in SINAIS if padrao.search(limpo)]
+    # número ("5 jogos") só vale no título e nos itens de lista, não na prosa ("3 ovos")
+    itens = [l for l in linhas if re.match(r"^\s*(?:[-*+]|\d+\.)\s", l)]
+    limpo_numero = regras_lib.sem_acento(URL.sub(" ", "\n".join([titulo] + itens)))
+    achados = [nome for nome, padrao in SINAIS
+               if padrao.search(limpo_numero if nome == "numero_no_titulo" else limpo)]
     if negrito >= 3:
         achados.append("varios_nomes")
     return achados
@@ -151,6 +160,49 @@ def motivo_fora(vault, nota, regras, inbox, excluir):
     return None
 
 
+def tags_da_nota(texto):
+    """Texto das tags do frontmatter (lista em linha ou em itens `- x`), vazio se não houver."""
+    m = re.match(r"^---\r?\n(.*?)\r?\n---", texto.lstrip(chr(0xFEFF)), re.DOTALL)
+    if not m:
+        return ""
+    achadas, dentro = [], False
+    for linha in m.group(1).splitlines():
+        par = re.match(r"^tags:\s*(.*)$", linha)
+        if par:
+            achadas.append(par.group(1))
+            dentro = True
+        elif dentro and re.match(r"^\s*-\s", linha):
+            achadas.append(linha)
+        else:
+            dentro = False
+    return " ".join(achadas)
+
+
+def buscar_tema(vault, tema):
+    """Notas do vault que citam o tema: título 3, tags 2, corpo 1 (somados), sem acento nem caixa."""
+    termo = regras_lib.sem_acento(tema).strip().lower()
+    achados = []
+    for dirpath, dirnomes, nomes in os.walk(vault):
+        dirnomes[:] = sorted(d for d in dirnomes if not d.startswith("."))
+        for nome in sorted(nomes):
+            if not nome.lower().endswith(".md"):
+                continue
+            rel = os.path.relpath(os.path.join(dirpath, nome), vault).replace(os.sep, "/")
+            try:
+                texto = ler_texto(os.path.join(dirpath, nome))
+            except (OSError, UnicodeDecodeError):
+                continue
+            campos, corpo = separar_frontmatter(texto)
+            titulo = campos.get("title") or os.path.splitext(nome)[0]
+            em = [(onde, pts) for onde, pts, fonte in
+                  (("titulo", 3, titulo), ("tags", 2, tags_da_nota(texto)), ("corpo", 1, corpo))
+                  if termo in regras_lib.sem_acento(fonte).lower()]
+            if em:
+                achados.append({"nota": rel, "onde": em[0][0], "pontos": sum(p for _, p in em)})
+    achados.sort(key=lambda c: (-c["pontos"], c["nota"]))
+    return achados
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("vault")
@@ -166,11 +218,19 @@ def main():
     if args.tamanho < 1:
         print("--tamanho deve ser 1 ou mais", file=sys.stderr)
         return 2
-    if args.tema:
-        print("--tema ainda não foi implementado", file=sys.stderr)
+    if bool(args.excluir_campo) != bool(args.excluir_valor):
+        print("--excluir-campo e --excluir-valor andam juntos", file=sys.stderr)
         return 2
 
-    if args.pasta:
+    tema_candidatos = []
+    if args.tema:
+        if not regras_lib.sem_acento(args.tema).strip():
+            print("--tema vazio", file=sys.stderr)
+            return 2
+        tema_candidatos = buscar_tema(args.vault, args.tema)
+        candidatas = [c["nota"] for c in tema_candidatos]
+        descricao = {"tipo": "tema", "valor": args.tema}
+    elif args.pasta:
         raiz = os.path.join(args.vault, *args.pasta.strip("/").split("/"))
         if not os.path.isdir(raiz):
             print(f"Pasta não encontrada: {args.pasta}", file=sys.stderr)
@@ -206,7 +266,7 @@ def main():
     for nota in mantidas:
         reassistir += reassistir_da_nota(nota, ler_texto(os.path.join(args.vault, *nota.split("/"))))
     print(json.dumps({"alvo": descricao, "grupos": grupos, "fora": fora, "reassistir": reassistir,
-                      "tema_candidatos": []}, ensure_ascii=False, indent=2))
+                      "tema_candidatos": tema_candidatos},ensure_ascii=False, indent=2))
     return 0 if grupos else 1
 
 
