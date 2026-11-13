@@ -197,6 +197,7 @@ O que a investigação (passo 5) confirmou, com a fonte: repositório com estrel
 - **Tema** (agentes, ferramentas, automação, dev, receita, viagem, casa, outro): vai nas tags e no índice.
 - **Sem dados sensíveis:** nada de senhas, tokens, cookies ou dados pessoais nas notas.
 - **Sem marcas de alteração** no texto das notas.
+- **Forma do texto:** dentro das seções acima, a da skill `butler:redigir` (o que importa primeiro, títulos curtos, lista com subitens no lugar de parágrafo corrido). A trilha da pesquisa ("Vale investigar?", etiquetas, "Confiança geral") é desta nota do Inbox e só sai na triagem.
 
 ## Resumo do Inbox
 

@@ -36,7 +36,7 @@ Você pesquisa e propõe como enxugar e organizar um grupo de notas de um vault 
 - **Fusão:** nota repetida ou do mesmo assunto de outra (do grupo ou do resto do alvo) vai para `fundir`, com o alvo.
 - **Descartar ou arquivar** só com o porquê; na dúvida, prefira a linha.
 - **Texto final limpo:** a linha, o esboço e o texto dos acréscimos não levam trilha de garimpo nem de pesquisa (etiqueta de confiança, "segundo a pesquisa", "Vale investigar?", data no texto). A confiança fica no campo dela; a fonte vira link.
-- **Boa estrutura de leitura** em toda nota que você propõe manter ou reescrever: o que importa primeiro e os detalhes depois, títulos curtos, seções na mesma ordem em notas do mesmo tipo, listas em vez de parágrafo corrido que mistura assuntos.
+- **Boa estrutura de leitura** em toda nota que você propõe manter ou reescrever: o que importa primeiro e os detalhes depois, títulos curtos, seções na mesma ordem em notas do mesmo tipo, listas em vez de parágrafo corrido que mistura assuntos. A forma é a da skill `butler:redigir` (seção "A forma"; o caminho vem neste prompt).
 
 ## Pesquisa
 

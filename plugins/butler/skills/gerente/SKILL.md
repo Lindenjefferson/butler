@@ -98,7 +98,7 @@ Antes de alterar uma nota:
 1. `B conferir "<nota>"`. Devolve se ela é protegida ou de formato rígido e os achados (`codigo` e `mensagem`).
 2. Confira você mesmo o frontmatter contra a regra do `CLAUDE.md` (campos obrigatórios, valores válidos): o script só sabe se ele existe e fecha.
 3. Nota de formato rígido: siga a regra dela à risca e não sugira nada.
-4. Nota de formato livre: leia a nota, duas ou três notas parecidas e o modelo dela antes de agir. Acrescentar segue a forma que a nota já tem. Nota nova: escreva com a estrutura que julgar melhor e diga em uma linha qual escolheu e em que notas se baseou; sem nota parecida, use o modelo e diga que não achou nenhuma. Reestruturar uma nota que já existe é reescrita: mostre a proposta antes.
+4. Nota de formato livre: leia a nota, duas ou três notas parecidas e o modelo dela antes de agir. Acrescentar segue a forma que a nota já tem. Nota nova: escreva com a estrutura que julgar melhor e diga em uma linha qual escolheu e em que notas se baseou; sem nota parecida, use o modelo e diga que não achou nenhuma. Reestruturar uma nota que já existe é reescrita: mostre a proposta antes. A forma do texto, na nota nova e na reescrita, é a da skill `butler:redigir`.
 5. Tudo certo: siga calado. Algo destoa: não corrija, pergunte se era para ser assim. Corrigir, só depois da resposta.
 6. Achado `dado_sensivel`: é a parada 5. Diga a nota, o tipo e a linha, nunca o valor, e pergunte se é dado sensível de verdade (seção 7). O `ponto` não grava esse arquivo enquanto ele não sair da nota ou for liberado.
 
@@ -158,4 +158,4 @@ Chamado pelo nome, `$ARGUMENTS` traz a rotina e a nota (`arquiva <nota>`, `revis
 
 ## 11. Pedidos que outras skills conduzem
 
-Use a skill do assunto, que roda este preâmbulo e estas paradas: `butler:triagem` (triar o Inbox), `butler:garimpo` (guardar links), `butler:pendencias` (o que ficou para depois), `butler:projeto` (nota de um projeto de código), `butler:ideia` (desenvolver uma ideia), `butler:explorar` (enxugar e organizar um pedaço já triado), `butler:programas` (inventário de programas da máquina), `butler:preparar` (preparar o vault ou refazer o que falta).
+Use a skill do assunto, que roda este preâmbulo e estas paradas: `butler:triagem` (triar o Inbox), `butler:garimpo` (guardar links), `butler:pendencias` (o que ficou para depois), `butler:projeto` (nota de um projeto de código), `butler:ideia` (desenvolver uma ideia), `butler:explorar` (enxugar e organizar um pedaço já triado), `butler:programas` (inventário de programas da máquina), `butler:redigir` (melhorar a leitura de uma nota), `butler:preparar` (preparar o vault ou refazer o que falta).

@@ -47,7 +47,7 @@ Uma viagem (ou outra classificação com `<destino>` no caminho) vira uma **seç
 
 1. **Achar a nota do destino:** o destino é a cidade, o país ou a viagem que a nota do Inbox cita; procure, na pasta declarada, a nota cujo título bate. Uma só bate: é ela.
 2. **Destino ambíguo** (duas notas podem bater) ou **o conteúdo não diz onde é:** vira a dúvida descrita em "Quando entra" — não adivinhe.
-3. **A nota do destino já existe:** `B conferir` nela, releia por último (mesma regra de não sobrescrever versão antiga) e acrescente uma seção nova, no fim ou perto de uma seção parecida, com o conteúdo inteiro da nota do Inbox (não resuma). Acrescente a URL de origem ao `source` da nota de destino (vira lista), se ainda não estiver lá.
+3. **A nota do destino já existe:** `B conferir` nela, releia por último (mesma regra de não sobrescrever versão antiga) e acrescente uma seção nova, no fim ou perto de uma seção parecida, com o conteúdo inteiro da nota do Inbox (não resuma), na forma da skill `butler:redigir`: a trilha de garimpo sai, os dados e os links ficam. Acrescente a URL de origem ao `source` da nota de destino (vira lista), se ainda não estiver lá.
 4. **A nota do destino ainda não existe:** crie-a nesse caminho, pelas regras de nota do `CLAUDE.md` (frontmatter, "Veja também", registro na nota índice), com o conteúdo da nota do Inbox como base — é a mesma operação de mover uma nota comum do Inbox para um destino já claro, que a triagem já faz sem parar.
 5. **Apagar a nota do Inbox.** O conteúdo inteiro dela já está na seção nova (ou ela virou a nota nova, movida) — não é perda de informação.
 

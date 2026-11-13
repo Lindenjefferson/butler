@@ -1,6 +1,6 @@
 {
   "name": "butler",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Gerente de um vault do Obsidian: mede o pedido, conduz triagem, garimpo, pendências, projetos e ideias, para só onde há risco de perder informação e desfaz qualquer mudança com uma frase, com um histórico git local fora da pasta sincronizada.",
   "author": {
     "name": "Lindenjefferson"
