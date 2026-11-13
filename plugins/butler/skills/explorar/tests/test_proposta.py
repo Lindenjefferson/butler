@@ -277,6 +277,121 @@ def test_conferir_detecta_nota_editada():
         c.fechar()
 
 
+def test_consolidar_de_novo_mantem_numeros():
+    c = Caso()
+    try:
+        for n in ("V/A.md", "V/B.md", "V/C.md"):
+            c.escrever(n)
+        r = c.iniciar([["V/A.md", "V/B.md"], ["V/C.md"]])
+        c.responder(r["grupos"][0]["saida"], "g1", [item("V/A.md", "descartar", ""), item("V/B.md", "mover", "V")])
+        c.rodar("consolidar", "--id", r["id"])
+        antes = {i["destino"]: i["n"] for i in c.proposta(r["id"])["itens"]}
+        c.rodar("marcar", "--id", r["id"], "--itens", str(antes["V/A.md"]), "--estado", "aprovado")
+        c.responder(r["grupos"][1]["saida"], "g2", [item("V/C.md", "linha", "Lista", "- C")])
+        c.rodar("consolidar", "--id", r["id"])
+        itens = c.proposta(r["id"])["itens"]
+        depois = {i["destino"]: i["n"] for i in itens}
+        assert {d: depois[d] for d in antes} == antes, (antes, depois)
+        assert depois["V/Lista.md"] == max(antes.values()) + 1, depois
+        assert por_destino(itens, "V/A.md")["estado"] == "aprovado", itens
+        assert [i["n"] for i in itens] == sorted(i["n"] for i in itens), itens
+    finally:
+        c.fechar()
+
+
+def test_redigitar_limpa_mudou():
+    c = Caso()
+    try:
+        c.escrever("V/A.md", "um\n")
+        r = c.iniciar([["V/A.md"]])
+        c.responder(r["grupos"][0]["saida"], "g1", [item("V/A.md", "detalhe", "")])
+        c.rodar("consolidar", "--id", r["id"])
+        c.escrever("V/A.md", "um editado\n")
+        assert c.rodar("conferir", "--id", r["id"]) == {"mudou": [1], "ok": []}
+        c.rodar("redigitar", "--id", r["id"], "--itens", "1")
+        assert c.rodar("conferir", "--id", r["id"]) == {"mudou": [], "ok": [1]}
+    finally:
+        c.fechar()
+
+
+def test_aplicado_atualiza_digital_do_destino():
+    c = Caso()
+    try:
+        c.escrever("V/Lista.md", "# Lista\n")
+        c.escrever("V/A.md")
+        c.escrever("V/B.md")
+        r = c.iniciar([["V/A.md", "V/B.md"]])
+        c.responder(r["grupos"][0]["saida"], "g1", [item("V/A.md", "linha", "Lista", "- A"),
+                                                     item("V/B.md", "fundir", "Lista")])
+        c.rodar("consolidar", "--id", r["id"])
+        itens = c.proposta(r["id"])["itens"]
+        linha = [i for i in itens if i["tipo"] == "linha"][0]["n"]
+        fundir = [i for i in itens if i["tipo"] == "fundir"][0]["n"]
+        c.escrever("V/Lista.md", "# Lista\n\n- A\n")
+        c.rodar("marcar", "--id", r["id"], "--itens", str(linha), "--estado", "aplicado")
+        s = c.rodar("conferir", "--id", r["id"], "--itens", str(fundir))
+        assert s == {"mudou": [], "ok": [fundir]}, s
+    finally:
+        c.fechar()
+
+
+def test_mover_mantendo_nome_nao_e_repetido():
+    c = Caso()
+    try:
+        c.escrever("V/A.md")
+        c.escrever("W/B.md")
+        r = c.iniciar([["V/A.md"]])
+        c.responder(r["grupos"][0]["saida"], "g1", [item("V/A.md", "mover", "W")])
+        c.rodar("consolidar", "--id", r["id"])
+        it = por_destino(c.proposta(r["id"])["itens"], "W/A.md")
+        assert "nome_repetido" not in it["avisos"], it
+    finally:
+        c.fechar()
+
+
+def test_linha_e_fundir_sem_alvo_avisam():
+    c = Caso()
+    try:
+        c.escrever("V/A.md")
+        c.escrever("V/B.md")
+        r = c.iniciar([["V/A.md", "V/B.md"]])
+        c.responder(r["grupos"][0]["saida"], "g1", [item("V/A.md", "linha", "", "- A"),
+                                                     item("V/B.md", "fundir", "  ")])
+        s = c.rodar("consolidar", "--id", r["id"])
+        assert s["itens"] == 0, s
+        assert "alvo_vazio: V/A.md" in s["avisos"] and "alvo_vazio: V/B.md" in s["avisos"], s
+    finally:
+        c.fechar()
+
+
+def test_detalhe_sem_alvo_fica_na_propria_nota():
+    c = Caso()
+    try:
+        c.escrever("V/A.md")
+        c.escrever("V/B.md")
+        r = c.iniciar([["V/A.md", "V/B.md"]])
+        c.responder(r["grupos"][0]["saida"], "g1", [item("V/A.md", "detalhe", ""), item("V/B.md", "detalhe", "")])
+        c.rodar("consolidar", "--id", r["id"])
+        itens = c.proposta(r["id"])["itens"]
+        assert sorted((i["destino"], tuple(i["origens"])) for i in itens) == [
+            ("V/A.md", ("V/A.md",)), ("V/B.md", ("V/B.md",))], itens
+        assert all(o["op"] == "reescrever" for i in itens for o in i["operacoes"]), itens
+    finally:
+        c.fechar()
+
+
+def test_fundir_em_si_rejeitado():
+    c = Caso()
+    try:
+        c.escrever("V/D.md")
+        r = c.iniciar([["V/D.md"]])
+        c.responder(r["grupos"][0]["saida"], "g1", [item("V/D.md", "fundir", "D")])
+        s = c.rodar("consolidar", "--id", r["id"])
+        assert s["itens"] == 0 and "fundir_em_si: V/D.md" in s["avisos"], s
+    finally:
+        c.fechar()
+
+
 def test_listar_e_remover():
     c = Caso()
     try:

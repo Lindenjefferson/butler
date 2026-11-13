@@ -10,13 +10,16 @@ Subcomandos (`python proposta.py <vault> <subcomando>`), todos imprimem JSON:
   digital (sha256 do conteúdo) de cada nota dos grupos. Imprime `{"id", "pasta", "grupos": [{"id", "saida"}]}`;
   `saida` é o caminho que vai no prompt do subagente do grupo.
 - `consolidar --id <id>`: lê os `g*.json`, junta por destino e grava `itens`. Imprime
-  `{"itens": N, "blocos": M, "faltam_grupos": [...], "avisos": [...]}`. Refazer mantém o estado dos itens que
-  continuam iguais (mesmo tipo e destino).
+  `{"itens": N, "blocos": M, "faltam_grupos": [...], "avisos": [...]}`. Refazer mantém o número e o estado dos
+  itens que continuam (mesmo tipo e destino); item novo ganha o próximo número. Avisos de entrada ignorada:
+  `alvo_vazio: <nota>` (`linha` ou `fundir` sem alvo) e `fundir_em_si: <nota>`.
 - `bloco --id <id> --n <N>`: os itens do bloco N (até 10).
 - `marcar --id <id> --itens 1,3 --estado aprovado|aplicado|recusado`: recusar marca como `bloqueado` os itens
   pendentes ou aprovados que dependem dele (em cadeia).
 - `conferir --id <id> [--itens 1,3]`: recalcula as digitais das origens e dos destinos de cada item;
-  `{"mudou": [n...], "ok": [n...]}`. Item que mudou não se aplica: a sessão refaz só ele.
+  `{"mudou": [n...], "ok": [n...]}`. Item que mudou não se aplica: a sessão refaz só ele e chama `redigitar`.
+  Marcar `aplicado` atualiza a digital do destino do item, que os outros itens com o mesmo destino conferem.
+- `redigitar --id <id> --itens 1,3`: grava as digitais atuais das origens e do destino desses itens.
 - `listar`: propostas ainda não consolidadas ou com item `pendente`/`aprovado`. `remover --id <id>`.
 
 Saída: 0 ok, 2 proposta, item ou argumento inválido.
@@ -35,10 +38,12 @@ O `alvo` de `linha`, `detalhe` e `fundir` é um caminho (`Pasta/Nome`, com ou se
 `fundir` vai para a nota criada por outro item ou para a nota existente com esse nome; `linha` vai para a nota
 existente com esse nome ou nasce na pasta do tema de mesmo nome, ou na pasta comum das origens; `detalhe` nasce na
 pasta comum das origens. `mover` e `arquivar` recebem uma pasta (a nota mantém o nome) ou um caminho `.md`
-(renomeia); `arquivar` sem alvo vai para `Arquivo/<caminho>`. `descartar` não tem alvo.
+(renomeia); `arquivar` sem alvo vai para `Arquivo/<caminho>`. `descartar` não tem alvo; `detalhe` sem alvo fica
+na própria nota; `linha` e `fundir` sem alvo são ignorados com aviso.
 
 Item consolidado: um por destino e tipo, numerado na ordem dos blocos (listas, notas de detalhe e fusões, movidos,
-descartes e arquivados) e estável depois disso:
+descartes e arquivados) no primeiro `consolidar`; o número não muda depois (item que chega num `consolidar`
+seguinte vai para o fim):
 
     {"n", "destino", "tipo", "origens": [...], "operacoes": [...], "depende_de": [n...],
      "links_de_entrada": {origem: [notas que linkam]}, "avisos": [...], "detalhes": {origem: {...}},
@@ -47,7 +52,8 @@ descartes e arquivados) e estável depois disso:
 Nomes comparados sem caixa e em NFC; o destino mostrado guarda a primeira grafia vista. `depende_de`: o item escreve
 num destino que outro item cria ou reescreve (lista ou nota de detalhe). `links_de_entrada`: para cada origem que
 some ou muda de nome, as notas com `[[Nome]]`, `[[Nome|...]]` ou `[[Nome#...]]`. Avisos: `nome_invalido`
-(`: * ? " < > | / \\` ou vazio), `nome_repetido` (destino novo com o nome de uma nota existente em outro caminho),
+(`: * ? " < > | / \\` ou vazio), `nome_repetido` (destino novo com o nome de uma nota existente que não
+é origem do item),
 `pasta_nova` (a pasta do destino não existe) e `protegida` (origem ou destino protegidos pela nota de regras).
 """
 import argparse
@@ -198,7 +204,13 @@ def ler_respostas(pasta, proposta):
                 avisos.append(f"{grupo['id']}: {caminho_nota} com tipo inválido ({destino.get('tipo')})")
                 continue
             respondidas.add(caminho_nota)
-            entradas.append({"nota": caminho_nota, "tipo": destino["tipo"], "alvo": (destino.get("alvo") or "").strip(),
+            alvo = (destino.get("alvo") or "").strip()
+            if not alvo and destino["tipo"] in ("linha", "fundir"):
+                avisos.append(f"alvo_vazio: {caminho_nota}")
+                continue
+            if not alvo and destino["tipo"] == "detalhe":
+                alvo = caminho_nota
+            entradas.append({"nota": caminho_nota, "tipo": destino["tipo"], "alvo": alvo,
                              "detalhe": {k: nota.get(k) for k in ("porque", "linha", "cortes", "esboco", "acrescimos",
                                                                   "atencao") if nota.get(k)}})
         for falta in grupo["notas"]:
@@ -295,6 +307,9 @@ def consolidar(vault, args):
     existentes = notas_do_vault(vault)
     existe = {norm(n) for n in existentes}
     resolver(entradas, temas, existentes)
+    for e in [e for e in entradas if e["tipo"] == "fundir" and norm(e["destino"]) == norm(e["nota"])]:
+        avisos.append(f"fundir_em_si: {e['nota']}")
+        entradas.remove(e)
 
     juntos, ordem = {}, []
     for e in entradas:
@@ -312,9 +327,14 @@ def consolidar(vault, args):
     por_nome = {}
     for nota in existentes:
         por_nome.setdefault(norm(stem(nota)), []).append(nota)
-    antigos = {(i["tipo"], norm(i["destino"])): i["estado"] for i in proposta.get("itens", [])}
+    antigos = {(i["tipo"], norm(i["destino"])): i for i in proposta.get("itens", [])}
+    proximo = max((i["n"] for i in antigos.values()), default=0) + 1
     itens = []
-    for n, chave in enumerate(chaves, 1):
+    for chave in chaves:
+        if chave in antigos:
+            n = antigos[chave]["n"]
+        else:
+            n, proximo = proximo, proximo + 1
         item = juntos[chave]
         tipo, destino, origens = item["tipo"], item["destino"], sorted(item["origens"])
         destino_existe = norm(destino) in existe
@@ -323,7 +343,8 @@ def consolidar(vault, args):
         nome = stem(destino)
         if not nome.strip() or INVALIDOS & set(nome):
             avisos_item.append("nome_invalido")
-        if not destino_existe and any(norm(p) != norm(destino) for p in por_nome.get(norm(nome), [])):
+        proprias = {norm(o) for o in origens} | {norm(destino)}
+        if not destino_existe and any(norm(p) not in proprias for p in por_nome.get(norm(nome), [])):
             avisos_item.append("nome_repetido")
         pasta_destino = posixpath.dirname(destino)
         if pasta_destino and not os.path.isdir(os.path.join(vault, *pasta_destino.split("/"))):
@@ -335,13 +356,15 @@ def consolidar(vault, args):
             "operacoes": operacoes(tipo, destino, origens, destino_existe, item["detalhes"]),
             "depende_de": [],
             "links_de_entrada": {o: sorted(x for x in links.get(norm(stem(o)), ()) if x != o) for o in some},
-            "avisos": avisos_item, "detalhes": item["detalhes"], "estado": antigos.get(chave, "pendente")})
+            "avisos": avisos_item, "detalhes": item["detalhes"],
+            "estado": antigos[chave]["estado"] if chave in antigos else "pendente"})
         if destino not in proposta["digitais"]:
             proposta["digitais"][destino] = digital(vault, destino)
     for item in itens:
         item["depende_de"] = [o["n"] for o in itens if o is not item and o["tipo"] in CRIAM
                               and norm(o["destino"]) == norm(item["destino"])
                               and ORDEM[o["tipo"]] < ORDEM[item["tipo"]]]
+    itens.sort(key=lambda i: i["n"])
     proposta["itens"], proposta["temas"] = itens, temas
     gravar_json(os.path.join(pasta, "proposta.json"), proposta)
     return {"itens": len(itens), "blocos": -(-len(itens) // BLOCO), "faltam_grupos": faltam, "avisos": avisos}
@@ -380,6 +403,11 @@ def marcar(vault, args):
     por_n = {i["n"]: i for i in proposta["itens"]}
     for n in pedidos:
         por_n[n]["estado"] = args.estado
+        if args.estado == "aplicado":
+            # o destino mudou de propósito: os outros itens que escrevem nele conferem contra o novo conteúdo
+            destino = norm(por_n[n]["destino"])
+            for nota in [p for p in proposta["digitais"] if norm(p) == destino]:
+                proposta["digitais"][nota] = digital(vault, nota)
     bloqueados = []
     if args.estado == "recusado":
         fila = list(pedidos)
@@ -405,6 +433,17 @@ def conferir(vault, args):
         alterada = any(digital(vault, p) != proposta["digitais"][p] for p in notas)
         (mudou if alterada else ok).append(item["n"])
     return {"mudou": mudou, "ok": ok}
+
+
+def redigitar(vault, args):
+    pasta, proposta = carregar(vault, args.id)
+    pedidos = numeros(args.itens, proposta["itens"])
+    for item in proposta["itens"]:
+        if item["n"] in pedidos:
+            for nota in item["origens"] + [item["destino"]]:
+                proposta["digitais"][nota] = digital(vault, nota)
+    gravar_json(os.path.join(pasta, "proposta.json"), proposta)
+    return {"redigitados": pedidos}
 
 
 def listar(vault, _args):
@@ -449,13 +488,16 @@ def main():
     s = sub.add_parser("conferir")
     s.add_argument("--id", required=True)
     s.add_argument("--itens")
+    s = sub.add_parser("redigitar")
+    s.add_argument("--id", required=True)
+    s.add_argument("--itens", required=True)
     sub.add_parser("listar")
     args = ap.parse_args()
     if not os.path.isdir(args.vault):
         print(f"vault não encontrado: {args.vault}", file=sys.stderr)
         return 2
     acoes = {"iniciar": iniciar, "consolidar": consolidar, "bloco": bloco, "marcar": marcar, "conferir": conferir,
-             "listar": listar, "remover": remover}
+             "redigitar": redigitar, "listar": listar, "remover": remover}
     try:
         resultado = acoes[args.subcomando](args.vault, args)
     except (Erro, OSError, ValueError, KeyError) as erro:
