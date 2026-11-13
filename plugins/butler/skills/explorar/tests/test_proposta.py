@@ -406,6 +406,8 @@ def test_listar_e_remover():
         lista = c.rodar("listar")
         assert [p["id"] for p in lista["propostas"]] == [r1["id"]], lista
         assert lista["propostas"][0]["rotulo"] == "um" and lista["propostas"][0]["pendentes"] == 1, lista
+        # a pasta de trabalho do explorar (fora do vault), onde a sessão grava o alvo.json antes do iniciar
+        assert os.path.normcase(lista["pasta"]) == os.path.normcase(os.path.dirname(r1["pasta"])), lista
         c.rodar("remover", "--id", r1["id"])
         assert not os.path.exists(r1["pasta"]), r1
         assert c.rodar("listar")["propostas"] == []

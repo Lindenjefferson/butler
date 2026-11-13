@@ -5,7 +5,7 @@ description: Explora um pedaço já triado de um vault do Butler (uma pasta, alg
 
 # Explorar
 
-Uma proposta lida e aprovada pelo usuário, aplicada como Reforma do `butler:gerente`. Antes de começar, leia `${CLAUDE_PLUGIN_ROOT}/skills/gerente/SKILL.md` se ainda não estiver nesta conversa: preâmbulo, paradas, conferência, pontos e resumo vêm de lá. `B` é o comando de lá. O porquê de cada passo está no design da skill (`docs/superpowers/specs/*-explorar-design.md` do repositório do plugin); as seções citadas abaixo são as dele.
+Uma proposta lida e aprovada pelo usuário, aplicada como Reforma do `butler:gerente`. Antes de começar, leia `${CLAUDE_PLUGIN_ROOT}/skills/gerente/SKILL.md` se ainda não estiver nesta conversa: preâmbulo, paradas, conferência, pontos e resumo vêm de lá. `B` é o comando de lá.
 
 Os scripts desta skill, rodados no Bash (`A` e `P` abaixo):
 
@@ -16,7 +16,7 @@ P = sh "${CLAUDE_PLUGIN_ROOT}/hooks/python.sh" -I "${CLAUDE_PLUGIN_ROOT}/skills/
 
 Argumentos, saídas, formato da proposta e dos itens: docstring de cada script. Até o aval, tudo é só leitura no vault, sem preâmbulo nem trava; o que protege a proposta é a digital de cada nota.
 
-**Sem argumento:** `P listar`. Uma linha por proposta (rótulo, itens abertos) e a pergunta de qual continuar; nenhuma, peça um alvo. Continuar ("aplica a proposta de ontem") retoma no passo 6, no primeiro bloco com item `pendente`.
+**Sem argumento:** `P listar`. Uma linha por proposta (rótulo, itens abertos) e a pergunta de qual continuar; nenhuma, peça um alvo. Continuar ("aplica a proposta de ontem") retoma no passo 6, no primeiro bloco com item `pendente` ou `aprovado`.
 
 ## 1. Regras e limites (Restrições, Fora do escopo)
 
@@ -24,7 +24,7 @@ Leia o `CLAUDE.md` do vault e a nota de regras (`B situacao`). Alvo dentro do In
 
 ## 2. Montar o alvo (§1, §2)
 
-`A montar (--pasta P | --notas N ... | --tema T) --excluir-campo <campo> --excluir-valor <valor> > <pasta temporária>/alvo.json`.
+A pasta de trabalho, fora do vault, é a `pasta` do `P listar` (`<pasta de estado>/explorar`); crie-a se faltar. `A montar (--pasta P | --notas N ... | --tema T) --excluir-campo <campo> --excluir-valor <valor> > "<pasta de trabalho>/alvo.json"`.
 
 - Saída 1: alvo vazio, diga em uma linha e pare. Saída 2: mostre o erro.
 - Pasta ou notas: uma linha com quantas notas, quantos grupos (agentes) e o que ficou em `fora` por motivo, e siga. As de motivo `ideia` ganham a linha "use a `butler:ideia` nelas"; as de `inbox`, a `butler:triagem`.
@@ -33,7 +33,7 @@ Leia o `CLAUDE.md` do vault e a nota de regras (`B situacao`). Alvo dentro do In
 ## 3. Reassistir as fontes que são listas (§2b)
 
 - `reassistir` vazio: pule. Até 20 vídeos: diga quantos e siga. Acima de 20: mostre o número e espere o ok. "Reassiste todos" é pedido explícito.
-- Rode o `assistir.py` numa execução só, em segundo plano, com todas as URLs e `--saida <pasta temporária>`, como o passo 1 da `butler:garimpo` (avise antes que o Firefox fica fechado durante a execução). As regras de login, bloqueio e status são as de lá, em `${CLAUDE_PLUGIN_ROOT}/skills/garimpo/SKILL.md`.
+- Rode o `assistir.py` numa execução só, em segundo plano, com todas as URLs e `--saida "<pasta de trabalho>/assistir"`, como o passo 1 da `butler:garimpo` (avise antes que o Firefox fica fechado durante a execução). As regras de login, bloqueio e status são as de lá, em `${CLAUDE_PLUGIN_ROOT}/skills/garimpo/SKILL.md`.
 - Bloqueio do Instagram: pare de assistir, mostre o erro exato e não insista. Link com `falhou`: o item dele fica como está na proposta, com o erro.
 
 ## 4. Pesquisar e propor (§3)
@@ -54,18 +54,19 @@ O usuário responde "aplica tudo", "aplica 1, 3 e 5", "tudo menos o 4" ou ajusta
 
 ## 7. Aplicar o bloco aprovado (§6, revisão do construtor)
 
-1. `P marcar --id <id> --itens <...> --estado recusado` para o que ele recusou e `--estado aprovado` para o resto. Os dependentes de um recusado ficam `bloqueados`.
-2. Preâmbulo do gerente com o rótulo `explorar: <alvo> (bloco N)`. `regras_mudaram`: releia as regras e confira contra elas os itens aprovados.
-3. `P conferir --id <id> --itens <aprovados>`. Item em `mudou` não se aplica agora: releia as notas, refaça só ele (como no ajuste), rode `P redigitar` para ele e mostre-o de novo depois deste bloco.
-4. Item por item, o plano é exatamente as `operacoes` dele. Um item só se aplica depois de cada item do seu `depende_de` estar `aplicado`; o número e a posição no bloco não garantem a ordem. Se quem cria o destino está num bloco seguinte, o dependente espera e vira dúvida até lá.
+1. `P marcar --id <id> --itens <...> --estado recusado` para o que ele recusou. Os dependentes de um recusado ficam `bloqueado`.
+2. Preâmbulo do gerente com o rótulo `explorar: <alvo> (bloco N)`. `regras_mudaram`: releia as regras e confira contra elas os itens aceitos.
+3. `P conferir --id <id> --itens <n...>` com os aceitos e os `aprovado` que esperavam. Item em `mudou` não se aplica agora, nem no passo 5 (o aceito neste bloco continua `pendente`): releia as notas, refaça só ele (como no ajuste), rode `P redigitar --id <id> --itens <n>` e mostre-o de novo depois deste bloco.
+4. `P marcar --id <id> --itens <os do ok> --estado aprovado`.
+5. Aplique cada item `aprovado` da proposta (deste bloco ou de um anterior) cujo `depende_de` esteja todo `aplicado`; o número e a posição no bloco não garantem a ordem, então repita até não sobrar nenhum pronto. O que espera quem cria o destino num bloco seguinte fica `aprovado` e entra no resumo como "esperando o bloco N". Item por item, o plano é exatamente as `operacoes` dele:
    - `B conferir` em cada nota antes de tocar.
    - Lista ou nota de detalhe nova: o frontmatter do vault, as linhas no formato das listas dele e o "Veja também". Acréscimos entram como texto direto com a fonte como link, sem etiqueta de confiança nem data.
    - Mover ou renomear: `B renomear` (os links seguem).
    - Apagar uma origem só depois do conteúdo dela estar no destino e dos `links_de_entrada` redirecionados para o destino.
    - Nota índice e `updated` das notas tocadas. Origem que vem de um link do registro de links (`## Caminhos` nas regras): a linha dele ganha o destino novo, como a regra do registro manda.
    - `B ponto` por nota concluída e `P marcar --estado aplicado` por item.
-5. Dependente de um recusado (`bloqueado`) ou que ainda espera um bloco seguinte: `B duvida`, com o que a skill faria. O que aparecer fora do plano para de novo.
-6. Resumo no formato do gerente e `B fim`. Depois, os itens refeitos e o próximo bloco (passo 6).
+6. Dependente de um recusado (`bloqueado`): `B duvida`, com o que a skill faria. O que aparecer fora do plano para de novo.
+7. Resumo no formato do gerente e `B fim`. Depois, os itens refeitos e o próximo bloco (passo 6).
 
 ## 8. Fim da proposta
 

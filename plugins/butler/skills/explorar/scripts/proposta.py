@@ -20,7 +20,9 @@ Subcomandos (`python proposta.py <vault> <subcomando>`), todos imprimem JSON:
   `{"mudou": [n...], "ok": [n...]}`. Item que mudou não se aplica: a sessão refaz só ele e chama `redigitar`.
   Marcar `aplicado` atualiza a digital do destino do item, que os outros itens com o mesmo destino conferem.
 - `redigitar --id <id> --itens 1,3`: grava as digitais atuais das origens e do destino desses itens.
-- `listar`: propostas ainda não consolidadas ou com item `pendente`/`aprovado`. `remover --id <id>`.
+- `listar`: propostas ainda não consolidadas ou com item `pendente`/`aprovado`, e em `pasta` a pasta de
+  trabalho do explorar (`<pasta de estado>/explorar`), onde vão o `alvo.json` e os vídeos reassistidos.
+  `remover --id <id>`.
 
 Saída: 0 ok, 2 proposta, item ou argumento inválido.
 
@@ -460,7 +462,7 @@ def listar(vault, _args):
         propostas.append({"id": p["id"], "rotulo": p.get("rotulo", ""), "criada": p.get("criada"),
                           "consolidada": consolidada, "itens": len(estados),
                           "pendentes": estados.count("pendente"), "aprovados": estados.count("aprovado")})
-    return {"propostas": propostas}
+    return {"pasta": raiz_explorar(vault), "propostas": propostas}
 
 
 def remover(vault, args):

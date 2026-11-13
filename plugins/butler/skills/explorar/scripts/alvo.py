@@ -20,7 +20,8 @@ Tema: busca o termo (sem acento nem caixa) no vault todo, título 3 pontos, tags
 vem ordenado por pontos e os grupos só têm esses candidatos, com as mesmas exclusões. O número só conta como sinal
 no título e nos itens de lista, não na prosa.
 
-Imprime JSON: alvo, grupos, fora, reassistir, tema_candidatos. Só lê o vault.
+Imprime JSON em UTF-8 (mesmo sem o modo UTF-8 do Python): alvo, grupos, fora, reassistir, tema_candidatos.
+Só lê o vault.
 Saída: 0 ok, 1 alvo vazio (nenhum grupo), 2 alvo inválido.
 
 Uso: python alvo.py <vault> montar (--pasta P | --notas N [N ...] | --tema T)
@@ -51,6 +52,11 @@ SINAIS = [
     ("nao_confirmado", re.compile(r"\bnao confirmad[oa]s?\b")),
     ("provavelmente", re.compile(r"\bprovavelmente\b")),
 ]
+
+
+def erro(mensagem):
+    """Mensagem de erro em UTF-8 no stderr, que pode trazer nome de nota."""
+    sys.stderr.buffer.write((mensagem + "\n").encode("utf-8"))
 
 
 def agrupar(notas, tamanho):
@@ -216,16 +222,16 @@ def main():
     ap.add_argument("--tamanho", type=int, default=10)
     args = ap.parse_args()
     if args.tamanho < 1:
-        print("--tamanho deve ser 1 ou mais", file=sys.stderr)
+        erro("--tamanho deve ser 1 ou mais")
         return 2
     if bool(args.excluir_campo) != bool(args.excluir_valor):
-        print("--excluir-campo e --excluir-valor andam juntos", file=sys.stderr)
+        erro("--excluir-campo e --excluir-valor andam juntos")
         return 2
 
     tema_candidatos = []
     if args.tema:
         if not regras_lib.sem_acento(args.tema).strip():
-            print("--tema vazio", file=sys.stderr)
+            erro("--tema vazio")
             return 2
         tema_candidatos = buscar_tema(args.vault, args.tema)
         candidatas = [c["nota"] for c in tema_candidatos]
@@ -233,7 +239,7 @@ def main():
     elif args.pasta:
         raiz = os.path.join(args.vault, *args.pasta.strip("/").split("/"))
         if not os.path.isdir(raiz):
-            print(f"Pasta não encontrada: {args.pasta}", file=sys.stderr)
+            erro(f"Pasta não encontrada: {args.pasta}")
             return 2
         candidatas = []
         for dirpath, _, nomes in os.walk(raiz):
@@ -265,8 +271,10 @@ def main():
     reassistir = []
     for nota in mantidas:
         reassistir += reassistir_da_nota(nota, ler_texto(os.path.join(args.vault, *nota.split("/"))))
-    print(json.dumps({"alvo": descricao, "grupos": grupos, "fora": fora, "reassistir": reassistir,
-                      "tema_candidatos": tema_candidatos},ensure_ascii=False, indent=2))
+    saida = {"alvo": descricao, "grupos": grupos, "fora": fora, "reassistir": reassistir,
+             "tema_candidatos": tema_candidatos}
+    # bytes UTF-8 direto: no Windows sem modo UTF-8 o stdout é cp1252 e não escreve nome com acento decomposto
+    sys.stdout.buffer.write((json.dumps(saida, ensure_ascii=False, indent=2) + "\n").encode("utf-8"))
     return 0 if grupos else 1
 
 

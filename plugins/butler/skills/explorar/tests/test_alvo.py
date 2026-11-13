@@ -190,6 +190,20 @@ def test_tema_sem_resultado_sai_com_1():
         assert codigo == 1 and r["tema_candidatos"] == [], (codigo, r)
 
 
+def test_saida_em_utf8_mesmo_sem_modo_utf8():
+    with tempfile.TemporaryDirectory() as vault:
+        escrever(vault, "Viagens/Ação.md")
+        nfd = "Viagens/" + unicodedata.normalize("NFD", "Pão") + ".md"
+        escrever(vault, nfd)
+        ambiente = {k: v for k, v in os.environ.items() if k not in ("PYTHONUTF8", "PYTHONIOENCODING")}
+        saida = subprocess.run([sys.executable, "-X", "utf8=0", SCRIPT, vault, "montar", "--pasta", "Viagens"],
+                               capture_output=True, env=dict(ambiente, PYTHONIOENCODING="cp1252"))
+        assert saida.returncode == 0, saida.stderr
+        r = json.loads(saida.stdout.decode("utf-8"))
+        assert r["grupos"][0]["notas"] == ["Viagens/Ação.md"], r
+        assert [f["nota"] for f in r["fora"]] == [nfd], r
+
+
 if __name__ == "__main__":
     for nome, funcao in sorted(globals().items()):
         if nome.startswith("test_") and callable(funcao):
