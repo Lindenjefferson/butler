@@ -10,11 +10,13 @@ Subcomandos (`python proposta.py <vault> <subcomando>`), todos imprimem JSON:
   digital (sha256 do conteúdo) de cada nota dos grupos. Imprime `{"id", "pasta", "grupos": [{"id", "saida"}]}`;
   `saida` é o caminho que vai no prompt do subagente do grupo.
 - `consolidar --id <id>`: lê os `g*.json`, junta por destino e grava `itens`. Imprime
-  `{"itens": N, "blocos": M, "faltam_grupos": [...], "avisos": [...], "refeitos": [n...], "bloqueados": [n...]}`.
-  Refazer mantém o número e o estado dos itens que continuam (mesmo tipo e destino); item novo ganha o próximo
-  número. Item `aprovado` ou `bloqueado` cujas origens, operações ou detalhes mudaram volta a `pendente` e vem em
-  `refeitos` (o ok era para o item como ele era). Item `aplicado` ou `recusado` fica com as origens que tinha: origem
-  nova no mesmo destino vira item novo. Item aberto que depende de um recusado ou bloqueado vem em `bloqueados`.
+  `{"itens": N, "blocos": M, "faltam_grupos": [...], "avisos": [...], "refeitos": [n...], "mudaram": [n...],
+  "bloqueados": [n...]}`. Refazer mantém o número e o estado dos itens que continuam (mesmo tipo e destino); item
+  novo ganha o próximo número. Item aberto que continua e cujas origens, operações ou detalhes mudaram vem em
+  `mudaram`, em qualquer estado (um `pendente` que absorveu um item refeito também: o dono não viu o item como
+  ficou); se estava `aprovado` ou `bloqueado`, volta a `pendente` e vem também em `refeitos`. Item `aplicado` ou
+  `recusado` fica como estava, mesmo sem entrada no `g*.json`: origem nova no mesmo destino vira item novo. Item
+  aberto que depende de um recusado ou bloqueado vem em `bloqueados`.
   Avisos de entrada ignorada: `alvo_vazio: <nota>` (`linha` ou `fundir` sem alvo), `fundir_em_si: <nota>` e
   `linha_em_si: <nota>` (a lista seria apagada depois de ganhar a linha).
 - `bloco --id <id> --n <N>`: os itens do bloco N (até 10).
@@ -349,8 +351,12 @@ def consolidar(vault, args):
     antigos = {(i["tipo"], norm(i["destino"]), i["n"] if i["estado"] in FECHADOS else 0): i
                for i in proposta.get("itens", [])}
     proximo = max((i["n"] for i in antigos.values()), default=0) + 1
-    itens, refeitos = [], []
+    # item fechado fica como estava, com ou sem entrada no g*.json: o registro do que foi feito ou recusado
+    itens = [i for i in antigos.values() if i["estado"] in FECHADOS]
+    refeitos, mudaram = [], []
     for chave in chaves:
+        if chave in antigos and antigos[chave]["estado"] in FECHADOS:
+            continue
         if chave in antigos:
             n = antigos[chave]["n"]
         else:
@@ -378,14 +384,16 @@ def consolidar(vault, args):
             "links_de_entrada": {o: sorted(x for x in links.get(norm(stem(o)), ()) if x != o) for o in some},
             "avisos": avisos_item, "detalhes": item["detalhes"],
             "estado": antigos[chave]["estado"] if chave in antigos else "pendente"}
-        if novo["estado"] in ("aprovado", "bloqueado") and mudou_o_item(antigos[chave], novo):
-            # o ok valia para o item como ele era: refeito, ajustado ou com origem nova, volta a pendente
-            novo["estado"] = "pendente"
-            refeitos.append(n)
+        if chave in antigos and mudou_o_item(antigos[chave], novo):
+            # o dono viu (e talvez aprovou) o item como ele era: refeito, ajustado ou com origem nova, pede novo ok
+            mudaram.append(n)
+            if novo["estado"] in ("aprovado", "bloqueado"):
+                novo["estado"] = "pendente"
+                refeitos.append(n)
         itens.append(novo)
         if destino not in proposta["digitais"]:
             proposta["digitais"][destino] = digital(vault, destino)
-    for item in itens:
+    for item in [i for i in itens if i["estado"] not in FECHADOS]:
         item["depende_de"] = [o["n"] for o in itens if o is not item and o["tipo"] in CRIAM
                               and norm(o["destino"]) == norm(item["destino"])
                               and ORDEM[o["tipo"]] < ORDEM[item["tipo"]]]
@@ -394,7 +402,8 @@ def consolidar(vault, args):
     proposta["itens"], proposta["temas"] = itens, temas
     gravar_json(os.path.join(pasta, "proposta.json"), proposta)
     return {"itens": len(itens), "blocos": -(-len(itens) // BLOCO), "faltam_grupos": faltam, "avisos": avisos,
-            "refeitos": sorted(n for n in refeitos if n not in bloqueados), "bloqueados": bloqueados}
+            "refeitos": sorted(n for n in refeitos if n not in bloqueados), "mudaram": sorted(mudaram),
+            "bloqueados": bloqueados}
 
 
 def mudou_o_item(antigo, novo):

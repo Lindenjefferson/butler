@@ -564,6 +564,61 @@ def test_item_novo_que_depende_de_recusado_nasce_bloqueado():
         c.fechar()
 
 
+def test_refazer_que_junta_em_pendente_aparece_em_mudaram():
+    """Item pendente que absorve um item refeito vem em `mudaram`: o dono nunca viu o item como ficou."""
+    c = Caso()
+    try:
+        c.escrever("L/Lista.md", "# Lista\n")
+        c.escrever("L/C.md")
+        c.escrever("L/D.md")
+        r = c.iniciar([["L/C.md"], ["L/D.md"]])
+        c.responder(r["grupos"][0]["saida"], "g1", [item("L/C.md", "linha", "Lista", "- C")])
+        c.responder(r["grupos"][1]["saida"], "g2", [item("L/D.md", "descartar", "")])
+        s = c.rodar("consolidar", "--id", r["id"])
+        assert s["mudaram"] == [], s
+        itens = c.proposta(r["id"])["itens"]
+        lista = por_destino(itens, "L/Lista.md")["n"]
+        descarte = por_destino(itens, "L/D.md")["n"]
+        assert c.rodar("consolidar", "--id", r["id"])["mudaram"] == []
+        # D refeito cai na lista, que continua pendente; o número do descarte some
+        c.responder(r["grupos"][1]["saida"], "g2", [item("L/D.md", "linha", "Lista", "- D")])
+        s = c.rodar("consolidar", "--id", r["id"])
+        itens = c.proposta(r["id"])["itens"]
+        it = por_destino(itens, "L/Lista.md")
+        assert it["origens"] == ["L/C.md", "L/D.md"] and it["estado"] == "pendente", it
+        assert descarte not in [i["n"] for i in itens], itens
+        assert s["mudaram"] == [lista] and s["refeitos"] == [], s
+    finally:
+        c.fechar()
+
+
+def test_item_fechado_sem_entrada_continua_nos_itens():
+    """Item aplicado ou recusado cuja entrada some do g*.json fica nos itens como estava."""
+    c = Caso()
+    try:
+        c.escrever("L/Lista.md", "# Lista\n")
+        c.escrever("L/C.md")
+        c.escrever("L/D.md")
+        r = c.iniciar([["L/C.md"], ["L/D.md"]])
+        c.responder(r["grupos"][0]["saida"], "g1", [item("L/C.md", "linha", "Lista", "- C")])
+        c.responder(r["grupos"][1]["saida"], "g2", [item("L/D.md", "descartar", "")])
+        c.rodar("consolidar", "--id", r["id"])
+        antes = c.proposta(r["id"])["itens"]
+        lista = por_destino(antes, "L/Lista.md")["n"]
+        descarte = por_destino(antes, "L/D.md")["n"]
+        c.rodar("marcar", "--id", r["id"], "--itens", str(lista), "--estado", "aprovado")
+        c.rodar("marcar", "--id", r["id"], "--itens", str(lista), "--estado", "aplicado")
+        c.rodar("marcar", "--id", r["id"], "--itens", str(descarte), "--estado", "recusado")
+        fechados = {i["n"]: i for i in c.proposta(r["id"])["itens"]}
+        c.responder(r["grupos"][0]["saida"], "g1", [])
+        c.responder(r["grupos"][1]["saida"], "g2", [])
+        s = c.rodar("consolidar", "--id", r["id"])
+        depois = {i["n"]: i for i in c.proposta(r["id"])["itens"]}
+        assert depois == fechados and s["itens"] == 2 and s["mudaram"] == [], (depois, s)
+    finally:
+        c.fechar()
+
+
 def test_linha_em_si_rejeitada():
     """Uma lista proposta como linha dela mesma seria apagada depois de ganhar a linha."""
     c = Caso()
