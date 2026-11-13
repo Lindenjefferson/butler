@@ -40,7 +40,7 @@ A pasta de trabalho, fora do vault, é a `pasta` do `P listar` (`<pasta de estad
 
 `P iniciar --alvo <alvo.json> --rotulo "explorar: <alvo>"`. Guarde o `id`.
 
-Um subagente `general-purpose` por grupo, em ondas de até 5 lançadas na mesma mensagem, com o prompt de `${CLAUDE_PLUGIN_ROOT}/skills/explorar/references/subagente.md` preenchido: os caminhos do grupo, o do `CLAUDE.md`, o da nota de regras e o dos perfis que o vault tiver para o tema; uma lista do vault (nota de um item por linha), de preferência perto do alvo, como molde de linha; os títulos do resto do alvo; o trecho do `resultado.json` só com os links do grupo; a `saida` do grupo; e o caminho do `proposta.py` (o formato do `g*.json` está na docstring dele). Cada um grava o JSON e devolve uma linha.
+Um subagente `general-purpose` por grupo, em ondas de até 5 lançadas na mesma mensagem, com o prompt de `${CLAUDE_PLUGIN_ROOT}/skills/explorar/references/subagente.md` preenchido: os caminhos do grupo, o do `CLAUDE.md`, o da nota de regras e o dos perfis que o vault tiver para o tema; uma lista do vault (nota de um item por linha), de preferência perto do alvo, como molde de linha; os títulos do resto do alvo; o trecho do `resultado.json` só com os links do grupo; a `saida` do grupo; o caminho do `proposta.py` (o formato do `g*.json` está na docstring dele); e o de `${CLAUDE_PLUGIN_ROOT}/skills/redigir/SKILL.md`, para a forma do texto. Cada um grava o JSON e devolve uma linha.
 
 ## 5. Consolidar (§4)
 

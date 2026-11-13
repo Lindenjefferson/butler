@@ -19,7 +19,7 @@ Pedido que altera a nota segue o `butler:gerente` (preâmbulo, paradas, pontos, 
 
 ## Criar
 
-- Escreva a nota inteira com a estrutura que julgar melhor, depois de ler duas ou três notas de projeto do vault, e diga em uma linha qual escolheu e em quais se baseou.
+- Escreva a nota inteira com a estrutura que julgar melhor, depois de ler duas ou três notas de projeto do vault, e diga em uma linha qual escolheu e em quais se baseou. A forma do texto é a da skill `butler:redigir`.
 - Nasce no Inbox, como toda nota nova. A exceção é a promoção de uma ideia (skill `butler:ideia`), que cria a nota direto na pasta de projetos.
 
 ## Atualizar

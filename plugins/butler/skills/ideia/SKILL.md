@@ -24,7 +24,7 @@ Formato livre. Leia a nota, o estágio, as outras notas da ideia (a subpasta del
 ## Como as paradas se aplicam
 
 - **Acrescentar uma seção** (pesquisa, funcionalidades, casos difíceis) segue direto.
-- **Reorganizar, enxugar ou reescrever** a nota mostra a proposta antes.
+- **Reorganizar, enxugar ou reescrever** a nota mostra a proposta antes. A forma do texto é a da skill `butler:redigir`.
 - **Tirar algo da ideia:** quando o usuário mandar remover uma funcionalidade, ela sai da nota e das menções, sem registro de que saiu (rotina de remover do gerente).
 - **Pesquisa longa** vai para a nota irmã "<título> - Pesquisa", como o modelo prevê, nascida ao lado da ideia, não no Inbox. Como a ideia passa a ter mais de uma nota, o `CLAUDE.md` pede uma subpasta: criar a subpasta e mover a nota original para ela mostra antes (use `B renomear`, para os links seguirem).
 

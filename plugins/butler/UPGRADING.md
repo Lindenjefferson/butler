@@ -2,6 +2,17 @@
 
 O que cada versão entregou e o que muda para quem atualiza. O arquivo vai junto com cada versão instalada: a skill `atualizar` lê o **Ao atualizar** de cada versão pulada, da mais antiga para a mais nova. Termine o pedido em andamento no vault antes de atualizar (a skill `atualizar` confere). As ideias que ainda não viraram versão estão no [roadmap](../../docs/roadmap.md). O que é major, minor e patch está no [`CLAUDE.md`](../../CLAUDE.md).
 
+## 0.9.0 — skill `redigir`: a forma do texto, para quem lê
+
+Pedido do dono: depois de enxugar várias notas do vault em listas por tema, pediu uma skill de texto com foco em quem lê a nota — mais listas com subitens, menos texto corrido sem tópicos — que as outras skills seguissem e que também atendesse o pedido de melhorar uma nota que já existe.
+
+- **Skill nova `redigir`:** diz a forma do texto de uma nota de formato livre (o que importa primeiro, títulos curtos, mesma ordem de seções entre notas do mesmo tipo, lista com subitens no lugar de parágrafo corrido, item curto de lista temática, fonte como link, sem data de alteração no texto), quando **não** usar lista (passo a passo, tabela, frase de abertura, raciocínio encadeado, citação, nota protegida ou de formato rígido) e como a trilha de garimpo vira texto direto na nota final. Traz dois exemplos de antes e depois.
+- **Pedido direto** ("melhora a leitura da nota X", "deixa essa nota mais em tópicos"): é Reforma. A proposta é escrita fora do vault, conferida, mostrada, e só vira nota com o sim. Só a forma muda: o que parecer errado na nota vira pergunta, e renomear, dividir ou unir fica para outro pedido.
+- **`conferir_dados.py`, com teste:** compara a nota e a proposta e aponta o link, o wikilink, o número e o trecho de código que sumiram ou que apareceram. É a checagem de "nenhum dado se perde e nenhum aparece" que dá para fazer sem um modelo; nome, frase e ressalva continuam conferidos na leitura.
+- **As outras skills apontam para ela, com uma linha cada:** `gerente` (escrever e reestruturar nota de formato livre, e a lista de skills por assunto), `garimpo` (o texto dentro das seções da nota do Inbox; a trilha continua lá), `triagem`, `fichar` e `fundir` (a nota de garimpo que sai do Inbox, ou vira seção, fica na forma final, sem a trilha), `ideia`, `projeto` e `explorar` (o que os subagentes propõem já sai na forma final).
+
+**Ao atualizar:** nada muda nas notas que já existem: nenhuma é reformatada sozinha, só por pedido e com a proposta aprovada. Da próxima triagem em diante, a nota de garimpo que sai do Inbox (movida, fundida ou fichada como seção) perde a trilha da pesquisa ("Vale investigar?", "Confiança geral", as etiquetas de confiança) e guarda os dados e os links; a nota que fica no Inbox continua com a trilha. Se o `CLAUDE.md` do seu vault pedir outra forma de texto, vale ele.
+
 ## 0.8.0 — explorar: enxugar e organizar um pedaço já triado
 
 Pedido do dono: o `triagem` só cuida do Inbox; faltava uma rotina para voltar a um pedaço do vault já triado (uma pasta, algumas notas ou um tema), pesquisar mais sobre cada nota e propor como enxugar e organizar.

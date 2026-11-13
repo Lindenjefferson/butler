@@ -84,6 +84,7 @@ O vault precisa de um `CLAUDE.md` na raiz com as regras dele (pastas, frontmatte
 | [`fundir`](plugins/butler/skills/fundir/SKILL.md) | Chamada pela triagem: decide, com o usuário, se uma nota do Inbox entra como seção nova numa nota já existente do mesmo assunto (achada por busca, não declarada) |
 | [`pendencias`](plugins/butler/skills/pendencias/SKILL.md) | Guarda o que ficou para depois e responde o que está pendente |
 | [`consultar`](plugins/butler/skills/consultar/SKILL.md) | Responde "o que eu sei sobre X?" com os links das notas; só lê |
+| [`redigir`](plugins/butler/skills/redigir/SKILL.md) | A forma do texto das notas, para quem lê: guia das outras skills e pedido direto de "melhora a leitura da nota X", com proposta antes e conferência de que nenhum dado saiu |
 | [`projeto`](plugins/butler/skills/projeto/SKILL.md) | Cria ou atualiza a nota curta de um projeto a partir do repositório dele |
 | [`ideia`](plugins/butler/skills/ideia/SKILL.md) | Desenvolve uma nota de ideia: pesquisa, funcionalidades, furos, veredito, promoção a projeto |
 | [`ideia-para-inbox`](plugins/butler/skills/ideia-para-inbox/SKILL.md) | Grava uma ideia curta (texto ou áudio transcrito) como nota nova no Inbox, sem pesquisar; feita para um serviço chamar, como um bot |

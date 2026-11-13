@@ -24,7 +24,7 @@ A triagem passa para cá toda nota do Inbox que tiver o campo de relacionada (o 
 ## Propor
 
 1. Leia a nota apontada por `relacionada` e a nota do Inbox inteiras.
-2. Monte a proposta: qual seção a nota do Inbox viraria (o título dela, sem o "Conteúdo original"/"Aprofundamento" como títulos — adapte ao estilo da nota de destino) e onde ela entraria (fim da nota, ou perto de uma seção parecida, se houver).
+2. Monte a proposta: qual seção a nota do Inbox viraria (o título dela, sem o "Conteúdo original"/"Aprofundamento" como títulos — adapte ao estilo da nota de destino, na forma da skill `butler:redigir`, sem a trilha de garimpo) e onde ela entraria (fim da nota, ou perto de uma seção parecida, se houver).
 3. `B duvida --token <token> --pergunta "Unir '<nota do Inbox>' com '<nota relacionada>'?" --proposta "<resumo da seção que entraria>" --nota "<nota do Inbox>"`.
 4. Se a nota do Inbox também precisar de uma subpasta nova para ficar separada (um projeto que passa a ter duas notas, por exemplo), isso entra na mesma dúvida, como a triagem já faz.
 
@@ -34,7 +34,7 @@ Só roda quando o usuário já respondeu que sim, nesta dúvida específica (nun
 
 1. **Conferir antes de tocar:** `B conferir "<nota relacionada>"`, como todo toque do gerente. Nota protegida ou de formato rígido: siga a regra dela à risca; nota de formato livre, mantenha o estilo que ela já tem.
 2. **Reler a nota relacionada logo antes de escrever.** Mudou desde que você leu: releia e funda sobre o texto novo.
-3. **Escrever a seção nova**, no fim da nota ou perto de uma seção parecida, com o conteúdo inteiro da nota do Inbox (não um resumo de uma linha — isso é o que diferencia de `butler:fichar`). Sem data no texto, se o `CLAUDE.md` pedir assim: atualize só o `updated`. Acrescente a URL de origem ao `source` da nota relacionada (vira lista), se ainda não estiver lá.
+3. **Escrever a seção nova**, no fim da nota ou perto de uma seção parecida, com o conteúdo inteiro da nota do Inbox (não um resumo de uma linha — isso é o que diferencia de `butler:fichar`), na forma da skill `butler:redigir`: a trilha de garimpo sai, os dados e os links ficam. Sem data no texto, se o `CLAUDE.md` pedir assim: atualize só o `updated`. Acrescente a URL de origem ao `source` da nota relacionada (vira lista), se ainda não estiver lá.
 4. **Apagar a nota do Inbox.** O conteúdo dela já está, inteiro, na seção nova — não é perda de informação, é o fim esperado da fusão que o usuário acabou de confirmar.
 5. **Registro de links**, se a nota do Inbox vier de um link: o destino da linha passa a ser o título da nota relacionada, status conforme a regra da nota do registro para "movida/unida".
 
