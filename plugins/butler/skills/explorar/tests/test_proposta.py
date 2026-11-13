@@ -416,6 +416,23 @@ def test_listar_e_remover():
         c.fechar()
 
 
+def test_aprovado_volta_a_pendente():
+    c = Caso()
+    try:
+        c.escrever("Viagens/A.md")
+        r = c.iniciar([["Viagens/A.md"]])
+        c.responder(r["grupos"][0]["saida"], "g1", [item("Viagens/A.md", "descartar", "")])
+        c.rodar("consolidar", "--id", r["id"])
+        c.rodar("marcar", "--id", r["id"], "--itens", "1", "--estado", "aprovado")
+        assert c.rodar("listar")["propostas"][0]["aprovados"] == 1
+        c.rodar("marcar", "--id", r["id"], "--itens", "1", "--estado", "pendente")
+        assert c.proposta(r["id"])["itens"][0]["estado"] == "pendente"
+        lista = c.rodar("listar")["propostas"][0]
+        assert lista["aprovados"] == 0 and lista["pendentes"] == 1, lista
+    finally:
+        c.fechar()
+
+
 if __name__ == "__main__":
     falhas = []
     for nome, funcao in sorted(globals().items()):

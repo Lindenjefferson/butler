@@ -14,7 +14,8 @@ Subcomandos (`python proposta.py <vault> <subcomando>`), todos imprimem JSON:
   itens que continuam (mesmo tipo e destino); item novo ganha o próximo número. Avisos de entrada ignorada:
   `alvo_vazio: <nota>` (`linha` ou `fundir` sem alvo) e `fundir_em_si: <nota>`.
 - `bloco --id <id> --n <N>`: os itens do bloco N (até 10).
-- `marcar --id <id> --itens 1,3 --estado aprovado|aplicado|recusado`: recusar marca como `bloqueado` os itens
+- `marcar --id <id> --itens 1,3 --estado pendente|aprovado|aplicado|recusado`: `pendente` devolve ao
+  estado inicial um item refeito que já estava aprovado (só se aplica depois de um novo ok); recusar marca como `bloqueado` os itens
   pendentes ou aprovados que dependem dele (em cadeia).
 - `conferir --id <id> [--itens 1,3]`: recalcula as digitais das origens e dos destinos de cada item;
   `{"mudou": [n...], "ok": [n...]}`. Item que mudou não se aplica: a sessão refaz só ele e chama `redigitar`.
@@ -486,7 +487,7 @@ def main():
     s = sub.add_parser("marcar")
     s.add_argument("--id", required=True)
     s.add_argument("--itens", required=True)
-    s.add_argument("--estado", required=True, choices=["aprovado", "aplicado", "recusado"])
+    s.add_argument("--estado", required=True, choices=["pendente", "aprovado", "aplicado", "recusado"])
     s = sub.add_parser("conferir")
     s.add_argument("--id", required=True)
     s.add_argument("--itens")

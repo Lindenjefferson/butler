@@ -6,6 +6,7 @@ Toda ideia passa pelo filtro do [`CLAUDE.md`](../CLAUDE.md) e termina numa desta
 
 ## Não triadas
 
+- **Wingman mostra propostas pendentes do `explorar`** (design do `explorar`): o `P listar` já devolve as propostas abertas (rótulo, itens pendentes e aprovados); falta o painel do Wingman lê-las, como lê o `estado.json`. Esforço: P.
 - **"Pedido explícito já é o aval" sem canal nem identidade** (revisão do Fable, mesma rodada de "modo sem supervisão" abaixo, pensando em uso autônomo tipo o plugin de pé num Duet/bot): o gerente (§4) dispensa a parada quando o pedido nomeia o dado, pensado para o dono corrigindo na hora. Num bot (Telegram, por exemplo), qualquer mensagem que chegar é "o usuário nesta conversa" — não há como distinguir um pedido do dono de um encaminhado ou de outra pessoa no grupo. Precisa de um modo declarado com lista fechada do que pode rodar sem parada nesse canal, e isso é desenho de política (quem pode pedir o quê, por qual canal), não checagem de script — é decisão do dono antes de entrar no Backlog. Esforço: G.
 - **`fila` não guarda por quanto tempo o Instagram bloqueou** (mesma revisão, achado menor): um agendador que chamar "próximo lote" bate de novo assim que for pedido, mesmo logo depois de um bloqueio. Agora que existe o diário de pedidos (`lib/diario.py`, 0.7.0), guardar um `bloqueado_ate` ali e o `fila.py` recusar antes dessa hora é mecânico — falta só decidir o formato do evento. Esforço: P.
 

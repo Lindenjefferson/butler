@@ -56,7 +56,7 @@ O usuário responde "aplica tudo", "aplica 1, 3 e 5", "tudo menos o 4" ou ajusta
 
 1. `P marcar --id <id> --itens <...> --estado recusado` para o que ele recusou. Os dependentes de um recusado ficam `bloqueado`.
 2. Preâmbulo do gerente com o rótulo `explorar: <alvo> (bloco N)`. `regras_mudaram`: releia as regras e confira contra elas os itens aceitos.
-3. `P conferir --id <id> --itens <n...>` com os aceitos e os `aprovado` que esperavam. Item em `mudou` não se aplica agora, nem no passo 5 (o aceito neste bloco continua `pendente`): releia as notas, refaça só ele (como no ajuste), rode `P redigitar --id <id> --itens <n>` e mostre-o de novo depois deste bloco.
+3. `P conferir --id <id> --itens <n...>` com **todos os `aprovado`** da proposta e os aceitos agora. Item em `mudou` não se aplica agora, nem no passo 5: releia as notas, refaça só ele (como no ajuste), rode `P redigitar --id <id> --itens <n>`, marque-o de volta `pendente` (`P marcar --estado pendente`) para só se aplicar depois de um novo ok, e mostre-o de novo depois deste bloco.
 4. `P marcar --id <id> --itens <os do ok> --estado aprovado`.
 5. Aplique cada item `aprovado` da proposta (deste bloco ou de um anterior) cujo `depende_de` esteja todo `aplicado`; o número e a posição no bloco não garantem a ordem, então repita até não sobrar nenhum pronto. O que espera quem cria o destino num bloco seguinte fica `aprovado` e entra no resumo como "esperando o bloco N". Item por item, o plano é exatamente as `operacoes` dele:
    - `B conferir` em cada nota antes de tocar.

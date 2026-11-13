@@ -158,4 +158,4 @@ Chamado pelo nome, `$ARGUMENTS` traz a rotina e a nota (`arquiva <nota>`, `revis
 
 ## 11. Pedidos que outras skills conduzem
 
-Use a skill do assunto, que roda este preâmbulo e estas paradas: `butler:triagem` (triar o Inbox), `butler:garimpo` (guardar links), `butler:pendencias` (o que ficou para depois), `butler:projeto` (nota de um projeto de código), `butler:ideia` (desenvolver uma ideia), `butler:programas` (inventário de programas da máquina), `butler:preparar` (preparar o vault ou refazer o que falta).
+Use a skill do assunto, que roda este preâmbulo e estas paradas: `butler:triagem` (triar o Inbox), `butler:garimpo` (guardar links), `butler:pendencias` (o que ficou para depois), `butler:projeto` (nota de um projeto de código), `butler:ideia` (desenvolver uma ideia), `butler:explorar` (enxugar e organizar um pedaço já triado), `butler:programas` (inventário de programas da máquina), `butler:preparar` (preparar o vault ou refazer o que falta).
