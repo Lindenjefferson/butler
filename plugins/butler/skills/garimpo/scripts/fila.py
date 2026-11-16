@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 """Compara uma fila declarada de links contra o registro de links e devolve o próximo lote.
 
-A fila é uma nota do vault com um ou mais blocos `### <nome> (<N> itens)`, cada um seguido de uma
-linha por item: `<código>\t<url>` (código e URL separados por tab) ou só `<url>`. É o formato que a
-exportação dos "Salvos" do Instagram já usa, lido por fora deste script e colado numa nota; este
-script não baixa nem lê nenhuma exportação, só compara o que já está declarado contra o que já foi
-processado.
+A fila é uma nota do vault com um ou mais blocos `### <nome> (<N> itens)` (ou `<N> links`; qualquer
+texto depois da contagem, como `— compartilhada` ou `, desde 2023`, é ignorado e não entra no nome),
+cada um seguido de uma
+linha por item: `<código>\t<url>` (código e URL separados por tab) ou só `<url>`, com ou sem marcador
+de lista (`- `) e com ou sem um prefixo antes da URL (ex.: uma data, `- AAAA-MM-DD — <url>`). É o
+formato que a exportação dos "Salvos" do Instagram já usa, lido por fora deste script e colado numa
+nota; este script não baixa nem lê nenhuma exportação, só compara o que já está declarado contra o
+que já foi processado.
 
 Pendente é todo item cujo código (ou, sem código, a URL inteira) não aparece em nenhuma linha do
 registro de links (`--registro`, o caminho da nota de registro; qualquer status conta como "já visto",
@@ -51,7 +54,7 @@ def ler_fila(texto):
     blocos = []
     bloco_atual = None
     for linha in texto.splitlines():
-        titulo = re.match(r"^###\s+(.+?)\s*\(\d+\s+itens?\)\s*$", linha)
+        titulo = re.match(r"^###\s+(.+?)\s*\(\d+\s+(?:itens?|links?)\b", linha)
         if titulo:
             bloco_atual = {"nome": titulo.group(1).strip(), "itens": []}
             blocos.append(bloco_atual)
@@ -63,11 +66,14 @@ def ler_fila(texto):
             continue
         if bloco_atual is None:
             continue
-        partes = linha.split("\t")
+        linha_sem_marcador = re.sub(r"^\s*-\s*", "", linha).strip()
+        partes = linha_sem_marcador.split("\t")
         if len(partes) >= 2 and partes[1].strip():
             bloco_atual["itens"].append((partes[0].strip(), partes[1].strip()))
-        elif len(partes) == 1 and re.match(r"^https?://", partes[0].strip()):
-            bloco_atual["itens"].append((None, partes[0].strip()))
+        elif len(partes) == 1:
+            m = re.search(r"(https?://\S+)", partes[0])
+            if m:
+                bloco_atual["itens"].append((None, m.group(1)))
     return blocos
 
 

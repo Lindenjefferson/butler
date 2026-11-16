@@ -121,6 +121,24 @@ def test_progresso_traz_totais_por_bloco():
         assert r["progresso"]["total_registrado"] == 2
 
 
+def test_formato_tolerante_aceita_links_marcador_e_prefixo_antes_da_url():
+    with tempfile.TemporaryDirectory() as vault:
+        os.makedirs(os.path.join(vault, "Sistema"), exist_ok=True)
+        fila = (
+            "### Compartilhados (2 links — compartilhada)\n"
+            "- 2026-11-14 — https://www.instagram.com/reel/GGG777/\n"
+            "- https://www.instagram.com/reel/HHH888/\n"
+        )
+        with open(os.path.join(vault, "Fila.md"), "w", encoding="utf-8") as f:
+            f.write(fila)
+        r = rodar(vault, "--fila", "Fila.md")
+        assert r["bloco"] == "Compartilhados", r
+        assert r["urls"] == [
+            "https://www.instagram.com/reel/GGG777/",
+            "https://www.instagram.com/reel/HHH888/",
+        ], r
+
+
 if __name__ == "__main__":
     test_escolhe_o_bloco_com_menos_pendente_primeiro()
     test_item_ja_no_registro_nao_entra_no_lote()
@@ -130,4 +148,5 @@ if __name__ == "__main__":
     test_sem_pendente_nenhum_devolve_bloco_nulo()
     test_ordem_arquivo_mantem_a_ordem_declarada()
     test_progresso_traz_totais_por_bloco()
+    test_formato_tolerante_aceita_links_marcador_e_prefixo_antes_da_url()
     print("ALL PASS")
