@@ -17,7 +17,7 @@ fim de um Lote, guardadas aqui para não se perderem numa compactação).
   solta, e o próximo `inicio` da mesma sessão a toma.
 - Trava ilegível (a sessão caiu no meio da escrita) conta como ocupada, com `corrompida: true`.
 
-`trava.json` é a fonte. O `estado.json` repete a trava para o Wingman, regravado a cada mudança dela.
+`trava.json` é a fonte. O `estado.json` repete a trava para o painel, regravado a cada mudança dela.
 """
 import datetime
 import json
@@ -63,7 +63,7 @@ def ler(pasta):
 
 
 def _repetir(funcao, *args):
-    """No Windows, um leitor com o arquivo aberto (o Wingman lendo a trava) faz `replace` e `remove` falharem por
+    """No Windows, um leitor com o arquivo aberto (o painel lendo a trava) faz `replace` e `remove` falharem por
     um instante: tenta de novo por até 2 s."""
     for tentativa in range(10):
         try:
@@ -86,7 +86,7 @@ def _escrever(pasta, dados):
 
 
 def descrever(trava):
-    """A trava sem o token, com a idade em minutos: o que se mostra a outra sessão e ao Wingman."""
+    """A trava sem o token, com a idade em minutos: o que se mostra a outra sessão e ao painel."""
     if trava is None:
         return None
     publica = {chave: valor for chave, valor in trava.items() if chave != "token"}

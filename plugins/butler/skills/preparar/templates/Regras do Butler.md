@@ -25,9 +25,9 @@ O formato destas notas vem de uma regra (no `CLAUDE.md` ou na própria nota). O 
 
 - `<pasta>/*.md` — <onde está a regra>
 
-## Escritas toleradas do Wingman
+## Escritas toleradas do painel
 
-As únicas escritas do Wingman no vault, todas só acréscimo ou pedido explícito por clique. Esperam a trava do Butler sair e entram no histórico como mudanças de fora. Qualquer outra escrita do Wingman no vault é proibida.
+As únicas escritas do painel no vault, todas só acréscimo ou pedido explícito por clique. Esperam a trava do Butler sair e entram no histórico como mudanças de fora. Qualquer outra escrita do painel no vault é proibida.
 
 - `<pasta do Inbox>/` — criar uma nota nova pela Captura rápida
 - `<nota de pendências>` — acrescentar uma linha

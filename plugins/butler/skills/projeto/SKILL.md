@@ -1,6 +1,6 @@
 ---
 name: projeto
-description: Cria ou atualiza, num vault do Butler, a nota curta de um projeto de código a partir do repositório dele (README, versão, dados do GitHub), e responde quais notas de projeto estão defasadas. Use quando o usuário pedir "atualiza a nota do projeto X", "cria a nota do projeto Y", "quais projetos estão desatualizados no vault?", ou quando o Wingman chamar `/butler:projeto <nota>`.
+description: Cria ou atualiza, num vault do Butler, a nota curta de um projeto de código a partir do repositório dele (README, versão, dados do GitHub), e responde quais notas de projeto estão defasadas. Use quando o usuário pedir "atualiza a nota do projeto X", "cria a nota do projeto Y", "quais projetos estão desatualizados no vault?", ou quando o painel chamar `/butler:projeto <nota>`.
 ---
 
 # Nota de projeto

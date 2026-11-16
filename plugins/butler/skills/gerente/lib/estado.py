@@ -1,4 +1,4 @@
-"""O `estado.json`, que o Wingman (ou qualquer outro painel) lê para mostrar o vault sem ler o terminal.
+"""O `estado.json`, que um painel externo lê para mostrar o vault sem ler o terminal.
 
 Fica na pasta de estado do vault (a do histórico, achada pela configuração da máquina), nunca dentro do vault. Não
 guarda conteúdo de nota nem dado sensível: só caminhos, títulos, vereditos e classificações. É regravado por

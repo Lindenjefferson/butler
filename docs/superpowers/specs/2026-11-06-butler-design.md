@@ -1,11 +1,11 @@
 # Butler — design
 
-> Documento histórico de design, escrito antes da primeira versão existir. Fica aqui como registro do processo (as decisões e por quê), não como documentação de uso — para isso, veja o [README](../../../README.md). Nomes de projetos e de ferramentas pessoais do dono foram tirados ou generalizados antes da publicação; o que ficou (como "Wingman", o painel que o dono descreve construindo) é parte do próprio design, não dado sensível.
+> Documento histórico de design, escrito antes da primeira versão existir. Fica aqui como registro do processo (as decisões e por quê), não como documentação de uso — para isso, veja o [README](../../../README.md). Nomes de projetos e de ferramentas pessoais do dono foram tirados ou generalizados antes da publicação; o que ficou (como um painel externo que o dono descreve construindo) é parte do próprio design, não dado sensível.
 
 Plugin do Claude Code que dá um gerente ao vault do Obsidian do dono.
 
 - **Data:** 2026-11-06
-- **Estado:** design fechado com as respostas do dono e, em 2026-11-06, integrado ao Wingman, o painel que vai chamar o Butler (seção 7.10). Passou por um revisor de construção, por uma checagem final, por uma revisão independente do documento inteiro e, no fim do mesmo dia, por uma revisão de coerência que separou a skill `colheita` do garimpo (seção 7.11) e fixou a independência entre o Butler e o Wingman. A integração ao Wingman e a colheita aguardam a leitura e a aprovação do dono. Nada foi construído. (superado por: a primeira versão foi construída em 2026-11-07, e no mesmo dia o dono pediu que a colheita entrasse nela, com as listas declaradas na nota de regras e o status `colhido`; seção 7.11)
+- **Estado:** design fechado com as respostas do dono e, em 2026-11-06, integrado a um painel externo que vai chamar o Butler (seção 7.10). Passou por um revisor de construção, por uma checagem final, por uma revisão independente do documento inteiro e, no fim do mesmo dia, por uma revisão de coerência que separou a skill `colheita` do garimpo (seção 7.11) e fixou a independência entre o Butler e o painel. A integração ao painel e a colheita aguardam a leitura e a aprovação do dono. Nada foi construído. (superado por: a primeira versão foi construída em 2026-11-07, e no mesmo dia o dono pediu que a colheita entrasse nela, com as listas declaradas na nota de regras e o status `colhido`; seção 7.11)
 - **Vault:** o vault do Obsidian do dono, sincronizado pelo Google Drive (caminho fora deste documento).
 - **Referência de organização:** o Foreman, o plugin de projetos de código do mesmo dono.
 
@@ -22,11 +22,11 @@ Hoje cada ação no vault (garimpar um link, triar o Inbox, atualizar um invent�
 
 O Butler é um gerente para o vault, inspirado no Foreman: mede o pedido, conduz a rotina sozinho, confere o próprio trabalho e só para onde há risco. A diferença para o Foreman é o que está em jogo. Lá o risco é código quebrado, e há merge para segurar. Aqui o risco é perder informação que deu trabalho para juntar, e não há merge: as paradas ficam nas mudanças que podem causar essa perda.
 
-**O Butler é o segundo cérebro de fato; o Wingman é o painel (decisão do dono).** Tudo o que conversa com o vault ou o altera acontece numa sessão do Claude Code com o Butler: a triagem, o garimpo, as ideias, as pendências do vault, as consultas ("o que eu sei sobre X?") e a conversa livre no vault. O Wingman, o app painel que o dono está desenhando, só mostra o que lê dos arquivos Markdown, sem LLM, e dispara as skills do Butler pelo nome numa aba. Ele não escreve no vault, fora de três escritas toleradas. Os dois são independentes: o Butler funciona sozinho, pelo terminal, e o Wingman entra em uso sem o Butler, porque o mod do vault dele é futuro e opcional. A seção 7.10 diz como os dois se encaixam quando esse mod existir.
+**O Butler é o segundo cérebro de fato; o painel só mostra a interface (decisão do dono).** Tudo o que conversa com o vault ou o altera acontece numa sessão do Claude Code com o Butler: a triagem, o garimpo, as ideias, as pendências do vault, as consultas ("o que eu sei sobre X?") e a conversa livre no vault. O painel, o app externo que o dono está desenhando, só mostra o que lê dos arquivos Markdown, sem LLM, e dispara as skills do Butler pelo nome numa aba. Ele não escreve no vault, fora de três escritas toleradas. Os dois são independentes: o Butler funciona sozinho, pelo terminal, e o painel entra em uso sem o Butler, porque o mod do vault dele é futuro e opcional. A seção 7.10 diz como os dois se encaixam quando esse mod existir.
 
 ## 2. Metas
 
-1. **Mesmo pedido, mesmo resultado.** Triagem, garimpo e inventário de programas seguem sempre o mesmo roteiro e entregam o mesmo formato de resumo, chamados pelo dono na conversa ou pelo Wingman pelo nome.
+1. **Mesmo pedido, mesmo resultado.** Triagem, garimpo e inventário de programas seguem sempre o mesmo roteiro e entregam o mesmo formato de resumo, chamados pelo dono na conversa ou pelo painel pelo nome.
 2. **Pedido simples continua simples.** Um pedido, uma resposta. O Butler não acrescenta passo nem pergunta ao que hoje sai direto.
 3. **Parar pelo risco, não pela quantidade.** Mudança que só acrescenta segue sem perguntar. Mudança que pode perder informação, perder sentido ou causar dano é mostrada antes.
 4. **Tudo o que o Butler faz sozinho dá para desfazer, nota por nota,** mesmo dias depois.
@@ -44,8 +44,8 @@ O Butler é um gerente para o vault, inspirado no Foreman: mede o pedido, conduz
 - **Editar o vault pelo celular, pelo ChatGPT ou em outro computador.** Isso continua entrando pelo Inbox.
 - **Um time de agentes como o do Foreman** (dev, revisor, testador). Aqui o gerente trabalha sozinho e confere o próprio trabalho.
 - **Substituir o `CLAUDE.md` do vault.** O Butler obedece a ele.
-- **Ser o painel.** Visão de sessões, contas, projetos e avisos é do Wingman. O Butler entrega o que o painel mostra do vault (seção 7.10), não a tela.
-- **Depender do Wingman.** O Butler nasce e vive no terminal. O Wingman é um chamador a mais, quando existir.
+- **Ser o painel.** Visão de sessões, contas, projetos e avisos é do painel. O Butler entrega o que o painel mostra do vault (seção 7.10), não a tela.
+- **Depender do painel.** O Butler nasce e vive no terminal. O painel é um chamador a mais, quando existir.
 
 ## 4. Anti-metas
 
@@ -92,7 +92,7 @@ O Butler mede o pedido pelo que a mudança faz, não pelo tamanho do texto.
 - **Se o pedido crescer no meio,** o Butler para, diz que cresceu e sobe de tamanho.
 - **Medir para mais é raro,** porque Reforma tem lista fechada de operações. Se acontecer, o dono responde "só faz" e segue.
 
-**Consulta não passa pelo gerente.** Pergunta sobre o que há no vault é respondida direto, sem medir nada. A skill `consultar` (seção 7.9) é essa consulta com nome, para o Wingman chamar.
+**Consulta não passa pelo gerente.** Pergunta sobre o que há no vault é respondida direto, sem medir nada. A skill `consultar` (seção 7.9) é essa consulta com nome, para o painel chamar.
 
 ### 6.2 Onde o Butler para
 
@@ -125,7 +125,7 @@ O Butler mede o pedido pelo que a mudança faz, não pelo tamanho do texto.
 - **Campos derivados que o formato da nota exige** (no histórico do carro: "Última troca de cada item", a referência mais recente, as garantias em vigor) são atualizados junto com a entrada só quando ela é a mais recente, e a resposta mostra o antes e o depois de cada um. Entrada antiga não mexe neles. Tirar um item de uma lista derivada, como uma pendência do carro que foi resolvida, mostra antes.
 - **Preencher um "Não informado"** é acréscimo só em dois casos: pedido explícito do dono, ou a rotina de registrar a partir de um documento (seção 7.8). Vindo de qualquer outro lugar, como um arquivo de atualização escrito por outra IA, é troca e mostra antes: o `CLAUDE.md` proíbe inferir modelo, voltagem, data ou loja.
 
-**Pedido explícito já é o aval (decisão minha).** As paradas existem para o que o Butler decide por conta própria. Quando o dono pede a mudança nomeando o dado ("troca a voltagem da geladeira para 220V", "registra que desinstalei o X"), o pedido é a aprovação: o Butler faz e responde com o antes e o depois. Ele só para se o pedido contradisser um dado confirmado de um jeito que pareça engano, ou se, para cumprir o pedido, precisar mexer em algo que o dono não citou. Um clique do dono num botão do Wingman que nomeia a ação ("feito" numa pendência, "Começar projeto", "Arquivar") é pedido explícito do mesmo jeito (seção 7.10).
+**Pedido explícito já é o aval (decisão minha).** As paradas existem para o que o Butler decide por conta própria. Quando o dono pede a mudança nomeando o dado ("troca a voltagem da geladeira para 220V", "registra que desinstalei o X"), o pedido é a aprovação: o Butler faz e responde com o antes e o depois. Ele só para se o pedido contradisser um dado confirmado de um jeito que pareça engano, ou se, para cumprir o pedido, precisar mexer em algo que o dono não citou. Um clique do dono num botão do painel que nomeia a ação ("feito" numa pendência, "Começar projeto", "Arquivar") é pedido explícito do mesmo jeito (seção 7.10).
 
 **Como o Butler pergunta num Lote (decisão minha):** ele não interrompe a cada nota. A nota com dúvida fica como está, as outras seguem, e as perguntas vêm juntas no fim, cada uma com o que ele faria. É o equivalente à lista a VALIDAR do Foreman. Na triagem, a nota com dúvida simplesmente continua no Inbox, que é a fila da própria triagem. Pergunta de qualquer outro pedido vai para a nota de pendências (seção 7.5) quando o dono seguir para outro assunto sem responder, para não se perder.
 
@@ -173,7 +173,7 @@ O que isso exige:
 - **A pasta do histórico fica fora de qualquer pasta sincronizada ou sujeita a limpeza:** nem Google Drive, nem OneDrive (no Windows, `Documentos` pode estar no OneDrive), nem pasta temporária ou de cache que uma limpeza de disco apague. O `preparar` confere isso antes de criar.
 - **Em máquina sem histórico** (o notebook, hoje), o Butler trabalha no modo da regra de mostrar antes. O que for feito lá chega a este PC pelo Drive e entra como "mudanças de fora".
 - **Sem remoto, nunca.** O Butler não adiciona remoto nem faz push no vault.
-- **Pontos de retorno:** um para as mudanças de fora, antes de começar; e, dentro de um Lote, um por nota concluída, todos com o rótulo do pedido **(decisão minha)**. Se a sessão cair no meio, no máximo uma nota fica pela metade, e o que já foi feito não se confunde com mudança de fora. Dentro do pedido, cada ponto grava só os arquivos que o próprio Butler alterou **(decisão minha)**: uma escrita tolerada do Wingman no meio do pedido (seção 7.10) fica de fora e entra como mudança de fora no pedido seguinte, para não ir junto num "desfaz". O garimpo grava o ponto dele ao terminar (seção 7.3), e esse ponto cobre também o que a `colheita` escreveu dentro do mesmo pedido (seção 7.11).
+- **Pontos de retorno:** um para as mudanças de fora, antes de começar; e, dentro de um Lote, um por nota concluída, todos com o rótulo do pedido **(decisão minha)**. Se a sessão cair no meio, no máximo uma nota fica pela metade, e o que já foi feito não se confunde com mudança de fora. Dentro do pedido, cada ponto grava só os arquivos que o próprio Butler alterou **(decisão minha)**: uma escrita tolerada do painel no meio do pedido (seção 7.10) fica de fora e entra como mudança de fora no pedido seguinte, para não ir junto num "desfaz". O garimpo grava o ponto dele ao terminar (seção 7.3), e esse ponto cobre também o que a `colheita` escreveu dentro do mesmo pedido (seção 7.11).
 - **Um pedido por vez no vault (decisão minha).** A trava cobre o pedido inteiro, não cada comando. Se outra sessão quiser alterar o vault enquanto um pedido está em andamento, ela avisa e espera, ou para. Sem isso, a segunda sessão gravaria como "mudança de fora" metade do trabalho da primeira, e desfazer voltaria só uma parte. Consulta não é travada.
 - **Desfazer por frase:** "desfaz a última triagem", "volta a nota X como estava ontem". O Butler mostra o que vai voltar, espera o sim e restaura. A restauração é um novo ponto de retorno, não apaga histórico. Se a nota mudou depois do ponto para o qual se quer voltar (por outro pedido, ou por fora), desfazer apagaria essa mudança posterior: o Butler mostra as duas versões e pergunta, em vez de sobrescrever. Isso vale em especial para o `Início.md` e para o registro de links, que quase todo pedido toca.
 - **O que não entra no histórico:** as pastas temporárias do Drive e o estado de janela do Obsidian. A lista exata fica com quem construir.
@@ -204,7 +204,7 @@ Como "propor a estrutura" acontece na prática **(decisão do dono para a nota n
 
 - As skills que escrevem no vault por fora do plugin (as skills de cada perfil nos Perfis; `liberar-espaco`, se escrever nas notas de programas) continuam como hoje, sem as paradas do Butler.
 - O que elas mudarem entra no histórico como "mudanças de fora" no pedido seguinte. Então dá para ver e desfazer, mas ninguém mostra antes.
-- As escritas toleradas do Wingman (seção 7.10) ficam de fora das paradas pelo mesmo motivo: são acréscimos ou cliques do dono, e entram no histórico como mudanças de fora.
+- As escritas toleradas do painel (seção 7.10) ficam de fora das paradas pelo mesmo motivo: são acréscimos ou cliques do dono, e entram no histórico como mudanças de fora.
 - Uma trava em toda escrita seria outra arquitetura, mais cara e com mais chance de incomodar. Fica como evolução possível se uma dessas skills causar perda.
 
 ### 6.8 O resumo
@@ -237,9 +237,9 @@ No Direto, uma linha.
 
 Além das skills, o `gerente` tem quatro rotinas sem skill própria (seção 7.8): **revisar**, **registrar**, **remover** e **arquivar**.
 
-As skills `pendencias`, `projeto` e `ideia` e as rotinas de revisar, registrar e remover saíram do histórico de pedidos do dono neste vault: são coisas que ele pede repetidamente. Ele aprovou a entrada de todas no design. A divisão entre skill e rotina, e o comportamento de cada uma, são **decisão minha**. A skill `consultar` e a rotina de arquivar entraram com a integração ao Wingman (seção 7.10). O que era "modo leve do garimpo" virou a skill `colheita`, separada de `garimpo`, porque o contrato das duas é diferente (uma pesquisa e usa o Inbox, a outra não). São onze skills, dez na primeira versão: a `colheita` fica para depois (seção 7.11).
+As skills `pendencias`, `projeto` e `ideia` e as rotinas de revisar, registrar e remover saíram do histórico de pedidos do dono neste vault: são coisas que ele pede repetidamente. Ele aprovou a entrada de todas no design. A divisão entre skill e rotina, e o comportamento de cada uma, são **decisão minha**. A skill `consultar` e a rotina de arquivar entraram com a integração ao painel (seção 7.10). O que era "modo leve do garimpo" virou a skill `colheita`, separada de `garimpo`, porque o contrato das duas é diferente (uma pesquisa e usa o Inbox, a outra não). São onze skills, dez na primeira versão: a `colheita` fica para depois (seção 7.11).
 
-**Como o gerente entra em cena** fica com quem construir (descrição da skill, uma linha no `CLAUDE.md` do vault, um aviso no início da sessão). O requisito: o dono não precisa digitar comando, e consulta não aciona o gerente. Além disso, cada skill atende pelo nome (`/butler:triagem`, `/butler:garimpo`, …), menos a `colheita`, que só o garimpo chama (seção 7.11), e as rotinas atendem pelo gerente (`/butler:gerente arquiva <nota>`): é assim que o Wingman as chama, e o dono também pode.
+**Como o gerente entra em cena** fica com quem construir (descrição da skill, uma linha no `CLAUDE.md` do vault, um aviso no início da sessão). O requisito: o dono não precisa digitar comando, e consulta não aciona o gerente. Além disso, cada skill atende pelo nome (`/butler:triagem`, `/butler:garimpo`, …), menos a `colheita`, que só o garimpo chama (seção 7.11), e as rotinas atendem pelo gerente (`/butler:gerente arquiva <nota>`): é assim que o painel as chama, e o dono também pode.
 
 ### 7.1 Triagem
 
@@ -281,7 +281,7 @@ O garimpo já existe em `~/.claude/skills/garimpo` e continua fazendo o que faz.
 - **lê e escreve `Sistema/Registro de Links Instagram.md`:** o `ja_no_vault.py` consulta o registro além de procurar no vault, e cada link processado ganha a sua linha. Linha do registro nunca é removida;
 - **ajustes na nota do registro,** que estavam na fila: status para link descartado e para link que falhou ou é carrossel pendente; citar `/reels/` e que maiúsculas contam no código; tirar a frase sobre conferência "por busca do código";
 - **regra nova na nota do registro:** o status e o destino de uma linha são atualizados quando a nota de destino é movida, unida, descartada, renomeada ou removida, mantendo o destino anterior no texto. Hoje o "Como o Claude usa" do registro não diz isso;
-- **classifica cada link** (ideia de projeto, viagem, filme, receita, referência…) e mostra a classificação no OK do lote, para o dono corrigir o que errar (decisão do dono). A classificação e o destino sugerido de cada nota nova vão para o `estado.json` (seção 7.10), de onde o Wingman os lê: a regra do PARA fica num lugar só;
+- **classifica cada link** (ideia de projeto, viagem, filme, receita, referência…) e mostra a classificação no OK do lote, para o dono corrigir o que errar (decisão do dono). A classificação e o destino sugerido de cada nota nova vão para o `estado.json` (seção 7.10), de onde o painel os lê: a regra do PARA fica num lugar só;
 - **passa pelo preâmbulo do gerente** (seção 7.10): trava e ponto das mudanças de fora antes de gravar. As paradas do próprio garimpo continuam.
 
 Escrever uma linha no registro é acréscimo e segue direto. O garimpo continua gravando só no Inbox e no registro, e não move nota. A frase da skill que hoje diz que ela nunca altera nota fora do Inbox ganha essa exceção. Quando a `colheita` existir, a escrita numa lista fora do Inbox é dela, não do garimpo (seção 7.11).
@@ -315,13 +315,13 @@ O `atualizar` avisa quando uma versão nova pede uma nova rodada do `preparar`.
 
 Hoje o que o dono manda "deixar na fila" fica na memória do Claude, onde ele não vê, e perguntas feitas no meio de uma sessão longa se perdem.
 
-- **Onde fica:** numa nota do vault, `Sistema/Pendências.md`, de formato rígido e de dono único: é do Butler, e só ele e as escritas toleradas do Wingman (seção 7.10) mexem nela.
-- **Formato (decisão do dono):** o mesmo que o Wingman definiu para todas as listas de pendências. Uma linha por item, `- [ ] [eu] texto` para o que é do dono ou de terceiros e `- [ ] [claude] texto` para um próximo passo do Claude, com o contexto mínimo para retomar no próprio texto e marcadores opcionais no fim, entre parênteses: `(até AAAA-MM-DD)` para prazo, `(lembrar AAAA-MM-DD HH:MM)` para gatilho, `(depois de: …)` para dependência, `(de: projeto)` para recado, `(trava)` para o que trava outra coisa e `(desde AAAA-MM-DD)` para a data em que o item entrou **(decisão minha: o marcador `desde`, que a nota do Wingman já incorporou ao formato único; os outros são do Wingman)**.
-- **Dono único:** a skill de pendências do plugin do Wingman cuida só dos repositórios (`docs/pendencias.md`, fora do vault e fora do Butler). Na pasta do vault, ela cede ao `pendencias` do Butler.
+- **Onde fica:** numa nota do vault, `Sistema/Pendências.md`, de formato rígido e de dono único: é do Butler, e só ele e as escritas toleradas do painel (seção 7.10) mexem nela.
+- **Formato (decisão do dono):** o mesmo que já era usado nas listas de pendências do dono antes do Butler. Uma linha por item, `- [ ] [eu] texto` para o que é do dono ou de terceiros e `- [ ] [claude] texto` para um próximo passo do Claude, com o contexto mínimo para retomar no próprio texto e marcadores opcionais no fim, entre parênteses: `(até AAAA-MM-DD)` para prazo, `(lembrar AAAA-MM-DD HH:MM)` para gatilho, `(depois de: …)` para dependência, `(de: projeto)` para recado, `(trava)` para o que trava outra coisa e `(desde AAAA-MM-DD)` para a data em que o item entrou **(decisão minha: o marcador `desde` é novo; os outros já existiam nesse formato anterior)**.
+- **Dono único:** a skill de pendências do plugin do painel cuida só dos repositórios (`docs/pendencias.md`, fora do vault e fora do Butler). Na pasta do vault, ela cede ao `pendencias` do Butler.
 - **O que entra:** o que o dono mandar deixar para depois ("deixa na fila", "depois a gente faz"), e as perguntas do Butler que ficaram sem resposta. Uma pergunta do Butler só entra na fila quando o dono segue para outro assunto sem responder, ou diz "depois". Enquanto a conversa ainda está nela, não entra.
 - **Entrar na fila é acréscimo** e segue direto, com uma linha de confirmação.
 - **Consultar** ("ficou algo pendente?", "o que ficou pra trás?") é leitura: responde a lista, agrupada por assunto.
-- **Sair da fila:** quando o dono disser que foi feito ou que desistiu, a linha sai sem deixar marca, como ele prefere. No vault não existe `[x]`: o `[x]` do Wingman vale só nos repositórios. O histórico guarda o que saiu. O Butler nunca tira um item por achar que foi resolvido: pergunta. A exceção é a pergunta dele mesmo: quando o dono responde, a linha dela sai. O clique "feito" no Wingman é pedido explícito, e a linha sai pela escrita tolerada dele, sem passar pelo Butler (seção 7.10).
+- **Sair da fila:** quando o dono disser que foi feito ou que desistiu, a linha sai sem deixar marca, como ele prefere. No vault não existe `[x]`: o `[x]` do painel vale só nos repositórios. O histórico guarda o que saiu. O Butler nunca tira um item por achar que foi resolvido: pergunta. A exceção é a pergunta dele mesmo: quando o dono responde, a linha dela sai. O clique "feito" no painel é pedido explícito, e a linha sai pela escrita tolerada dele, sem passar pelo Butler (seção 7.10).
 - **Aviso no início da sessão:** a contagem de pendências entra na linha do aviso (seção 9).
 - **O que já está na memória do Claude** (hoje, a fila do registro do Instagram): o `preparar` propõe passar para a nota o que ainda valer. A memória só é apagada com o sim do dono. Dos quatro itens dessa fila, três são cobertos por este design (seção 7.3) e o quarto já foi feito: o link aparece como triado no registro.
 - **Não é lista de tarefas da vida.** Guarda só o que nasceu de um pedido no vault ou de uma conversa sobre ele.
@@ -331,7 +331,7 @@ Hoje o que o dono manda "deixar na fila" fica na memória do Claude, onde ele n�
 Cria ou atualiza a nota curta de um projeto em `Projetos`, a partir do repositório dele. Resolve notas defasadas: a do Foreman cita a versão 1.34.0 e o repositório está na 1.38.1.
 
 - **O que lê:** o README, o arquivo de versão e os dados do GitHub (nome, link, descrição). Só lê. Nunca altera o repositório.
-- **Onde acha o repositório:** pelo link em "Onde está" da nota. Sem link, ou com link que não abre, pergunta quando o dono pedir para atualizar. Nota sem link é normal: o projeto nascido pelo "Começar projeto" do Wingman (seção 7.7) ainda não tem GitHub, e a skill não cobra o link até ele pedir a atualização **(decisão minha)**.
+- **Onde acha o repositório:** pelo link em "Onde está" da nota. Sem link, ou com link que não abre, pergunta quando o dono pedir para atualizar. Nota sem link é normal: o projeto nascido pelo "Começar projeto" do painel (seção 7.7) ainda não tem GitHub, e a skill não cobra o link até ele pedir a atualização **(decisão minha)**.
 - **Formato:** livre, com o `Modelo de Projeto` como roteiro. Nota curta e humana, sem a parte técnica, com o link do GitHub em vez do caminho local.
 - **Nota nova:** escreve e explica a estrutura que escolheu, como toda nota livre (seção 6.6). Nasce no Inbox, como toda nota nova, exceto quando vem da promoção de uma ideia (seção 7.7), que cria a nota direto em `Projetos`.
 - **Atualizar:** só o número da versão e o link são trocados sem perguntar, e a resposta mostra o antes e o depois. Todo o resto mostra antes: o texto de "Status", que nas notas atuais é prosa escrita à mão, e as seções "O que faz", "Decisões principais" e "Origem".
@@ -342,7 +342,7 @@ Cria ou atualiza a nota curta de um projeto em `Projetos`, a partir do repositó
 
 ### 7.7 Ideia
 
-Desenvolve uma nota de `Ideias de Projetos`. É o que o dono fez à mão com o Wingman, e o fluxo que ele descreveu: pegar uma ideia parada, pesquisar, ver se é viável e transformar em projeto.
+Desenvolve uma nota de `Ideias de Projetos`. É o que o dono fez à mão com o painel, e o fluxo que ele descreveu: pegar uma ideia parada, pesquisar, ver se é viável e transformar em projeto.
 
 O que o dono pode pedir, em qualquer ordem:
 
@@ -358,8 +358,8 @@ Como as paradas se aplicam:
 - **Acrescentar uma seção** (pesquisa, lista de funcionalidades, casos difíceis) segue direto.
 - **Reorganizar, enxugar ou reescrever** a nota mostra a proposta antes.
 - **Tirar algo da ideia:** quando o dono mandar remover uma funcionalidade, ela sai da nota e das menções, sem registro de que saiu (rotina de remover, seção 7.8).
-- **Estágio:** `viavel` e `nao-viavel` só com o veredito do dono. O Butler pode dizer o que a pesquisa indica, mas não grava um estágio nem escreve um veredito por conta própria. Por pedido explícito, marca o estágio (`arquivada`, `projeto`, e `viavel` ou `nao-viavel` quando o dono der o veredito) e transcreve na seção "Veredito" o veredito que ele ditar: transcrever é pedido explícito, inventar não. No Wingman, os botões de estágio chamam esta skill; o Wingman não grava o campo.
-- **Promover a projeto** segue o `CLAUDE.md`: cria a nota em `Projetos`, move as notas da ideia e muda o estágio para `projeto`. Move várias notas, então mostra o plano antes. O plano diz o título com que cada nota fica e para qual delas os links que já existem passam a apontar: hoje cinco notas têm link para `[[Wingman]]`, e a promoção criaria uma nota de projeto com o mesmo nome da nota de ideia. Pelo Wingman, a promoção é chamada pelo "Começar projeto" depois que o Wingman cria a pasta do projeto, o git local e o Foreman, fora do vault (decisão do dono). A nota do projeto nasce sem a linha "Repositório", porque ainda não há GitHub, e a skill `projeto` (seção 7.6) aceita a nota sem link.
+- **Estágio:** `viavel` e `nao-viavel` só com o veredito do dono. O Butler pode dizer o que a pesquisa indica, mas não grava um estágio nem escreve um veredito por conta própria. Por pedido explícito, marca o estágio (`arquivada`, `projeto`, e `viavel` ou `nao-viavel` quando o dono der o veredito) e transcreve na seção "Veredito" o veredito que ele ditar: transcrever é pedido explícito, inventar não. No painel, os botões de estágio chamam esta skill; o painel não grava o campo.
+- **Promover a projeto** segue o `CLAUDE.md`: cria a nota em `Projetos`, move as notas da ideia e muda o estágio para `projeto`. Move várias notas, então mostra o plano antes. O plano diz o título com que cada nota fica e para qual delas os links que já existem passam a apontar, e a promoção criaria uma nota de projeto com o mesmo nome da nota de ideia. Pelo painel, a promoção é chamada pelo "Começar projeto" depois que o painel cria a pasta do projeto, o git local e o Foreman, fora do vault (decisão do dono). A nota do projeto nasce sem a linha "Repositório", porque ainda não há GitHub, e a skill `projeto` (seção 7.6) aceita a nota sem link.
 - **Só notas com `type: ideia`.** Em `Ideias de Projetos` há notas `type: referencia`, sem estágio, que acumulam itens soltos (por exemplo, `Ideias Soltas` e `App de Receitas`). Elas não passam por este fluxo.
 - **Pesquisa longa** vai para a nota irmã "<título> - Pesquisa", como o `Modelo de Ideia` prevê. Ela nasce ao lado da ideia, não no Inbox. Como a ideia passa a ter mais de uma nota, o `CLAUDE.md` pede uma subpasta: criar a subpasta e mover a nota original para ela mostra antes.
 - **Não constrói o projeto.** A skill termina na nota. Construir é assunto de outra ferramenta, como o Foreman.
@@ -397,7 +397,7 @@ Quatro pedidos pontuais que usam as paradas que o gerente já tem. Não têm ski
 
 - move a nota, e a subpasta quando houver, para `Arquivo`, mantendo a subpasta, como o `CLAUDE.md` manda; troca a seção da nota no `Início.md`; numa ideia, marca `estagio: arquivada`;
 - move nota fora do Inbox, então sempre mostra antes;
-- o Wingman propõe arquivar (ideia `nao-viavel` há 90 dias sem mexer, "Arquivar" de um projeto iniciado) e chama esta rotina pelo gerente (seção 7.10); a decisão é o clique do dono;
+- o painel propõe arquivar (ideia `nao-viavel` há 90 dias sem mexer, "Arquivar" de um projeto iniciado) e chama esta rotina pelo gerente (seção 7.10); a decisão é o clique do dono;
 - o repositório do projeto nunca é tocado.
 
 ### 7.9 Consultar
@@ -406,20 +406,20 @@ Responde "o que eu sei sobre X?" a partir das notas do vault.
 
 - **Só lê.** Não pega a trava, não grava ponto de retorno e não passa pelo gerente, como toda consulta (seção 6.1).
 - **Resposta curta,** com os links das notas usadas, considerando o campo `pessoa`: diz de quem é a nota quando isso importa. Quando não acha nota sobre o assunto, diz que não achou, em vez de responder de memória.
-- **Pelo Wingman,** roda em `claude -p` na pasta do vault, sem gravar sessão, carregando só o plugin do Butler.
-- **(decisão minha)** É skill, não rotina do gerente: o Wingman a chama pelo nome (`/butler:consultar <pergunta>`), e uma rotina só existe dentro do gerente, que pega trava e roda o preâmbulo, o que uma consulta não pode fazer.
+- **Pelo painel,** roda em `claude -p` na pasta do vault, sem gravar sessão, carregando só o plugin do Butler.
+- **(decisão minha)** É skill, não rotina do gerente: o painel a chama pelo nome (`/butler:consultar <pergunta>`), e uma rotina só existe dentro do gerente, que pega trava e roda o preâmbulo, o que uma consulta não pode fazer.
 
-### 7.10 Integração com o Wingman
+### 7.10 Integração com o painel
 
-O Wingman é o app painel que o dono está desenhando (nota `Ideias de Projetos/Wingman.md`). A divisão é dele: **o Wingman é o painel; o Butler é o segundo cérebro de fato.** O Wingman mostra o vault lendo os arquivos Markdown direto, sem LLM, e dispara as skills do Butler pelo nome numa aba. Ele não escreve no vault, fora das três escritas toleradas abaixo.
+O painel é um app externo que o dono descreve construindo. A divisão é essa: o painel mostra a interface; o Butler é o segundo cérebro de fato. O painel mostra o vault lendo os arquivos Markdown direto, sem LLM, e dispara as skills do Butler pelo nome numa aba. Ele não escreve no vault, fora das três escritas toleradas abaixo.
 
-**Independência nos dois sentidos (decisão do dono).** O Butler funciona sozinho, pelo terminal, e é assim que ele nasce e anda. O Wingman também não depende do Butler: o núcleo dele (sessões, contas, projetos, pendências dos repositórios) entra em uso sem o vault, e o mod do vault no Wingman é futuro e opcional, previsto na nota dele em "Mods futuros". Até esse mod existir, as ações do vault são feitas direto numa sessão ou pelo `/butler:...`, no terminal. Tudo o que esta seção descreve é o encaixe para quando o mod entrar.
+**Independência nos dois sentidos (decisão do dono).** O Butler funciona sozinho, pelo terminal, e é assim que ele nasce e anda. O painel também não depende do Butler: o núcleo dele (sessões, contas, projetos, pendências dos repositórios) entra em uso sem o vault, e o mod do vault no painel é futuro e opcional. Até esse mod existir, as ações do vault são feitas direto numa sessão ou pelo `/butler:...`, no terminal. Tudo o que esta seção descreve é o encaixe para quando o mod entrar.
 
-**Invocação explícita (decisão do dono).** O Wingman abre uma aba com uma sessão do Claude Code na pasta do vault e manda a skill pelo nome: `/butler:triagem`, `/butler:garimpo <links>`, `/butler:ideia <nota> <ação>`, `/butler:consultar <pergunta>`, `/butler:gerente arquiva <nota>` e assim por diante. Nunca um pedido em prosa. O acionamento sem comando, pelo dono digitando na conversa, continua valendo como antes (seção 7).
+**Invocação explícita (decisão do dono).** O painel abre uma aba com uma sessão do Claude Code na pasta do vault e manda a skill pelo nome: `/butler:triagem`, `/butler:garimpo <links>`, `/butler:ideia <nota> <ação>`, `/butler:consultar <pergunta>`, `/butler:gerente arquiva <nota>` e assim por diante. Nunca um pedido em prosa. O acionamento sem comando, pelo dono digitando na conversa, continua valendo como antes (seção 7).
 
-**Preâmbulo obrigatório (decisão minha).** Toda skill que altera o vault, chamada direto pelo nome (pelo Wingman ou pelo dono), roda antes o preâmbulo do gerente: pega a trava, grava o ponto das mudanças de fora e checa se o histórico está funcionando; e termina com o resumo da seção 6.8. Assim chamar a skill pelo nome não pula nada do que o gerente faria se tivesse recebido o pedido em prosa. O garimpo continua com as paradas dele (seção 7.3), mas também passa pelo preâmbulo (trava e mudanças de fora) e mantém o ponto de retorno próprio ao terminar.
+**Preâmbulo obrigatório (decisão minha).** Toda skill que altera o vault, chamada direto pelo nome (pelo painel ou pelo dono), roda antes o preâmbulo do gerente: pega a trava, grava o ponto das mudanças de fora e checa se o histórico está funcionando; e termina com o resumo da seção 6.8. Assim chamar a skill pelo nome não pula nada do que o gerente faria se tivesse recebido o pedido em prosa. O garimpo continua com as paradas dele (seção 7.3), mas também passa pelo preâmbulo (trava e mudanças de fora) e mantém o ponto de retorno próprio ao terminar.
 
-**Arquivo de estado para o Wingman (decisão minha).** O Butler grava um `estado.json` dentro da pasta do histórico, fora do vault e do Drive, com:
+**Arquivo de estado para o painel (decisão minha).** O Butler grava um `estado.json` dentro da pasta do histórico, fora do vault e do Drive, com:
 
 - a trava ativa (pedido, sessão, início);
 - se o histórico está funcionando;
@@ -428,34 +428,34 @@ O Wingman é o app painel que o dono está desenhando (nota `Ideias de Projetos/
 - o resumo do último pedido em forma legível por máquina: as notas tocadas, de onde para onde; no garimpo, cada nota nova com o veredito ✅/🤔/❌, a classificação do link e o destino sugerido; quando a `colheita` existir, cada link colhido com a classificação e a nota em que entrou, sem veredito (seção 7.11);
 - a hora em que foi gravado.
 
-O Wingman lê esse arquivo para os Avisos, o Agora e o resultado do lote, em vez de ler o terminal. O `preparar` cria o primeiro, junto com o histórico; o aviso do início da sessão e cada pedido o regravam. Ele não guarda conteúdo de nota nem dado sensível: só títulos, caminhos, vereditos e classificações. O formato exato fica com quem construir (seção 14). O caminho da pasta do histórico é configuração da máquina (seção 6.5); o Wingman lê essa mesma configuração para achar o arquivo.
+O painel lê esse arquivo para os Avisos, o Agora e o resultado do lote, em vez de ler o terminal. O `preparar` cria o primeiro, junto com o histórico; o aviso do início da sessão e cada pedido o regravam. Ele não guarda conteúdo de nota nem dado sensível: só títulos, caminhos, vereditos e classificações. O formato exato fica com quem construir (seção 14). O caminho da pasta do histórico é configuração da máquina (seção 6.5); o painel lê essa mesma configuração para achar o arquivo.
 
-**Destino sugerido e classificação vêm do Butler.** O Wingman nunca calcula o destino de uma nota nem a classificação de um link: lê os dois do `estado.json`, gravados pelo garimpo e pela triagem. A regra do PARA existe num lugar só.
+**Destino sugerido e classificação vêm do Butler.** O painel nunca calcula o destino de uma nota nem a classificação de um link: lê os dois do `estado.json`, gravados pelo garimpo e pela triagem. A regra do PARA existe num lugar só.
 
-**Escritas toleradas do Wingman (decisão do dono).** São três, declaradas em `Sistema/Regras do Butler.md`, todas só acréscimo ou pedido explícito por clique:
+**Escritas toleradas do painel (decisão do dono).** São três, declaradas em `Sistema/Regras do Butler.md`, todas só acréscimo ou pedido explícito por clique:
 
 1. criar uma nota nova no `Inbox` pela Captura rápida;
 2. acrescentar uma linha em `Sistema/Pendências.md`;
 3. tirar uma linha de `Sistema/Pendências.md` quando o dono clica "feito": o clique é o pedido explícito (seção 6.2).
 
-Qualquer outra escrita do Wingman no vault é proibida: estágio de ideia, nota de projeto, `Início.md` e o resto passam pelo Butler. As três respeitam a trava: com pedido em andamento, lido do `estado.json`, o Wingman enfileira e grava depois que a trava sai **(decisão minha: a fila é do Wingman)**. Entram no histórico como mudanças de fora, no pedido seguinte, e o Butler as trata como qualquer mudança de fora (seção 6.4).
+Qualquer outra escrita do painel no vault é proibida: estágio de ideia, nota de projeto, `Início.md` e o resto passam pelo Butler. As três respeitam a trava: com pedido em andamento, lido do `estado.json`, o painel enfileira e grava depois que a trava sai **(decisão minha: a fila é do painel)**. Entram no histórico como mudanças de fora, no pedido seguinte, e o Butler as trata como qualquer mudança de fora (seção 6.4).
 
-**Pontos de retorno só com o que o Butler tocou (decisão minha).** Dentro de um pedido, cada ponto de retorno grava só os arquivos que o próprio Butler alterou (seção 6.5). Uma escrita tolerada do Wingman no meio do pedido fica de fora e entra como mudança de fora depois, para não ir junto num "desfaz".
+**Pontos de retorno só com o que o Butler tocou (decisão minha).** Dentro de um pedido, cada ponto de retorno grava só os arquivos que o próprio Butler alterou (seção 6.5). Uma escrita tolerada do painel no meio do pedido fica de fora e entra como mudança de fora depois, para não ir junto num "desfaz".
 
-**Sem o Butler instalado (decisão do dono).** O Wingman detecta e mostra só a leitura: contagens, listas e notas. Não há caminho alternativo em prosa.
+**Sem o Butler instalado (decisão do dono).** O painel detecta e mostra só a leitura: contagens, listas e notas. Não há caminho alternativo em prosa.
 
-**O que continua igual.** O Butler não sabe nem precisa saber se foi chamado pelo Wingman ou pela conversa: as paradas, o resumo e o desfazer são os mesmos. Nada no Butler depende de o Wingman existir, e nada no núcleo do Wingman depende de o Butler existir.
+**O que continua igual.** O Butler não sabe nem precisa saber se foi chamado pelo painel ou pela conversa: as paradas, o resumo e o desfazer são os mesmos. Nada no Butler depende de o painel existir, e nada no núcleo do painel depende de o Butler existir.
 
 ### 7.11 Colheita
 
 Entrou na primeira versão a pedido do dono (2026-11-07). A fonte do comportamento é a skill `plugins/butler/skills/colheita/SKILL.md`; o que segue é o design que ela implementa. As duas questões que ficaram abertas foram decididas assim: a lista de cada classificação fica declarada na nota de regras, em `## Listas da colheita` (com `<destino>` para uma nota por destino), e o status no registro de links é `colhido`. Num link só, sem plano, o item é gravado direto e o resumo diz como desfazer.
 
 - **O que faz:** recebe um link que o garimpo classificou como filme, lugar de viagem ou receita e grava um resumo curto direto numa lista que já existe: o filme na nota de filmes para assistir em `Lazer`, o lugar na nota da viagem em `Viagens`, a receita na nota de receitas que a regra 4 indica. Sem "vale investigar?", sem aprofundamento, sem nota no Inbox e sem triagem. É a exceção da regra 4 do `CLAUDE.md`, já escrita e aprovada. Qualquer outra classificação segue pelo Inbox, como sempre.
-- **Quem chama (decisão minha):** só o garimpo. É ele que lê o link, classifica e mostra a classificação no OK do lote; a colheita grava depois desse OK, já com a classificação corrigida pelo dono. A colheita não atende pelo nome: um link colado vai sempre para o garimpo, que decide. Assim o Wingman não precisa saber da colheita para chamar: continua chamando `/butler:garimpo`.
+- **Quem chama (decisão minha):** só o garimpo. É ele que lê o link, classifica e mostra a classificação no OK do lote; a colheita grava depois desse OK, já com a classificação corrigida pelo dono. A colheita não atende pelo nome: um link colado vai sempre para o garimpo, que decide. Assim o painel não precisa saber da colheita para chamar: continua chamando `/butler:garimpo`.
 - **Paradas (decisão minha):** acrescentar um item numa lista que já existe é acréscimo e segue direto (seção 6.2). Lista de destino que não existe: criar uma nota fora do Inbox não está em nenhuma das listas da seção 6.2, então para: a colheita propõe criar, como a regra 4 manda, e a proposta entra no OK do lote, junto com a classificação, para não virar uma segunda pergunta. Destino que é nota protegida (o Perfil Culinário, se a receita for para lá): acrescentar segue direto, trocar ou remover para, como em toda protegida. Item que já está na lista não é duplicado: a colheita avisa e não grava.
 - **Conferência do toque:** a lista de destino passa pela conferência da seção 6.4 antes de receber o item, como qualquer nota tocada.
 - **Registro de links (decisão minha):** o link ganha a sua linha no registro como qualquer outro, escrita pelo garimpo, com um status próprio de colhido e a nota de destino. O registro ganha esse status quando a colheita entrar, além dos da seção 7.3. Mover ou renomear a nota de destino atualiza a linha, pela regra nova do registro.
-- **Histórico e estado (decisão minha):** a colheita roda dentro do pedido do garimpo: mesma trava, mesmo rótulo, e o ponto de retorno que o garimpo grava ao terminar cobre o que ela escreveu (seção 6.5). "Desfaz o último garimpo" desfaz a colheita junto. No `estado.json`, cada link colhido entra no resumo do pedido com a classificação e a nota em que foi gravado, sem veredito, que ela não dá (seção 7.10). É dali que o Wingman mostra o colhido no resultado do lote e nas listas da visão Pessoal.
+- **Histórico e estado (decisão minha):** a colheita roda dentro do pedido do garimpo: mesma trava, mesmo rótulo, e o ponto de retorno que o garimpo grava ao terminar cobre o que ela escreveu (seção 6.5). "Desfaz o último garimpo" desfaz a colheita junto. No `estado.json`, cada link colhido entra no resumo do pedido com a classificação e a nota em que foi gravado, sem veredito, que ela não dá (seção 7.10). É dali que o painel mostra o colhido no resultado do lote e nas listas da visão Pessoal.
 - **Modo sem histórico:** gravar fora do Inbox é alterar uma nota que já existe. Sem o histórico funcionando, a colheita mostra antes, como a regra 8 manda.
 
 ---
@@ -494,12 +494,12 @@ Entrou na primeira versão a pedido do dono (2026-11-07). A fonte do comportamen
 | Item a remover aparece em nota de formato rígido que proíbe tirar linha | A linha fica, e o Butler avisa. |
 | Pendência que parece resolvida | Não tira sozinho: pergunta. |
 | Pedido para desfazer algo anterior ao histórico | Diz que não há ponto de retorno e lembra do histórico de versões do Drive. |
-| O Wingman clica "feito" numa pendência, ou captura uma nota, durante uma triagem | A trava está no `estado.json`: o Wingman enfileira e grava depois que ela sai. A escrita entra como mudança de fora no pedido seguinte, e os pontos de retorno da triagem não a levam junto. |
-| O Wingman chama uma skill e o Butler não está instalado | O comando não existe na sessão e nada roda. O Wingman detecta antes e mostra só a leitura; não cai em prosa. |
-| `estado.json` ilegível ou velho | O Wingman mostra "lido há…" e não age. O Butler regrava o arquivo no próximo pedido ou no aviso do início da sessão; se não consegue gravar, diz em uma linha. |
+| O painel clica "feito" numa pendência, ou captura uma nota, durante uma triagem | A trava está no `estado.json`: o painel enfileira e grava depois que ela sai. A escrita entra como mudança de fora no pedido seguinte, e os pontos de retorno da triagem não a levam junto. |
+| O painel chama uma skill e o Butler não está instalado | O comando não existe na sessão e nada roda. O painel detecta antes e mostra só a leitura; não cai em prosa. |
+| `estado.json` ilegível ou velho | O painel mostra "lido há…" e não age. O Butler regrava o arquivo no próximo pedido ou no aviso do início da sessão; se não consegue gravar, diz em uma linha. |
 | Link classificado como filme, lugar de viagem ou receita | Na primeira versão, vira nota no Inbox com a classificação, como todo link. Quando a `colheita` existir, o garimpo passa a mão para ela depois do OK do lote (seção 7.11). |
 | A `colheita` não acha a lista de destino | Não cria sozinha: propõe criar no OK do lote e só grava com o sim. |
-| O Wingman roda sem o Butler, ou o Butler sem o Wingman | Os dois funcionam. O Wingman mostra só a leitura do vault; o Butler atende no terminal e grava o `estado.json` do mesmo jeito. |
+| O painel roda sem o Butler, ou o Butler sem o painel | Os dois funcionam. O painel mostra só a leitura do vault; o Butler atende no terminal e grava o `estado.json` do mesmo jeito. |
 
 ---
 
@@ -511,11 +511,11 @@ Ideias para deixar o uso mais fluido. **Todas são sugestão minha**, nenhuma fo
 
 - **Aviso no início da sessão,** em uma linha: quantas notas há no Inbox, quantas pendências há, se houve mudança de fora desde o último ponto de retorno (e se alguma pegou nota protegida) e se o histórico está funcionando. Nesse momento ele já grava o ponto das mudanças de fora. É o "andamento" do Foreman.
 - **Desfazer por frase** (já na seção 6.5).
-- **Captura rápida:** "anota isso" vira nota no Inbox, sem conversa. Se não estiver claro de quem é a nota, o campo `pessoa` fica em branco e a triagem pergunta. Pela caixa do Wingman, quem grava a nota é o próprio Wingman (escrita tolerada, seção 7.10).
+- **Captura rápida:** "anota isso" vira nota no Inbox, sem conversa. Se não estiver claro de quem é a nota, o campo `pessoa` fica em branco e a triagem pergunta. Pela caixa do painel, quem grava a nota é o próprio painel (escrita tolerada, seção 7.10).
 
-**Do Wingman, não do Butler:**
+**Do painel, não do Butler:**
 
-- **Lembrete de coisa parada** (Inbox com nota há mais de uma semana, ideia há meses no estágio `ideia`, ideia `nao-viavel` há 90 dias): o Wingman lê os arquivos e propõe; o Butler só age quando chamado. O aviso do início da sessão (acima) continua, porque é dentro da sessão.
+- **Lembrete de coisa parada** (Inbox com nota há mais de uma semana, ideia há meses no estágio `ideia`, ideia `nao-viavel` há 90 dias): o painel lê os arquivos e propõe; o Butler só age quando chamado. O aviso do início da sessão (acima) continua, porque é dentro da sessão.
 
 **Depois:**
 
@@ -535,7 +535,7 @@ Não é meta da primeira versão. Esta seção registra o que é do vault do don
 - nenhum caminho de vault escrito no plugin;
 - todas as regras lidas do `CLAUDE.md` e de `Sistema/Regras do Butler.md` do vault em uso;
 - `programas` e `garimpo` são opcionais: sem as ferramentas deles, o resto funciona;
-- o Wingman é opcional: o Butler grava o `estado.json` sempre, mas nada nele depende de o Wingman existir.
+- o painel é opcional: o Butler grava o `estado.json` sempre, mas nada nele depende de o painel existir.
 
 **O que é específico do dono e precisaria virar configurável:**
 
@@ -571,7 +571,7 @@ O plugin não faz estas mudanças por conta própria. O `preparar` as propõe:
 - **`CLAUDE.md`, pasta `Sistema`:** citar `Regras do Butler.md`, `Pendências.md` e o `Registro de Links Instagram.md` (este já estava na fila).
 - **`Início.md`:** registrar `Sistema/Regras do Butler.md`, `Sistema/Pendências.md` e a nota do projeto.
 - **Nota nova `Sistema/Pendências.md`,** de formato rígido, declarada em `Sistema/Regras do Butler.md`. Aprovada pelo dono. O formato é o da seção 7.5: `- [ ] [eu] texto` ou `- [ ] [claude] texto`, com os marcadores entre parênteses no fim; no vault, feito ou desistência tira a linha, sem `[x]`.
-- **`Sistema/Regras do Butler.md`:** declara as três escritas toleradas do Wingman (criar nota no `Inbox` pela Captura rápida, acrescentar uma linha em `Pendências.md`, tirar uma linha de `Pendências.md` pelo clique "feito"), seção 7.10. Qualquer outra escrita do Wingman no vault é proibida.
+- **`Sistema/Regras do Butler.md`:** declara as três escritas toleradas do painel (criar nota no `Inbox` pela Captura rápida, acrescentar uma linha em `Pendências.md`, tirar uma linha de `Pendências.md` pelo clique "feito"), seção 7.10. Qualquer outra escrita do painel no vault é proibida.
 - **Skill `colheita` (depois da primeira versão, seção 7.11):** usa a exceção já escrita na regra 4 do `CLAUDE.md` para gravar um resumo curto direto numa lista que já existe, em vez de criar nota no `Inbox`. O que ela pede ao vault quando entrar: o status de colhido no `Registro de Links Instagram.md` e, se faltar, a lista de destino de cada tipo, criada com o aval do dono. Não faz parte do `preparar` da primeira versão.
 - **Memória do Claude:** passar a fila do registro do Instagram para a nota de pendências e apagar da memória. Aprovado pelo dono; acontece no `preparar`, não antes.
 - **`Sistema/Como Usar com IA.md`:** o trecho da triagem diz que o Claude "mostra o que vai mover... e só então move". Ajustar para a regra 8 nova.
@@ -644,20 +644,20 @@ Entraram com a revisão independente do Fable, e o dono ainda não viu:
 - Registrar lista cada valor que entrou, não só a contagem.
 - Primeira versão inclui aviso no início da sessão, desfazer por frase e captura rápida.
 
-Entraram com a integração ao Wingman, e o dono ainda não viu:
+Entraram com a integração ao painel, e o dono ainda não viu:
 
 - Toda skill que altera o vault, chamada pelo nome, roda o preâmbulo do gerente (trava, ponto das mudanças de fora, checagem do histórico) e termina com o resumo. O garimpo passa pelo preâmbulo e mantém as paradas dele.
 - As rotinas do gerente atendem por `/butler:gerente <rotina> <nota>`; `consultar` é skill porque não passa pelo gerente e não pode pegar trava.
 - O `estado.json` fica na pasta do histórico, é criado pelo `preparar`, regravado a cada pedido e no aviso do início da sessão, e não guarda conteúdo de nota nem dado sensível.
-- A trava que o Wingman respeita é a do `estado.json`; a fila das escritas toleradas é do Wingman, não do Butler.
+- A trava que o painel respeita é a do `estado.json`; a fila das escritas toleradas é do painel, não do Butler.
 - Dentro de um pedido, cada ponto de retorno grava só os arquivos que o Butler alterou.
-- Um clique num botão do Wingman que nomeia a ação é pedido explícito, como uma frase do dono.
-- `Pendências.md` ganha o marcador `(desde AAAA-MM-DD)` para a data em que o item entrou; os outros marcadores são os do Wingman.
+- Um clique num botão do painel que nomeia a ação é pedido explícito, como uma frase do dono.
+- `Pendências.md` ganha o marcador `(desde AAAA-MM-DD)` para a data em que o item entrou; os outros marcadores são os do painel.
 - A skill `projeto` aceita nota sem link e só pergunta pelo repositório quando o dono pedir para atualizar.
-- A classificação de cada link e o destino sugerido são gravados no `estado.json` pelo garimpo e pela triagem; o Wingman não os calcula.
+- A classificação de cada link e o destino sugerido são gravados no `estado.json` pelo garimpo e pela triagem; o painel não os calcula.
 - `consultar` e a rotina de arquivar entram na etapa 3 da ordem de construção.
 - O que era "modo leve do garimpo" virou a skill `colheita`, separada de `garimpo`; fica para depois da primeira versão (seção 7.11). A exceção na regra 4 do `CLAUDE.md` já foi escrita e aprovada.
-- O Butler não distingue pedido vindo do Wingman de pedido vindo da conversa: as paradas, o resumo e o desfazer são os mesmos.
+- O Butler não distingue pedido vindo do painel de pedido vindo da conversa: as paradas, o resumo e o desfazer são os mesmos.
 
 Entraram com a revisão de coerência do fim do dia, e o dono ainda não viu:
 
@@ -665,7 +665,7 @@ Entraram com a revisão de coerência do fim do dia, e o dono ainda não viu:
 - Acrescentar numa lista que já existe pela `colheita` segue direto; lista que não existe vira proposta no OK do lote; destino protegido segue a regra das protegidas; item repetido não é gravado.
 - A `colheita` roda dentro do pedido do garimpo: mesma trava, mesmo rótulo, e o ponto de retorno do garimpo cobre o que ela escreveu.
 - O link colhido ganha linha no registro com um status próprio, e entra no `estado.json` com a classificação e a nota de destino, sem veredito.
-- O mod do vault no Wingman é futuro e opcional: o núcleo do Wingman não espera nenhuma etapa do Butler (seção 14).
+- O mod do vault no painel é futuro e opcional: o núcleo do painel não espera nenhuma etapa do Butler (seção 14).
 
 ---
 
@@ -680,11 +680,11 @@ Entraram com a revisão de coerência do fim do dia, e o dono ainda não viu:
 - **Migração do garimpo** sem deixar duas cópias ativas.
 - **Como detectar dado sensível** (senha, cartão, CPF, RG) com poucos alarmes falsos. Números de série, MACs, placa do carro e valores em reais são mantidos de propósito e não contam.
 - **Como a trava de "um pedido por vez" expira** quando a sessão que a criou cai, e como isso aparece no `estado.json`.
-- **Formato do `estado.json`** (seção 7.10): os campos da trava, do histórico, dos avisos, das perguntas pendentes e do resumo do último pedido, estável para o Wingman ler. Decidido junto com quem construir o Wingman.
-- **Como o Wingman acha a pasta do histórico:** ele lê a mesma configuração da máquina em que o Butler guarda o caminho (seção 6.5). Onde essa configuração fica e em que formato é uma decisão só, para os dois.
-- **A fila das escritas toleradas sob a trava:** o Wingman enfileira quando o `estado.json` mostra pedido em andamento e grava depois. O que acontece com a fila se o Wingman fechar é problema do Wingman, não do Butler.
-- **O ponto de retorno só com os arquivos tocados:** o Butler precisa saber quais arquivos ele mesmo alterou dentro do pedido, para não levar junto uma escrita tolerada do Wingman.
-- **Como o Wingman detecta que o Butler está instalado,** para mostrar só a leitura quando não estiver. Decidido junto com quem construir o Wingman.
+- **Formato do `estado.json`** (seção 7.10): os campos da trava, do histórico, dos avisos, das perguntas pendentes e do resumo do último pedido, estável para o painel ler. Decidido junto com quem construir o painel.
+- **Como o painel acha a pasta do histórico:** ele lê a mesma configuração da máquina em que o Butler guarda o caminho (seção 6.5). Onde essa configuração fica e em que formato é uma decisão só, para os dois.
+- **A fila das escritas toleradas sob a trava:** o painel enfileira quando o `estado.json` mostra pedido em andamento e grava depois. O que acontece com a fila se o painel fechar é problema do painel, não do Butler.
+- **O ponto de retorno só com os arquivos tocados:** o Butler precisa saber quais arquivos ele mesmo alterou dentro do pedido, para não levar junto uma escrita tolerada do painel.
+- **Como o painel detecta que o Butler está instalado,** para mostrar só a leitura quando não estiver. Decidido junto com quem construir o painel.
 - **Como a `colheita` acha a lista de destino** (a nota de filmes em `Lazer`, a nota da viagem certa em `Viagens`, o destino da receita) e onde essa correspondência fica declarada, e o nome do status de colhido no registro de links. Só quando ela for construída (seção 7.11). (superado por: decidido na construção, seção 7.11)
 
 **Fatos do vault que quem construir vai encontrar:**
@@ -707,7 +707,7 @@ Entraram com a revisão de coerência do fim do dia, e o dono ainda não viu:
 
 O `estado.json` e o preâmbulo das skills chamadas pelo nome entram na etapa 1, com o gerente. A `colheita` (seção 7.11) vem depois de tudo isso, com as outras melhorias da seção 9.
 
-O núcleo do Wingman não espera nenhuma etapa: ele entra em uso sem o vault. O que espera é o mod do vault dele, futuro e opcional: as etapas 1, 2 e 4 (gerente, triagem e garimpo) para o mod entrar; a 3 para o "o que eu sei sobre X?" e o arquivar; a 7 para os botões de ideia. Enquanto o mod não existe, o Butler atende pelo terminal.
+O núcleo do painel não espera nenhuma etapa: ele entra em uso sem o vault. O que espera é o mod do vault dele, futuro e opcional: as etapas 1, 2 e 4 (gerente, triagem e garimpo) para o mod entrar; a 3 para o "o que eu sei sobre X?" e o arquivar; a 7 para os botões de ideia. Enquanto o mod não existe, o Butler atende pelo terminal.
 
 ## 15. Como saber que deu certo
 
@@ -716,6 +716,6 @@ O núcleo do Wingman não espera nenhuma etapa: ele entra em uso sem o vault. O 
 - Qualquer mudança feita pelo Butler volta atrás com uma frase.
 - O dono não precisa dizer "isso eu queria ter visto antes" duas vezes para o mesmo tipo de coisa.
 - Um pedido simples continua levando um pedido e uma resposta.
-- O Wingman mostra o resultado de uma triagem ou de um garimpo lendo só o `estado.json`, sem ler o terminal.
-- O Butler faz tudo isso numa sessão no terminal, sem o Wingman aberto.
+- O painel mostra o resultado de uma triagem ou de um garimpo lendo só o `estado.json`, sem ler o terminal.
+- O Butler faz tudo isso numa sessão no terminal, sem o painel aberto.
 - Quando a `colheita` existir, um link de filme, viagem ou receita entra na lista certa sem passar pelo Inbox, e "desfaz o último garimpo" o tira de lá.

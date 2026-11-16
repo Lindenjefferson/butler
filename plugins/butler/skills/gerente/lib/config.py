@@ -5,7 +5,7 @@ histórico só vale nesta máquina e um apontador dentro do vault seria sincroni
 
     {"versao": 1, "vaults": {"<caminho do vault>": {"historico": "<pasta do histórico>"}}}
 
-O Wingman lê este mesmo arquivo para achar o `estado.json` de cada vault (`<historico>/estado.json`).
+O painel lê este mesmo arquivo para achar o `estado.json` de cada vault (`<historico>/estado.json`).
 
 A pasta do histórico não pode ficar dentro do vault, numa pasta sincronizada (OneDrive, Google Drive, Dropbox,
 iCloud) nem numa pasta temporária ou de cache, que uma limpeza de disco apaga. `BUTLER_PERMITIR_TEMP=1` libera a

@@ -109,7 +109,7 @@ O dono responde "aplica tudo", "aplica 1, 3 e 5", "tudo menos o 4" ou ajusta um 
 - **Subagentes gravam fora do vault.** "Não escrever nada" é no vault. Cada subagente grava o resultado do seu grupo como JSON na pasta de estado (o caminho vem no prompt) e devolve só uma linha. A consolidação (cruzar fusões entre grupos, links de entrada de cada nota que some, nomes inválidos ou repetidos no vault) é script com teste (`alvo.py consolidar`); a sessão lê o resumo e, para mostrar um bloco, só os itens dele.
 - **Item é por destino.** Um item = uma nota de destino (lista do tema, nota de detalhe, ou descarte de uma origem), com todas as origens que vão para ela; a tabela final é a mesma informação vista pela origem. Quando o dono recusa um item do qual outros dependem (a lista que os outros alimentam), os dependentes não são aplicados e entram como dúvida no fim do bloco, com o que a skill faria.
 - **Onde nasce uma lista nova:** na pasta do alvo onde estão as origens (a pasta comum mais próxima). Criar a lista, unir e apagar as origens ficam cobertos pelo aval do bloco, porque o item lista cada operação (a Reforma do gerente: "o aval cobre só as operações que o plano lista"). Pasta nova continua sendo a parada 6, à parte. Transformar uma nota existente de formato livre em lista é reescrita e aparece no item como tal, com o antes e o depois em esboço.
-- **Wingman:** fora desta versão. A proposta fica só no arquivo da pasta de estado; nada novo no `estado.json`. Vai para o roadmap como ideia.
+- **Painel:** fora desta versão. A proposta fica só no arquivo da pasta de estado; nada novo no `estado.json`. Vai para o roadmap como ideia.
 
 ## Onde mexer
 

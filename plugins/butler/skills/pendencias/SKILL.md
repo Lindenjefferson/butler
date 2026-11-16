@@ -5,7 +5,7 @@ description: Dona da nota de pendências do vault. Guarda o que ficou para depoi
 
 # Pendências do vault
 
-A nota é a de `pendencias` em `## Caminhos` de `Sistema/Regras do Butler.md`, de formato rígido. Só esta skill e as escritas toleradas do Wingman mexem nela. `B` é o comando do `butler:gerente`.
+A nota é a de `pendencias` em `## Caminhos` de `Sistema/Regras do Butler.md`, de formato rígido. Só esta skill e as escritas toleradas do painel mexem nela. `B` é o comando do `butler:gerente`.
 
 ## Formato
 
@@ -17,7 +17,7 @@ Uma linha por item, na seção `## Itens`:
 ```
 
 - `[eu]` é do usuário ou de terceiros; `[claude]` é um próximo passo do Claude.
-- Marcadores no fim, entre parênteses, nesta ordem (a do formato único do Wingman): `(até AAAA-MM-DD)` (prazo), `(lembrar AAAA-MM-DD HH:MM)` (gatilho), `(depois de: …)` (dependência), `(de: <projeto>)` (recado de outro projeto), `(trava)` (trava outra coisa) e, por último e sempre, `(desde AAAA-MM-DD)` (a data em que entrou). Os outros são opcionais.
+- Marcadores no fim, entre parênteses, nesta ordem (a do formato único do painel): `(até AAAA-MM-DD)` (prazo), `(lembrar AAAA-MM-DD HH:MM)` (gatilho), `(depois de: …)` (dependência), `(de: <projeto>)` (recado de outro projeto), `(trava)` (trava outra coisa) e, por último e sempre, `(desde AAAA-MM-DD)` (a data em que entrou). Os outros são opcionais.
 - No vault não existe `[x]`: feito ou desistência tira a linha.
 
 ## Entrar na fila
@@ -37,7 +37,7 @@ O que entra: o que o usuário mandar deixar para depois e as perguntas do Butler
 - Quando o usuário disser que foi feito ou que desistiu, a linha sai sem deixar marca. O histórico guarda o que saiu.
 - **Nunca tire um item por achar que foi resolvido:** pergunte.
 - A exceção é a pergunta do próprio Butler: quando o usuário responde, a linha dela sai.
-- O clique "feito" no Wingman tira a linha pela escrita tolerada dele, sem passar por aqui.
+- O clique "feito" no painel tira a linha pela escrita tolerada dele, sem passar por aqui.
 - Mudar ou tirar a linha: preâmbulo, edição, `B ponto`, `B fim`.
 
 ## O que já estava na memória do Claude

@@ -6,7 +6,7 @@ Toda ideia passa pelo filtro do [`CLAUDE.md`](../CLAUDE.md) e termina numa desta
 
 ## Não triadas
 
-- **Wingman mostra propostas pendentes do `explorar`** (design do `explorar`): o `P listar` já devolve as propostas abertas (rótulo, itens pendentes e aprovados); falta o painel do Wingman lê-las, como lê o `estado.json`. Esforço: P.
+- **Painel mostra propostas pendentes do `explorar`** (design do `explorar`): o `P listar` já devolve as propostas abertas (rótulo, itens pendentes e aprovados); falta o painel lê-las, como lê o `estado.json`. Esforço: P.
 - **"Pedido explícito já é o aval" sem canal nem identidade** (revisão do Fable, mesma rodada de "modo sem supervisão" abaixo, pensando em uso autônomo tipo o plugin de pé num Duet/bot): o gerente (§4) dispensa a parada quando o pedido nomeia o dado, pensado para o dono corrigindo na hora. Num bot (Telegram, por exemplo), qualquer mensagem que chegar é "o usuário nesta conversa" — não há como distinguir um pedido do dono de um encaminhado ou de outra pessoa no grupo. Precisa de um modo declarado com lista fechada do que pode rodar sem parada nesse canal, e isso é desenho de política (quem pode pedir o quê, por qual canal), não checagem de script — é decisão do dono antes de entrar no Backlog. Esforço: G.
 - **`fila` não guarda por quanto tempo o Instagram bloqueou** (mesma revisão, achado menor): um agendador que chamar "próximo lote" bate de novo assim que for pedido, mesmo logo depois de um bloqueio. Agora que existe o diário de pedidos (`lib/diario.py`, 0.7.0), guardar um `bloqueado_ate` ali e o `fila.py` recusar antes dessa hora é mecânico — falta só decidir o formato do evento. Esforço: P.
 
@@ -36,4 +36,4 @@ Toda ideia passa pelo filtro do [`CLAUDE.md`](../CLAUDE.md) e termina numa desta
 - **Unir ou promover notas sozinho depois de um prazo** (o consolidate e o crystallize do AGENTS): contraria "parar pelo risco"; unir é sempre a parada 2.
 - **Log de ações dentro do vault** (o `log.md` do AGENTS): deixaria marca de alteração no vault; o histórico fora dele já é esse registro, e o `pedidos` o lê.
 - **Decompor notas em notas atômicas, Johnny Decimal, prefixos de tipo no nome** (zettelvault, puma-vault): são métodos de organização; as regras moram no vault, e o Butler não impõe método.
-- **Guarda liberar as escritas toleradas do Wingman** (segunda revisão do código da 0.2.0): o Wingman grava as três escritas toleradas pelo próprio app, esperando a trava sair; elas não passam pelas ferramentas do Claude, então a guarda nunca as vê. Liberá-las na guarda abriria a escrita sem pedido para uma sessão do Claude.
+- **Guarda liberar as escritas toleradas do painel** (segunda revisão do código da 0.2.0): o painel grava as três escritas toleradas pelo próprio app, esperando a trava sair; elas não passam pelas ferramentas do Claude, então a guarda nunca as vê. Liberá-las na guarda abriria a escrita sem pedido para uma sessão do Claude.

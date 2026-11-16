@@ -1,6 +1,6 @@
 ---
 name: programas
-description: Atualiza a nota do inventário de programas da máquina em que a sessão está, e o JSON do winget ao lado dela, num vault do Butler no Windows. Use quando o usuário pedir "atualiza os programas", "atualiza o inventário de programas", "o que mudou nos programas instalados", depois de instalar ou desinstalar programas, ou quando o Wingman chamar `/butler:programas`.
+description: Atualiza a nota do inventário de programas da máquina em que a sessão está, e o JSON do winget ao lado dela, num vault do Butler no Windows. Use quando o usuário pedir "atualiza os programas", "atualiza o inventário de programas", "o que mudou nos programas instalados", depois de instalar ou desinstalar programas, ou quando o painel chamar `/butler:programas`.
 ---
 
 # Inventário de programas

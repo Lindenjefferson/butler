@@ -38,7 +38,7 @@ Subcomandos:
       somadas às `duvidas` anotadas), limpa os avisos já mostrados e solta a trava.
   aviso [--sessao ID]
       O aviso do início da sessão: com a trava livre, pega a trava em nome da sessão, grava as mudanças de fora e
-      solta; devolve `linha`. Com BUTLER_SO_LEITURA=1 (uma consulta pelo Wingman, por exemplo), não grava nada.
+      solta; devolve `linha`. Com BUTLER_SO_LEITURA=1 (uma consulta pelo painel, por exemplo), não grava nada.
   soltar-sessao --sessao ID
       Solta a trava se for daquela sessão (hook de fim de sessão).
   liberar-trava --forcar
@@ -69,7 +69,7 @@ Subcomandos:
       abandonada por prazo, `fim` recusado por `sem_ponto`) e o início/fim de cada pedido. Só lê.
 
 As regras de cada parte estão nas docstrings de lib/: historico.py (o git fora do vault), trava.py, estado.py (o
-formato que o Wingman lê), regras.py (a nota de regras do vault), sensivel.py, conferencia.py, operacoes.py
+formato que o painel lê), regras.py (a nota de regras do vault), sensivel.py, conferencia.py, operacoes.py
 (mudanças de fora, desfazer, renomear) e diario.py (o que fica registrado fora de uma nota).
 """
 import argparse

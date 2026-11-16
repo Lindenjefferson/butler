@@ -1,6 +1,6 @@
 ---
 name: triagem
-description: Tria o Inbox de um vault do Butler pelas regras do CLAUDE.md, nota por nota, sem parar entre elas, e junta as dúvidas no fim. Use quando o usuário pedir "tria o Inbox", "faz a triagem", "organiza o que chegou", ou quando o Wingman chamar `/butler:triagem`.
+description: Tria o Inbox de um vault do Butler pelas regras do CLAUDE.md, nota por nota, sem parar entre elas, e junta as dúvidas no fim. Use quando o usuário pedir "tria o Inbox", "faz a triagem", "organiza o que chegou", ou quando o painel chamar `/butler:triagem`.
 ---
 
 # Triagem do Inbox
@@ -41,7 +41,7 @@ Para cada nota, sem parar entre elas:
 
 ## Fim
 
-1. Resumo no formato do gerente e `B fim`. Para o Wingman, o JSON do `fim` traz `notas` (cada nota movida, com `de` e `para`) e `perguntas` (as que ficaram, com a nota no Inbox e, em `proposta`, o destino sugerido).
+1. Resumo no formato do gerente e `B fim`. Para o painel, o JSON do `fim` traz `notas` (cada nota movida, com `de` e `para`) e `perguntas` (as que ficaram, com a nota no Inbox e, em `proposta`, o destino sugerido).
 2. Pergunte tudo de uma vez, numeradas, cada pergunta com o que você faria. Aplicar as respostas é um pedido novo, como o gerente manda.
 3. Pergunta que o usuário deixar para depois vira pendência (`butler:pendencias`).
 

@@ -13,7 +13,7 @@ O modo direto da triagem: quando a classificação de uma nota já tem destino d
 
 `B` é o comando da skill `butler:gerente` (`sh "${CLAUDE_PLUGIN_ROOT}/hooks/python.sh" "${CLAUDE_PLUGIN_ROOT}/skills/gerente/butler.py"`). Esta skill não atende pelo nome: quem a chama é o `butler:triagem`, nota por nota, depois de ler a nota do Inbox inteira. Ela roda dentro do pedido da triagem, depois do preâmbulo dela: mesmo token, sem `B inicio` nem `B fim` próprios.
 
-**Nome interno:** por compatibilidade com quem já lê `B situacao` e o `estado.json` (um painel como o Wingman, por exemplo), a chave continua `colheita` nesses dois lugares, e o status da linha no registro de links continua `colhido`. Só o nome da skill, da pasta e da seção da nota de regras mudaram, de `colheita` para `fichar`.
+**Nome interno:** por compatibilidade com quem já lê `B situacao` e o `estado.json` (um painel externo, por exemplo), a chave continua `colheita` nesses dois lugares, e o status da linha no registro de links continua `colhido`. Só o nome da skill, da pasta e da seção da nota de regras mudaram, de `colheita` para `fichar`.
 
 ## Quando entra
 

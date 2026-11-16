@@ -1,6 +1,6 @@
 ---
 name: ideia
-description: Desenvolve uma nota de ideia de projeto num vault do Butler — pesquisar o que já existe, listar funcionalidades, procurar casos difíceis e furos, enxugar, gravar o estágio, transcrever o veredito que o usuário ditar e promover a projeto. Use quando o usuário pedir "pesquisa essa ideia", "isso é viável?", "lista as funcionalidades do X", "procura furos na ideia Y", "enxuga a ideia", "essa ideia virou projeto", ou quando o Wingman chamar `/butler:ideia <nota> <ação>`.
+description: Desenvolve uma nota de ideia de projeto num vault do Butler — pesquisar o que já existe, listar funcionalidades, procurar casos difíceis e furos, enxugar, gravar o estágio, transcrever o veredito que o usuário ditar e promover a projeto. Use quando o usuário pedir "pesquisa essa ideia", "isso é viável?", "lista as funcionalidades do X", "procura furos na ideia Y", "enxuga a ideia", "essa ideia virou projeto", ou quando o painel chamar `/butler:ideia <nota> <ação>`.
 ---
 
 # Desenvolver uma ideia
@@ -33,7 +33,7 @@ Formato livre. Leia a nota, o estágio, as outras notas da ideia (a subpasta del
 - Os estágios "viável" e "não viável" só com o veredito do usuário. Você pode dizer o que a pesquisa indica, mas não grava esses estágios nem escreve um veredito por conta própria.
 - "Arquiva a ideia" (ou o estágio `arquivada`) é a rotina de arquivar do gerente (`${CLAUDE_PLUGIN_ROOT}/skills/gerente/references/arquivar.md`), que move a nota e marca o estágio junto; nunca marque `arquivada` sem mover.
 - Por pedido explícito, marque o estágio (projeto, e viável ou não viável quando o usuário der o veredito) e transcreva na seção "Veredito" o veredito que ele ditar. Transcrever é pedido explícito; inventar não.
-- No Wingman, os botões de estágio chamam esta skill: o Wingman não grava o campo.
+- No painel, os botões de estágio chamam esta skill: o painel não grava o campo.
 
 ## Promover a projeto
 
@@ -42,6 +42,6 @@ Segue o `CLAUDE.md`: cria a nota do projeto na pasta de projetos, pelo modelo de
 - o título com que cada nota fica;
 - para qual delas os links que já existem passam a apontar. Se a nota do projeto for ter o mesmo nome da nota de ideia, diga quantas notas têm link para esse nome e qual nota elas vão abrir depois.
 
-Pelo Wingman, a promoção vem do "Começar projeto", depois que o Wingman criou a pasta do projeto, o git local e o Foreman, fora do vault. A nota do projeto nasce sem a linha do repositório, porque ainda não há GitHub; a skill `butler:projeto` aceita a nota sem link.
+Pelo painel, a promoção vem do "Começar projeto", depois que o painel criou a pasta do projeto, o git local e o Foreman, fora do vault. A nota do projeto nasce sem a linha do repositório, porque ainda não há GitHub; a skill `butler:projeto` aceita a nota sem link.
 
 **Não construa o projeto.** A skill termina na nota. Construir é assunto de outra ferramenta.

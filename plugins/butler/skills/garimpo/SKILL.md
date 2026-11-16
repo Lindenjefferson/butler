@@ -1,6 +1,6 @@
 ---
 name: garimpo
-description: Garimpa links para um vault do Butler (Obsidian). Recebe links de vídeo (Reels do Instagram, YouTube, TikTok etc.), que assiste com o plugin do /watch, e links de texto (artigo, página de produto, repositório do GitHub, PDF), que lê. Confere antes se o link já está no vault e no registro de links, investiga o que o conteúdo cita (repositórios, ferramentas, preços, afirmações e riscos), classifica cada link (filme, lugar de viagem, receita e os demais tipos) e grava no Inbox uma nota com o conteúdo original, a avaliação "vale investigar?" e um aprofundamento com o nível de confiança de cada afirmação. A classificação de filme, lugar de viagem ou receita (ou outra que o vault declarar) vira item de lista só depois, na triagem (skill butler:fichar), nunca aqui. Carrossel ou post sem vídeo vira pedido de prints ou leitura pelo Claude in Chrome. Use quando o usuário colar um link e quiser guardá-lo ("resume e guarda", "salva no vault", "transforma em nota", "põe no vault", "bora olhar esses Reels"), quando o Wingman chamar `/butler:garimpo <links>`, e também quando ele perguntar o que tem no Inbox, o que vale investigar ou pedir o resumo do Inbox. Só "assiste", "vê esse vídeo" ou "resume esse vídeo", sem pedir para guardar, é caso do /watch.
+description: Garimpa links para um vault do Butler (Obsidian). Recebe links de vídeo (Reels do Instagram, YouTube, TikTok etc.), que assiste com o plugin do /watch, e links de texto (artigo, página de produto, repositório do GitHub, PDF), que lê. Confere antes se o link já está no vault e no registro de links, investiga o que o conteúdo cita (repositórios, ferramentas, preços, afirmações e riscos), classifica cada link (filme, lugar de viagem, receita e os demais tipos) e grava no Inbox uma nota com o conteúdo original, a avaliação "vale investigar?" e um aprofundamento com o nível de confiança de cada afirmação. A classificação de filme, lugar de viagem ou receita (ou outra que o vault declarar) vira item de lista só depois, na triagem (skill butler:fichar), nunca aqui. Carrossel ou post sem vídeo vira pedido de prints ou leitura pelo Claude in Chrome. Use quando o usuário colar um link e quiser guardá-lo ("resume e guarda", "salva no vault", "transforma em nota", "põe no vault", "bora olhar esses Reels"), quando o painel chamar `/butler:garimpo <links>`, e também quando ele perguntar o que tem no Inbox, o que vale investigar ou pedir o resumo do Inbox. Só "assiste", "vê esse vídeo" ou "resume esse vídeo", sem pedir para guardar, é caso do /watch.
 ---
 
 # Garimpo
@@ -99,7 +99,7 @@ Se o usuário pediu só um resumo, sem pedir para guardar, entregue o resumo no 
                  "classificacao": "ferramenta", "destino_sugerido": "<pasta>"}]}
    ```
 
-   `veredito` é ✅, 🤔 ou ❌, o mesmo do "Vale investigar?". É daí que o Wingman mostra o resultado do lote.
+   `veredito` é ✅, 🤔 ou ❌, o mesmo do "Vale investigar?". É daí que o painel mostra o resultado do lote.
 
 10. **Limpar.** Apague a pasta temporária do passo 1 (os vídeos baixados) quando as notas estiverem gravadas.
 

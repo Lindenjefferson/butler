@@ -6,7 +6,7 @@ pela skill. Títulos de seção, comparados sem acento e sem maiúsculas:
 
 - `## Notas protegidas` e `## Formato rígido`: cada item é `- \\`<caminho ou glob>\\` — <explicação>`. Glob com `*`
   (dentro de uma pasta) e `**` (em qualquer profundidade), relativo ao vault, com `/`.
-- `## Escritas toleradas do Wingman`: lida pela skill; o script só a repassa.
+- `## Escritas toleradas do painel`: lida pela skill; o script só a repassa.
 - `## Exceções aprendidas`: um item com dois trechos em código, `- \\`<glob>\\` \\`<código de achado>\\` — <por quê>`,
   cala aquele achado da conferência naquelas notas. Item sem o segundo trecho é só texto para a skill.
 - `## Liberações de dado sensível`: `- \\`<impressão digital>\\` — <arquivo e motivo>`, para um alarme falso ou um
@@ -24,7 +24,7 @@ pela skill. Títulos de seção, comparados sem acento e sem maiúsculas:
   — <explicação>`, a lista em que a skill `fichar` grava cada classificação do garimpo, qualquer uma, não só `filme`,
   `viagem` ou `receita`. `<destino>` no caminho quer dizer uma nota por destino (a nota de cada viagem). Classificação
   sem linha aqui vira nota no Inbox, como todo link. A chave no dicionário devolvido por `situacao` continua
-  `colheita`, por compatibilidade com quem já lê esse campo (ex.: o Wingman).
+  `colheita`, por compatibilidade com quem já lê esse campo (ex.: o painel).
 - `## Modo sem supervisão`: ausente, nada muda (uma trava de outra sessão só sai com `--forcar` depois de um sim,
   como sempre). Presente, com `- trava abandonada depois de: \\`<N> min\\``: uma trava mais velha que `<N>` minutos
   (pela `atualizado`) é tratada como abandonada e liberada sozinha pelo próprio `inicio`, sem pedir sim — pensado
@@ -82,7 +82,7 @@ class Regras:
                 self.nuvem_ignorada.append(codigos[0].strip())
             elif secao == "formato rigido":
                 self.rigidas.append(codigos[0].strip())
-            elif secao == "escritas toleradas do wingman":
+            elif secao == "escritas toleradas do painel":
                 self.toleradas.append(corpo.strip())
             elif secao == "excecoes aprendidas" and len(codigos) >= 2:
                 self.excecoes.append((codigos[0].strip(), codigos[1].strip()))

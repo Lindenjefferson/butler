@@ -1,6 +1,6 @@
 ---
 name: consultar
-description: Responde "o que eu sei sobre X?" a partir das notas do vault, curto e com os links das notas usadas. Só lê. Use para perguntas sobre o conteúdo de um vault do Butler ("o que eu tenho anotado sobre…", "qual a voltagem da geladeira?", "quando troquei o óleo?"), e quando o Wingman chamar `/butler:consultar <pergunta>`.
+description: Responde "o que eu sei sobre X?" a partir das notas do vault, curto e com os links das notas usadas. Só lê. Use para perguntas sobre o conteúdo de um vault do Butler ("o que eu tenho anotado sobre…", "qual a voltagem da geladeira?", "quando troquei o óleo?"), e quando o painel chamar `/butler:consultar <pergunta>`.
 ---
 
 # Consultar o vault
@@ -18,4 +18,4 @@ A pergunta vem em `$ARGUMENTS` quando a skill é chamada pelo nome.
    - Duas notas que discordam: mostre as duas, não escolha.
 5. **Não achou nota sobre o assunto: diga que não achou.** Não responda de memória nem da internet. Ofereça uma das duas saídas, em uma linha: anotar agora, se o usuário souber a resposta ("quer que eu anote?"), ou guardar a pergunta como pendência ("descobrir: <pergunta>"), para a lacuna não se perder. Com o sim, cada uma é um pedido à parte, pelo `butler:gerente` ou pela `butler:pendencias`.
 
-Pelo Wingman, esta skill roda em `claude -p` na pasta do vault, sem gravar sessão, carregando só o plugin do Butler. Ele define `BUTLER_SO_LEITURA=1`, para o aviso do início da sessão não gravar nada.
+Pelo painel, esta skill roda em `claude -p` na pasta do vault, sem gravar sessão, carregando só o plugin do Butler. Ele define `BUTLER_SO_LEITURA=1`, para o aviso do início da sessão não gravar nada.

@@ -20,7 +20,7 @@ do Butler (o vault é achado pelo caminho do arquivo, não pela pasta da sessão
   sendo a parada da skill.
 Fora de um vault, ou com qualquer erro, não diz nada: a guarda nunca impede uma escrita fora do Butler.
 Só as ferramentas do Claude passam por aqui: escritas pelo Bash (o `butler.py`, um `mv`) e as escritas toleradas do
-Wingman, que o próprio app grava esperando a trava sair, não.
+painel, que o próprio app grava esperando a trava sair, não.
 
 Lê do stdin o JSON que o Claude Code manda aos hooks (`session_id`, `cwd`, `source`, `tool_name`, `tool_input`).
 """

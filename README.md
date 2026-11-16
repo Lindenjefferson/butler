@@ -100,7 +100,7 @@ Nada além do que o Claude Code já envia na conversa. O histórico do vault fic
 
 ## Painel
 
-O Butler funciona sozinho, pelo terminal. Um painel (o autor usa o dele, o Wingman) pode mostrar o vault lendo o `estado.json` que o Butler grava na pasta do histórico (o formato está na docstring de [`lib/estado.py`](plugins/butler/skills/gerente/lib/estado.py)), ler `B diario` para o que não virou nota (trava ocupada, abandonada por prazo, `fim` recusado) e chamar as skills pelo nome (`/butler:triagem`, `/butler:garimpo <links>`, `/butler:consultar <pergunta>`, `/butler:gerente arquiva <nota>`).
+O Butler funciona sozinho, pelo terminal. Um painel externo pode mostrar o vault lendo o `estado.json` que o Butler grava na pasta do histórico (o formato está na docstring de [`lib/estado.py`](plugins/butler/skills/gerente/lib/estado.py)), ler `B diario` para o que não virou nota (trava ocupada, abandonada por prazo, `fim` recusado) e chamar as skills pelo nome (`/butler:triagem`, `/butler:garimpo <links>`, `/butler:consultar <pergunta>`, `/butler:gerente arquiva <nota>`).
 
 ## Para onde vai
 

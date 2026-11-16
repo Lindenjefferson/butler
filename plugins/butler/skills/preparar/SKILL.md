@@ -27,7 +27,7 @@ Diga sempre, antes de mais nada (primeira vez ou rodando de novo, seção 4 incl
    - **Formato rígido:** as notas cujo formato o `CLAUDE.md` (ou a própria nota) dita: inventários, históricos, registros de links, a nota de pendências.
    - **Caminhos:** a pasta do Inbox, a nota índice, a nota de pendências, a de registro de links (se houver) e o título da seção de links do fim das notas, como o `CLAUDE.md` os chama. O caminho da nuvem e as pastas fora da varredura (se houver) vêm da seção 2b, abaixo.
    - **Listas para fichar:** as listas em que o `CLAUDE.md` manda gravar direto um item (filme, lugar de viagem, receita, ou outra classificação que o vault usar), se ele tiver essa regra. Lista que ainda não existe fica declarada assim mesmo: a `butler:fichar` propõe criá-la na primeira nota daquele tipo, na triagem. Sem a regra no `CLAUDE.md`, pergunte se o usuário quer isso; com o não, tire as linhas.
-   - **Escritas toleradas do Wingman:** deixe as três do molde se o usuário usa o Wingman; senão, a seção fica com "Nenhuma".
+   - **Escritas toleradas do painel:** deixe as três do molde se o usuário usa algum painel externo; senão, a seção fica com "Nenhuma".
    - **Liberações:** as que saíram da seção 1.
    - O frontmatter e o "Veja também" seguem as regras do `CLAUDE.md` do vault, inclusive os campos que o molde não traz (o de dono da nota, por exemplo): se o valor não for claro, pergunte.
 3. Crie a nota de pendências a partir de `${CLAUDE_PLUGIN_ROOT}/skills/preparar/templates/Pendências.md` no caminho que a nota de regras declara, se ela ainda não existir.

@@ -6,7 +6,7 @@
 
 **Goal:** construir o plugin `butler` do design (etapas 1 a 8 da seção 14), pronto para o GitHub no molde do Foreman, sem aplicar nada ao vault real.
 
-**Architecture:** um script Python sem dependências (`butler.py`, com módulos em `lib/`) faz tudo o que é conferível: histórico git fora do vault, trava, pontos de retorno, desfazer, estado para o Wingman, conferência do toque, detecção de dado sensível e a revisão do vault. As skills, em português, conduzem o que só um modelo faz (medir o pedido, decidir destino, escrever nota) e chamam o script em cada passo que dá para conferir. Um hook de início de sessão dá o aviso de uma linha e diz à sessão que o vault é do Butler.
+**Architecture:** um script Python sem dependências (`butler.py`, com módulos em `lib/`) faz tudo o que é conferível: histórico git fora do vault, trava, pontos de retorno, desfazer, estado para o painel, conferência do toque, detecção de dado sensível e a revisão do vault. As skills, em português, conduzem o que só um modelo faz (medir o pedido, decidir destino, escrever nota) e chamam o script em cada passo que dá para conferir. Um hook de início de sessão dá o aviso de uma linha e diz à sessão que o vault é do Butler.
 
 **Tech Stack:** Python 3 (biblioteca padrão), git 2.x, Claude Code plugins (skills, hooks), Git Bash no Windows.
 
@@ -25,13 +25,13 @@
 
 ## Decisões de construção (seção 14 do design)
 
-- **Configuração da máquina:** `~/.butler/maquina.json` (ou o caminho em `BUTLER_CONFIG`), `{"versao": 1, "vaults": {"<caminho do vault>": {"historico": "<pasta>"}}}`. O Wingman lê o mesmo arquivo.
+- **Configuração da máquina:** `~/.butler/maquina.json` (ou o caminho em `BUTLER_CONFIG`), `{"versao": 1, "vaults": {"<caminho do vault>": {"historico": "<pasta>"}}}`. O painel lê o mesmo arquivo.
 - **Pasta do histórico:** padrão `%LOCALAPPDATA%/Butler/<nome do vault>` (no Linux, `~/.local/share/butler/<nome>`). Dentro: `git/`, `estado.json`, `trava.json`. Recusada se ficar dentro do vault, dentro de `OneDrive`/`Google Drive`/`My Drive`/`Dropbox`/`iCloud`, ou numa pasta temporária ou de cache.
 - **Git:** `core.autocrlf=false`, `core.safecrlf=false`, `core.quotepath=false`, `core.longpaths=true`, `core.precomposeunicode=true`, identidade própria (`Butler`, `butler@localhost`), `core.hooksPath` apontando para uma pasta vazia dentro do histórico, `info/exclude` com `.obsidian/workspace*.json`, `.tmp.drivedownload/`, `.tmp.driveupload/`, `.trash/`, `desktop.ini`, `~$*`, `*.tmp`.
 - **Pontos de retorno:** mensagem `[<tipo>] <rótulo>` com os trailers `Butler-Pedido: <id>` e `Butler-Tipo: fora|nota|fim|desfaz|preparar`.
 - **Trava:** `trava.json` com `pedido`, `token`, `rotulo`, `inicio`, `atualizado`. Não expira sozinha: com mais de 2 h sem atualizar, o script a marca como `provavelmente_caiu` e a skill mostra ao dono antes de liberar (`liberar-trava --forcar`).
 - **Gatilho do gerente:** a descrição da skill e a linha do hook de início de sessão, que diz que pedidos que alteram o vault passam pelo `butler:gerente` e consultas não.
-- **Formato de `Sistema/Regras do Butler.md`:** seções com títulos fixos (`## Notas protegidas`, `## Formato rígido`, `## Escritas toleradas do Wingman`, `## Exceções aprendidas`, `## Liberações de dado sensível`); cada item é uma linha `- \`<caminho ou glob>\` — <explicação>`; liberações são `- \`<impressão digital>\` — <arquivo e motivo>`.
+- **Formato de `Sistema/Regras do Butler.md`:** seções com títulos fixos (`## Notas protegidas`, `## Formato rígido`, `## Escritas toleradas do painel`, `## Exceções aprendidas`, `## Liberações de dado sensível`); cada item é uma linha `- \`<caminho ou glob>\` — <explicação>`; liberações são `- \`<impressão digital>\` — <arquivo e motivo>`.
 - **Dado sensível:** CPF formatado com dígito válido, ou 11 dígitos com a palavra CPF na linha; cartão em grupos de 4 com Luhn válido, ou 13 a 19 dígitos com Luhn válido e palavra de cartão na linha; `senha`/`password`/`pin` seguido de `:` ou `=` e um valor; RG com a sigla e número. Números de série, MAC, placa e valores em reais não casam.
 
 ## Review Focus
