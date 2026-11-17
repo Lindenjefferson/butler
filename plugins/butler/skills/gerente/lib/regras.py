@@ -73,7 +73,9 @@ class Regras:
                 if par:
                     destino = (self.caminhos if secao == "caminhos" else
                                self.sem_supervisao if secao == "modo sem supervisao" else self.colheita)
-                    destino[sem_acento(par.group(1))] = par.group(2).strip().strip("/")
+                    nome, valor = sem_acento(par.group(1)), par.group(2).strip().rstrip("/")
+                    # `nuvem` é absoluto: a barra do começo de um caminho do Linux fica.
+                    destino[nome] = valor if nome == "nuvem" else valor.lstrip("/")
                 continue
             if not codigos:
                 continue
