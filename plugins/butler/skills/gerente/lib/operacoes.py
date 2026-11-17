@@ -297,7 +297,8 @@ def publico(plano, conteudo=()):
 # -- renomear ----------------------------------------------------------------------------------------------------
 
 def renomear(vault, de, para):
-    """Move `de` para `para` e reescreve os wikilinks. Devolve a lista das notas cujos links mudaram."""
+    """Move `de` para `para` e reescreve os wikilinks. Devolve (as notas cujos links mudaram, as notas que não são
+    UTF-8 e por isso não foram lidas nem tocadas)."""
     origem, destino = notas.absoluto(vault, de), notas.absoluto(vault, para)
     if not os.path.isfile(origem):
         raise FileNotFoundError(f"{de} não existe")
@@ -326,17 +327,21 @@ def renomear(vault, de, para):
 
     os.makedirs(os.path.dirname(destino), exist_ok=True)
     os.replace(origem, destino)  # a pasta de origem fica, mesmo vazia: tirá-la é decisão do `CLAUDE.md`
-    tocadas = []
+    tocadas, ilegiveis = [], []
     for caminho in notas.arquivos(vault):
         if not caminho.lower().endswith(".md"):
             continue
         absoluto = notas.absoluto(vault, caminho)
         with open(absoluto, "rb") as arquivo:
             bruto = arquivo.read()
-        texto = bruto.decode("utf-8", "replace")
+        try:
+            texto = bruto.decode("utf-8")
+        except UnicodeDecodeError:
+            ilegiveis.append(caminho)  # regravar trocaria por `?` o que não é UTF-8: a nota fica como está
+            continue
         novo = re.sub(r"!?\[\[([^\]\n]+?)\]\]", trocar, texto)
         if novo != texto:
             with open(absoluto, "wb") as arquivo:
                 arquivo.write(novo.encode("utf-8"))
             tocadas.append(caminho)
-    return tocadas
+    return tocadas, ilegiveis

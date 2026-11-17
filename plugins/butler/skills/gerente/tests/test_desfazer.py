@@ -120,5 +120,21 @@ def test_renomear_atualiza_links_com_apelido_e_secao():
         amb.fechar()
 
 
+def test_renomear_nao_regrava_nota_que_nao_e_utf8():
+    amb = Ambiente()
+    try:
+        latin = "café com [[Geladeira]]\n".encode("latin-1")
+        amb.escrever("Casa/Latin.md", latin, binario=True)
+        amb.preparar()
+        token = amb.inicio("renomeia")["token"]
+        resposta = amb.rodar("renomear", "--token", token, "Inventários/Geladeira.md", "Inventários/Refrigerador.md")
+        with open(amb.caminho("Casa/Latin.md"), "rb") as arquivo:
+            assert arquivo.read() == latin
+        assert resposta["links_nao_conferidos"] == ["Casa/Latin.md"]
+        assert "Casa/Latin.md" not in resposta["links_atualizados"]
+    finally:
+        amb.fechar()
+
+
 if __name__ == "__main__":
     rodar_testes(globals())

@@ -56,6 +56,7 @@ Subcomandos:
   renomear --token T DE PARA
       Move a nota, reescreve os wikilinks que apontam para ela e grava tudo num ponto, com o filtro do `ponto`.
       `links_markdown: true` quer dizer que o vault usa links em Markdown, que ele não reescreve.
+      `links_nao_conferidos` lista as notas que não são UTF-8: ficam como estão, com os links por conferir à mão.
   conferir ARQUIVO...
       A conferência do toque (ver lib/conferencia.py).
   sensivel ARQUIVO...
@@ -593,7 +594,7 @@ def cmd_renomear(args):
     atual = _token(ctx, args)
     de, para = ctx.relativo(args.de), ctx.relativo(args.para)
     try:
-        tocadas = operacoes.renomear(ctx.vault, de, para)
+        tocadas, ilegiveis = operacoes.renomear(ctx.vault, de, para)
     except (FileNotFoundError, FileExistsError) as erro:
         return saida({"ok": False, "erro": str(erro)}, USO)
     sha, recusados = None, []
@@ -606,7 +607,8 @@ def cmd_renomear(args):
             sha, _, nao = ctx.hist.gravar(gravar, "nota", f"renomeia {de} para {para}", atual["pedido"],
                                           rotulo_pedido=atual["rotulo"])
             recusados += nao
-    return saida({"ok": True, "de": de, "para": para, "links_atualizados": tocadas, "ponto": sha,
+    return saida({"ok": True, "de": de, "para": para, "links_atualizados": tocadas,
+                  "links_nao_conferidos": ilegiveis, "ponto": sha,
                   "recusados": recusados, "historico_ok": ctx.ok,
                   "links_markdown": notas.usa_links_markdown(ctx.vault)})
 
