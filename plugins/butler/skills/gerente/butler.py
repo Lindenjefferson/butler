@@ -244,7 +244,7 @@ def cmd_preparar_historico(args):
     liberadas = regras.liberacoes if regras else set()
     ficariam_fora, copias = [], []
     for caminho in notas.arquivos(vault, com_obsidian=True):
-        if notas.copia_conflito(caminho):
+        if notas.copia_conflito(caminho) and not regras_mod.calado(regras, caminho, "copia_conflito"):
             copias.append(caminho)
         try:
             achados, binario, marca = sensivel.no_arquivo(notas.absoluto(vault, caminho), liberadas)

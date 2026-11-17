@@ -13,7 +13,9 @@ cala, em `## Exceções aprendidas` nas regras):
   nome muito parecido (difflib, razão de pelo menos 0,85), o achado traz a `sugestao`: é um palpite para a pessoa
   confirmar, nunca uma correção;
 - `dado_sensivel`: um achado de `sensivel.py`, sem o valor;
-- `copia_conflito`: o nome tem cara de cópia de conflito do sincronizador (`Nota (1).md`);
+- `copia_conflito`: o nome tem cara de cópia de conflito do sincronizador (`Nota (1).md`, com um contador de um ou
+  dois dígitos; `Filme (2021).md` é um ano). A exceção aprendida cala este achado, e o `nome_nfd`, também nas
+  listas da revisão, nos avisos das mudanças de fora e na preparação;
 - `nome_nfd`: o nome está em Unicode decomposto e convive mal com o mesmo nome composto.
 
 O `CLAUDE.md` da raiz não é nota: passa só pela detecção de dado sensível. O arquivo também diz se a nota é protegida ou de formato rígido, para a skill aplicar a regra dela. A conferência
@@ -35,7 +37,7 @@ import difflib
 import re
 
 from . import notas, sensivel
-from .regras import sem_acento
+from .regras import calado, sem_acento
 
 PROIBIDOS = re.compile(r'[:*?"<>|/\\]')
 PARECIDO = 0.85
@@ -116,9 +118,7 @@ def conferir(vault, relativo, regras, nomes=None, bases=None):
 
 
 def _filtrar(resultado, regras):
-    if regras:
-        resultado["achados"] = [a for a in resultado["achados"]
-                                if not regras.calado(resultado["arquivo"], a["codigo"])]
+    resultado["achados"] = [a for a in resultado["achados"] if not calado(regras, resultado["arquivo"], a["codigo"])]
     return resultado
 
 
@@ -146,8 +146,10 @@ def revisar(vault, regras):
     inbox = regras.caminho("inbox") if regras else "Inbox"
     relatorio = {"notas": [], "arvore": notas.arvore(vault),
                  "pastas_vazias": notas.pastas_vazias(vault, manter=[inbox]),
-                 "copias_conflito": [c for c in lista if notas.copia_conflito(c)],
-                 "nomes_nfd": [c for c in lista if notas.nome_nfd(c)], "fora_do_indice": None,
+                 "copias_conflito": [c for c in lista
+                                     if notas.copia_conflito(c) and not calado(regras, c, "copia_conflito")],
+                 "nomes_nfd": [c for c in lista if notas.nome_nfd(c) and not calado(regras, c, "nome_nfd")],
+                 "fora_do_indice": None,
                  "links_quebrados_recorrentes": [], "possiveis_duplicatas": _duplicatas(vault, lista),
                  "links_markdown": notas.usa_links_markdown(vault)}
     citantes = {}
@@ -159,7 +161,7 @@ def revisar(vault, regras):
             if achado["codigo"] == "link_quebrado" and not achado.get("sugestao"):
                 citantes.setdefault(achado["alvo"], []).append(caminho)
     for alvo, quem in sorted(citantes.items()):
-        quem = sorted(c for c in quem if not (regras and regras.calado(c, "link_quebrado_recorrente")))
+        quem = sorted(c for c in quem if not calado(regras, c, "link_quebrado_recorrente"))
         if len(quem) >= RECORRENTE:
             relatorio["links_quebrados_recorrentes"].append({"alvo": alvo, "notas": quem})
     indice = regras.caminho("indice") if regras else None

@@ -126,6 +126,11 @@ class Regras:
                 "nuvem_ignorada": self.nuvem_ignorada, "sem_supervisao": self.sem_supervisao}
 
 
+def calado(regras, caminho, codigo):
+    """Uma exceção aprendida cala este achado nesta nota (sem regras, nada é calado)."""
+    return bool(regras and regras.calado(caminho, codigo))
+
+
 def _glob_para_regex(glob):
     partes, i = [], 0
     while i < len(glob):

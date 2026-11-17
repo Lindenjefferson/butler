@@ -28,7 +28,7 @@ import tempfile
 import unicodedata
 
 from . import notas, sensivel
-from .regras import SEMPRE_PROTEGIDAS
+from .regras import SEMPRE_PROTEGIDAS, calado
 
 
 def registrar_fora(hist, regras, rotulo, pedido, ignorar=None):
@@ -60,9 +60,9 @@ def registrar_fora(hist, regras, rotulo, pedido, ignorar=None):
             removidas = hist.linhas_removidas(caminho) if estado != "novo" else 0
             if estado == "apagado" or removidas is None or removidas > 0:
                 avisos["protegidas_com_remocao"].append(caminho)
-        if estado == "novo" and notas.copia_conflito(caminho):
+        if estado == "novo" and notas.copia_conflito(caminho) and not calado(regras, caminho, "copia_conflito"):
             avisos["copias_conflito"].append(caminho)
-        if estado == "novo" and notas.nome_nfd(caminho):
+        if estado == "novo" and notas.nome_nfd(caminho) and not calado(regras, caminho, "nome_nfd"):
             avisos["nomes_nfd"].append(caminho)
         if caminho in SEMPRE_PROTEGIDAS:
             avisos["regras_mudaram"].append(caminho)

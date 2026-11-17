@@ -6,7 +6,7 @@ import unicodedata
 
 IGNORAR_PASTAS = {".obsidian", ".trash", ".git", ".tmp.drivedownload", ".tmp.driveupload"}
 IGNORAR_ARQUIVOS = {"desktop.ini", "thumbs.db", ".ds_store"}
-COPIA_CONFLITO = re.compile(r" \(\d+\)$")
+COPIA_CONFLITO = re.compile(r" \(\d{1,2}\)$")  # o contador do sincronizador; `(2021)` é um ano no nome
 _LINK = re.compile(r"!?\[\[([^\]\n]+?)\]\]")
 _CERCA = re.compile(r"^(```|~~~).*?^\1", re.S | re.M)
 _CODIGO_INLINE = re.compile(r"`[^`\n]*`")
