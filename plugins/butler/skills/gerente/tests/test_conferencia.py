@@ -51,6 +51,23 @@ def test_excecao_aprendida_cala_o_achado():
         amb.fechar()
 
 
+def test_ano_entre_parenteses_nao_e_copia_de_conflito_e_a_excecao_cala_em_todo_lugar():
+    amb = Ambiente()
+    try:
+        from apoio import REGRAS
+        amb.escrever("Sistema/Regras do Butler.md", REGRAS.replace(
+            "## Liberações", "- `Casa/Treino (2).md` `copia_conflito` — é o nome do treino\n\n## Liberações"))
+        amb.preparar()
+        amb.escrever("Lazer/Duna (2021).md", nota("Duna (2021)"))  # um ano, não o contador do sincronizador
+        amb.escrever("Casa/Treino (2).md", nota("Treino (2)"))  # parece cópia, mas a exceção diz que é o nome
+        amb.escrever("Casa/Lista (1).md", nota("Lista (1)"))
+        assert achados(amb, "Lazer/Duna (2021).md") == [] and achados(amb, "Casa/Treino (2).md") == []
+        assert amb.inicio()["mudancas_de_fora"]["copias_conflito"] == ["Casa/Lista (1).md"]
+        assert amb.rodar("revisar")["copias_conflito"] == ["Casa/Lista (1).md"]
+    finally:
+        amb.fechar()
+
+
 def test_avisos_das_mudancas_de_fora():
     amb = Ambiente()
     try:

@@ -13,7 +13,12 @@ O que casa:
 - `senha`: `senha`, `password`, `senha do wi-fi` e afins seguidos de `:`, `=`, `|` (tabela) ou de `é`, e de um valor;
 - `pin`: `PIN:` seguido de 4 a 8 dígitos (`PIN: 24`, de pinos, não casa);
 - `rg`: a sigla RG seguida de um número no formato de RG;
-- `token`: chaves com prefixo conhecido (GitHub, Anthropic, OpenAI, AWS, Slack, Google).
+- `token`: chaves com prefixo conhecido (GitHub, Anthropic, OpenAI, OpenRouter, AWS, Slack, Google), token de bot do
+  Telegram (`<id>:<35 caracteres>`), o cabeçalho de uma chave privada (`-----BEGIN ... PRIVATE KEY-----`) e uma
+  atribuição de `api_key`, `secret`, `client_secret`, `access_token` ou `auth_token` a um valor de 16 caracteres ou
+  mais, sem espaço.
+
+Não casa código de recuperação nem frase-semente: não têm formato que dê para reconhecer sem alarme falso.
 
 Fica de fora de propósito: número de série, MAC, placa de carro, IMEI sem palavra de cartão e valor em reais.
 """
@@ -63,7 +68,11 @@ PADROES = [
     ("rg", re.compile(r"(?i)\brg\b\s*(?:n[ºo°.]*\s*)?[:=]?\s*(\d{1,2}\.?\d{3}\.?\d{3}-?[\dxX])(?![\d])")),
     ("token", re.compile(r"\b(ghp_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{40,}|sk-ant-[A-Za-z0-9_-]{20,}|"
                          r"sk-(?:proj-)?[A-Za-z0-9]{32,}|AKIA[0-9A-Z]{16}|xox[baprs]-[A-Za-z0-9-]{10,}|"
-                         r"AIza[0-9A-Za-z_-]{35})")),
+                         r"AIza[0-9A-Za-z_-]{35}|sk-or-v1-[0-9a-f]{32,})")),
+    ("token", re.compile(r"(?<![\w:])(\d{8,10}:[A-Za-z0-9_-]{35})(?![A-Za-z0-9_-])")),
+    ("token", re.compile(r"(-----BEGIN [A-Z ]*PRIVATE KEY-----)")),
+    ("token", re.compile(r"(?i)\b(?:api[_-]?key|(?:client[_-]?)?secret|access[_-]?token|auth[_-]?token)\b[\"']?"
+                         r"\s*[:=]\s*[\"']?([A-Za-z0-9_\-./+]{16,})")),
 ]
 
 

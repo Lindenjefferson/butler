@@ -24,9 +24,18 @@ def test_casa_cpf_cartao_senha_pin_rg_e_token():
     assert tipos("PIN: 4821") == ["pin"]
     assert tipos("RG: 12.345.678-9") == ["rg"]
     assert tipos("chave ghp_" + "a" * 36) == ["token"]
+    assert tipos("bot do Telegram: 1234567890:" + "Ab_" * 11 + "Cd") == ["token"]
+    assert tipos("OpenRouter sk-or-" + "v1-" + "a1" * 32) == ["token"]
+    assert tipos("-----BEGIN OPENSSH " + "PRIVATE KEY-----") == ["token"]
+    assert tipos("api_" + "key = '" + "z9" * 12 + "'") == ["token"]
+    assert tipos("CLIENT_" + "SECRET: " + "q7" * 10) == ["token"]
 
 
 def test_nao_casa_o_que_o_vault_guarda_de_proposito():
+    assert tipos("O limite é de 200000 tokens: economize.") == []
+    assert tipos("token: não informado") == []
+    assert tipos("api key: pegar no painel do provedor") == []
+    assert tipos("Horário 12:30, ratio 16:9, id 1234567890: ver nota") == []
     assert tipos("Número de série: 4111111111111111") == []
     assert tipos("cartão SD de 128 GB, serial 4111111111111111") == []
     assert tipos("Cartão SIM, IMEI 490154203237518") == []

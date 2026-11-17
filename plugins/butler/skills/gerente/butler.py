@@ -13,13 +13,14 @@ Subcomandos:
       sensível nem binários, conferindo também a pasta `.obsidian`. Recusa uma pasta que já é o histórico de outro
       vault. `--so-conferir` só relata o que impediria ou ficaria de fora. Rodado de novo, só confere e completa.
   situacao
-      Só lê: histórico ok ou o motivo, trava, quantas mudanças de fora esperam, Inbox, pendências e os pontos do
-      pedido em andamento (para dizer onde um Lote parou). Num vault sem histórico nesta máquina, lista em
+      Só lê: histórico ok ou o motivo, trava, quantas mudanças de fora esperam, Inbox, pendências, as `perguntas`
+      que ainda esperam resposta e os pontos do pedido em andamento (para dizer onde um Lote parou). Num vault sem histórico nesta máquina, lista em
       `historicos_de_vaults_que_sumiram` os vaults registrados cuja pasta não existe mais (um vault movido).
   inicio --rotulo R [--sessao ID] [--continuando ARQUIVO ...]
       Pega a trava (a mesma sessão retoma a dela) e grava o ponto das mudanças de fora. Devolve `token`, `pedido`,
-      `historico_ok`, `motivo` e `mudancas_de_fora`, com os avisos que o aviso do início da sessão já tinha gravado
-      e nenhum pedido mostrou ainda. Sem histórico, pega a trava do mesmo jeito e diz o motivo. Numa retomada, traz
+      `rotulo` (numa retomada, o do pedido retomado, que pode não ser o `--rotulo` de agora), `historico_ok`,
+      `motivo` e `mudancas_de_fora`, com os avisos que o aviso do início da sessão já tinha gravado e nenhum pedido
+      mostrou ainda. Sem histórico, pega a trava do mesmo jeito e diz o motivo. Numa retomada, traz
       também `pontos_do_pedido` e as `duvidas` já anotadas; `--continuando` tira da varredura de mudança de fora os
       arquivos que já são sabidamente do próprio pedido, ainda sem ponto. Trava ocupada mais velha do que o prazo
       de `## Modo sem supervisão` (nota de regras) é liberada sozinha; a resposta traz `trava_abandonada_por_prazo`.
@@ -35,7 +36,9 @@ Subcomandos:
       mudou, sai com 6 e a lista em `sem_ponto`, sem soltar a trava: grave o ponto do que o pedido tocou e rode de
       novo; `--sem-ponto-ok` solta mesmo assim (o resto mudou por fora e entra no próximo pedido como mudança de
       fora). Depois grava o resumo no estado.json (campos `notas`, `garimpo`, `colhidos`, `perguntas`, estas
-      somadas às `duvidas` anotadas), limpa os avisos já mostrados e solta a trava.
+      somadas às `duvidas` anotadas e às de pedidos anteriores ainda sem resposta), limpa os avisos já mostrados e
+      solta a trava. `respondidas` no resumo (itens com `pergunta` e/ou `nota`) tira da lista as perguntas de
+      pedidos anteriores que já foram respondidas.
   aviso [--sessao ID]
       O aviso do início da sessão: com a trava livre, pega a trava em nome da sessão, grava as mudanças de fora e
       solta; devolve `linha`. Com BUTLER_SO_LEITURA=1 (uma consulta pelo painel, por exemplo), não grava nada.
@@ -56,6 +59,13 @@ Subcomandos:
   renomear --token T DE PARA
       Move a nota, reescreve os wikilinks que apontam para ela e grava tudo num ponto, com o filtro do `ponto`.
       `links_markdown: true` quer dizer que o vault usa links em Markdown, que ele não reescreve.
+      `links_nao_conferidos` lista as notas que não são UTF-8: ficam como estão, com os links por conferir à mão.
+      `links_ambiguos` lista as notas com link só pelo nome antigo quando outra nota tem esse nome: não são trocados.
+  apagar --token T --rotulo R [--fora-do-inbox] ARQUIVO...
+      Apaga os arquivos e grava a saída deles num ponto: é por aqui que uma nota é apagada, nunca por um `rm`.
+      Recusa tudo (saída 2, nada apagado) se algum não for um arquivo do vault, ficar fora do Inbox sem
+      `--fora-do-inbox`, ou tiver uma versão que o histórico não guarda (sem ponto, ou fora dele por dado sensível
+      ou binário): o desfazer não o devolveria. A pasta fica, mesmo vazia.
   conferir ARQUIVO...
       A conferência do toque (ver lib/conferencia.py).
   sensivel ARQUIVO...
@@ -89,8 +99,8 @@ class Contexto:
     def __init__(self, vault_arg):
         inicio = vault_arg or os.getcwd()
         self.vault = os.path.abspath(config.achar_vault(inicio) or inicio)
-        self.configurado = config.historico_de(self.vault) is not None
         pasta = config.historico_de(self.vault)
+        self.configurado = pasta is not None
         self.hist = Historico(self.vault, pasta) if pasta else None
         self.pasta_estado = config.pasta_de_estado(self.vault)
         self.regras = regras_mod.ler(self.vault)
@@ -234,7 +244,7 @@ def cmd_preparar_historico(args):
     liberadas = regras.liberacoes if regras else set()
     ficariam_fora, copias = [], []
     for caminho in notas.arquivos(vault, com_obsidian=True):
-        if notas.copia_conflito(caminho):
+        if notas.copia_conflito(caminho) and not regras_mod.calado(regras, caminho, "copia_conflito"):
             copias.append(caminho)
         try:
             achados, binario, marca = sensivel.no_arquivo(notas.absoluto(vault, caminho), liberadas)
@@ -285,6 +295,7 @@ def cmd_situacao(args):
     return saida({"vault": ctx.vault, "configurado": ctx.configurado, "historico_ok": ctx.ok, "motivo": ctx.motivo,
                   "trava": trava.descrever(atual), "mudancas_de_fora_pendentes": pendentes,
                   "inbox": _contar_inbox(ctx), "pendencias": _contar_pendencias(ctx),
+                  "perguntas": estado.ler(ctx.pasta_estado).get("perguntas") or [],
                   "pontos_do_pedido_em_andamento": _pontos_do_pedido(ctx, (atual or {}).get("pedido")),
                   "regras": ctx.regras.como_dict() if ctx.regras else None,
                   "historicos_de_vaults_que_sumiram": [] if ctx.configurado else config.sumidos()})
@@ -317,7 +328,8 @@ def cmd_inicio(args):
     if not atual["retomada"]:
         diario.registrar(ctx.pasta_estado, quando=atual["inicio"], evento="inicio", pedido=atual["pedido"],
                          rotulo=atual["rotulo"], sessao=args.sessao)
-    resposta = {"ok": True, "token": atual["token"], "pedido": atual["pedido"], "retomada": atual["retomada"],
+    resposta = {"ok": True, "token": atual["token"], "pedido": atual["pedido"], "rotulo": atual["rotulo"],
+                "retomada": atual["retomada"],
                 "historico_ok": ctx.ok, "motivo": ctx.motivo, "mudancas_de_fora": None,
                 "trava_abandonada_por_prazo": abandonada}
     if ctx.ok:
@@ -411,11 +423,14 @@ def cmd_fim(args):
     for pergunta in resumo.get("perguntas") if isinstance(resumo.get("perguntas"), list) else []:
         trava.somar_duvida(perguntas, pergunta)
     # As perguntas de um pedido anterior que ainda esperam resposta não saem de vista só porque este pedido
-    # terminou: continuam, enquanto a nota que elas citam ainda existir (resolvida ou não, se a nota some, a
-    # pergunta sobre ela deixou de fazer sentido).
+    # terminou: continuam, até o resumo de um pedido as trazer em `respondidas` ou a nota que elas citam deixar de
+    # existir (se a nota some, a pergunta sobre ela deixou de fazer sentido).
+    respondidas = resumo.get("respondidas") if isinstance(resumo.get("respondidas"), list) else []
     for pergunta in estado.ler(ctx.pasta_estado).get("perguntas") or []:
         nota_citada = pergunta.get("nota") if isinstance(pergunta, dict) else None
-        if nota_citada is None or os.path.isfile(notas.absoluto(ctx.vault, nota_citada)):
+        if nota_citada is not None and not os.path.isfile(notas.absoluto(ctx.vault, nota_citada)):
+            continue
+        if not any(trava.responde(resposta, pergunta) for resposta in respondidas):
             trava.somar_duvida(perguntas, pergunta)
     trava.soltar(ctx.pasta_estado, args.token)
     gravado = ctx.gravar_estado(trava=None, ultimo_pedido=ultimo, perguntas=perguntas,
@@ -593,7 +608,7 @@ def cmd_renomear(args):
     atual = _token(ctx, args)
     de, para = ctx.relativo(args.de), ctx.relativo(args.para)
     try:
-        tocadas = operacoes.renomear(ctx.vault, de, para)
+        tocadas, ilegiveis, ambiguas = operacoes.renomear(ctx.vault, de, para)
     except (FileNotFoundError, FileExistsError) as erro:
         return saida({"ok": False, "erro": str(erro)}, USO)
     sha, recusados = None, []
@@ -606,9 +621,35 @@ def cmd_renomear(args):
             sha, _, nao = ctx.hist.gravar(gravar, "nota", f"renomeia {de} para {para}", atual["pedido"],
                                           rotulo_pedido=atual["rotulo"])
             recusados += nao
-    return saida({"ok": True, "de": de, "para": para, "links_atualizados": tocadas, "ponto": sha,
+    return saida({"ok": True, "de": de, "para": para, "links_atualizados": tocadas,
+                  "links_nao_conferidos": ilegiveis, "links_ambiguos": ambiguas, "ponto": sha,
                   "recusados": recusados, "historico_ok": ctx.ok,
                   "links_markdown": notas.usa_links_markdown(ctx.vault)})
+
+
+def cmd_apagar(args):
+    ctx = Contexto(args.vault)
+    atual = _token(ctx, args)
+    inbox = ((ctx.regras.caminho("inbox") if ctx.regras else None) or "Inbox").strip("/").lower() + "/"
+    caminhos = list(dict.fromkeys(ctx.relativo(a) for a in args.arquivos))
+    for caminho in caminhos:  # confere todos antes de apagar o primeiro
+        absoluto = notas.absoluto(ctx.vault, caminho)
+        if ".." in caminho.split("/") or not os.path.isfile(absoluto) or notas.grafia_no_disco(ctx.vault, caminho) != caminho:
+            motivo = "não é um arquivo do vault com esta grafia"
+        elif not args.fora_do_inbox and not caminho.lower().startswith(inbox):
+            motivo = "fica fora do Inbox (use --fora-do-inbox, depois de mostrar ao usuário)"
+        elif ctx.ok and ctx.hist.conteudo("HEAD", caminho) != open(absoluto, "rb").read():
+            motivo = "o histórico não tem esta versão: grave o ponto dela antes, ou apague à mão o que fica fora dele"
+        else:
+            continue
+        return saida({"ok": False, "erro": f"{caminho}: {motivo}", "apagados": []}, USO)
+    for caminho in caminhos:
+        os.remove(notas.absoluto(ctx.vault, caminho))
+    sha, nao = None, []
+    if ctx.ok:
+        sha, _, nao = ctx.hist.gravar(caminhos, "nota", args.rotulo, atual["pedido"], rotulo_pedido=atual["rotulo"])
+    return saida({"ok": True, "apagados": caminhos, "ponto": sha, "recusados": nao, "historico_ok": ctx.ok,
+                  "estado_gravado": ctx.gravar_estado()})
 
 
 def cmd_conferir(args):
@@ -690,6 +731,11 @@ def main(argv=None):
     p.add_argument("--token", required=True)
     p.add_argument("de")
     p.add_argument("para")
+    p = novo("apagar", cmd_apagar)
+    p.add_argument("--token", required=True)
+    p.add_argument("--rotulo", required=True)
+    p.add_argument("--fora-do-inbox", action="store_true")
+    p.add_argument("arquivos", nargs="+")
     for nome, funcao in (("conferir", cmd_conferir), ("sensivel", cmd_sensivel)):
         p = novo(nome, funcao)
         p.add_argument("arquivos", nargs="+")

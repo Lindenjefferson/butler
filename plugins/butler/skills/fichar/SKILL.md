@@ -56,7 +56,7 @@ Uma viagem (ou outra classificação com `<destino>` no caminho) vira uma **seç
 Para cada nota fichada (ou "já estava"):
 
 - atualiza o status da linha do registro de links (se houver) para `colhido`, com o título do destino em texto, sem link, no campo de destino; num "já estava" (só na lista compartilhada), o destino diz "já estava em `<lista>`";
-- inclui no `B ponto` daquela nota o destino (criado ou alterado) e a nota índice, se mudou — no lugar da nota do Inbox, que foi apagada;
+- inclui no `B ponto` daquela nota o destino (criado ou alterado) e a nota índice, se mudou (a nota do Inbox já saiu pelo `B apagar` do gerente, com o ponto dela);
 - no JSON do `B fim` da triagem: o destino em `notas` (`"acao": "alterada"`, ou `"criada"` para destino novo) e a nota do Inbox apagada (`"acao": "apagada", "de": "Inbox/<título>.md"`);
 - no resumo final da triagem, junta os fichados numa linha só: "Fichados: 2 filmes em `<lista>`, 1 seção em `<nota de viagem>`; 1 já estava".
 

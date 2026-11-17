@@ -42,7 +42,21 @@ def test_sem_a_secao_fica_vazia():
         amb.fechar()
 
 
+def test_caminho_absoluto_do_linux_fica_inteiro():
+    amb = Ambiente()
+    try:
+        amb.escrever("Sistema/Regras do Butler.md",
+                     REGRAS.replace("- indice: `Início.md`", "- indice: `Início.md`\n- nuvem: `/mnt/nuvem/Drive/`"))
+        amb.preparar()
+        caminhos = amb.rodar("situacao")["regras"]["caminhos"]
+        assert caminhos["nuvem"] == "/mnt/nuvem/Drive", caminhos
+        assert caminhos["indice"] == "Início.md"
+    finally:
+        amb.fechar()
+
+
 if __name__ == "__main__":
     test_situacao_traz_o_caminho_e_as_pastas_fora_da_varredura()
     test_sem_a_secao_fica_vazia()
+    test_caminho_absoluto_do_linux_fica_inteiro()
     print("ALL PASS")

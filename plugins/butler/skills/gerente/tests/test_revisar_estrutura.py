@@ -10,6 +10,33 @@ def _achados(resposta, arquivo):
     return []
 
 
+def test_exemplo_em_bloco_de_codigo_na_nota_de_regras_nao_e_regra():
+    amb = Ambiente()
+    try:
+        exemplo = "Exemplo de como declarar:\n\n```\n## Notas protegidas\n\n- `Casa/**` — exemplo\n```\n\n## Caminhos"
+        amb.escrever("Sistema/Regras do Butler.md", REGRAS.replace("## Caminhos", exemplo))
+        regras = amb.rodar("situacao")["regras"]
+        assert "Casa/**" not in regras["protegidas"], regras["protegidas"]
+        assert regras["caminhos"]["indice"] == "Início.md"  # a seção de verdade, depois do bloco, continua lida
+    finally:
+        amb.fechar()
+
+
+def test_conferencia_e_historico_ignoram_os_mesmos_arquivos():
+    amb = Ambiente()
+    try:
+        amb.preparar()
+        for lixo in ("Casa/rascunho.tmp", "Casa/~$Planilha.xlsx", "Casa/video.crdownload", "Casa/Thumbs.db"):
+            amb.escrever(lixo, "x")
+        amb.inicio()
+        assert amb.git("status", "--porcelain", "--untracked-files=all").strip() == ""  # o histórico não os vê
+        revisao = amb.rodar("revisar")
+        assert not [n["arquivo"] for n in revisao["notas"] if n["arquivo"].startswith("Casa/")], revisao["notas"]
+        assert "Casa" in revisao["pastas_vazias"]  # só lixo dentro: para a revisão, a pasta está vazia
+    finally:
+        amb.fechar()
+
+
 def test_arvore_conta_as_notas_de_cada_pasta():
     amb = Ambiente()
     try:

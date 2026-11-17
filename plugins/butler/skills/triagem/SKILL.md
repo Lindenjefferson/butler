@@ -37,7 +37,7 @@ Para cada nota, sem parar entre elas:
 7. **Nota de garimpo com ✅:** sugira, no fim, uma pendência "testar" na nota de pendências. A linha só entra com o OK, pela skill `butler:pendencias`.
 8. **Nota de garimpo com link no registro de links:** ao mover, unir, fichar ou descartar, atualize o status e o destino da linha do registro, mantendo o destino anterior citado no texto, como a regra do registro manda. Use os status e a forma que a nota do registro define (se ela não tiver um status para descartado, siga o que ela faz, como "descartada" no destino). Nota de garimpo com link do registro sem linha nele: acrescente a linha. Segue direto.
 9. Pasta que ficou vazia depois de mover: sai, se o `CLAUDE.md` mandar. Subpasta do Inbox que ficou vazia sempre sai (é só organização temporária, como o passo 3 já diz), mesmo sem regra escrita para isso no `CLAUDE.md`.
-10. `B ponto --token <token> --rotulo "triagem: <título>" <arquivos>`, com todos os arquivos que você tocou por aquela nota e que o `renomear` não gravou: a nota no destino, a nota índice e o registro, se mudaram. Num arquivo de atualização, a original e o arquivo apagado do Inbox. Ao fichar, a lista e a nota do Inbox apagada. Um ponto por nota concluída.
+10. `B ponto --token <token> --rotulo "triagem: <título>" <arquivos>`, com todos os arquivos que você tocou por aquela nota e que o `renomear` não gravou: a nota no destino, a nota índice e o registro, se mudaram. Num arquivo de atualização, a original. Ao fichar, a lista. A nota apagada do Inbox não entra aqui: ela sai pelo `B apagar` do gerente, que já grava a saída. Um ponto por nota concluída.
 
 ## Fim
 

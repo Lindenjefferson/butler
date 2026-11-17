@@ -5,6 +5,8 @@ histórico só vale nesta máquina e um apontador dentro do vault seria sincroni
 
     {"versao": 1, "vaults": {"<caminho do vault>": {"historico": "<pasta do histórico>"}}}
 
+Um arquivo ilegível conta como vazio; antes de ser regravado, é copiado para `maquina.json.ilegivel`.
+
 O painel lê este mesmo arquivo para achar o `estado.json` de cada vault (`<historico>/estado.json`).
 
 A pasta do histórico não pode ficar dentro do vault, numa pasta sincronizada (OneDrive, Google Drive, Dropbox,
@@ -15,6 +17,7 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import tempfile
 import unicodedata
 
@@ -33,20 +36,26 @@ def chave(caminho):
     return unicodedata.normalize("NFC", os.path.normcase(os.path.abspath(caminho)))
 
 
-def ler():
+def _ler():
+    """A configuração como está no disco, ou None se o arquivo não existe ou não dá para entender."""
     try:
         with open(caminho_config(), encoding="utf-8") as arquivo:
             dados = json.load(arquivo)
     except (OSError, ValueError):
-        return {"versao": VERSAO, "vaults": {}}
-    if not isinstance(dados, dict) or not isinstance(dados.get("vaults"), dict):
-        return {"versao": VERSAO, "vaults": {}}
-    return dados
+        return None
+    return dados if isinstance(dados, dict) and isinstance(dados.get("vaults"), dict) else None
+
+
+def ler():
+    return _ler() or {"versao": VERSAO, "vaults": {}}
 
 
 def gravar(dados):
     destino = caminho_config()
     os.makedirs(os.path.dirname(destino), exist_ok=True)
+    if os.path.isfile(destino) and _ler() is None:
+        # Ilegível (cortado no meio, editado à mão): os outros vaults registrados nele se perderiam ao regravar.
+        shutil.copyfile(destino, destino + ".ilegivel")
     temporario = destino + ".novo"
     with open(temporario, "w", encoding="utf-8", newline="\n") as arquivo:
         json.dump(dados, arquivo, ensure_ascii=False, indent=2)

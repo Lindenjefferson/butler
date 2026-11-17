@@ -35,9 +35,12 @@ def test_mesma_sessao_retoma_a_trava_com_o_mesmo_pedido():
     try:
         amb.preparar()
         primeiro = amb.inicio("triagem", sessao="sessao-a")
-        segundo = amb.inicio("triagem", sessao="sessao-a")
+        segundo = amb.inicio("registra o óleo", sessao="sessao-a")
         assert segundo["retomada"] and segundo["pedido"] == primeiro["pedido"]
         assert segundo["token"] == primeiro["token"]
+        # O rótulo que volta é o do pedido retomado, não o que se pediu agora: é por ele que se vê um pedido
+        # anterior que ficou sem `fim`.
+        assert primeiro["rotulo"] == "triagem" and segundo["rotulo"] == "triagem"
     finally:
         amb.fechar()
 
@@ -86,6 +89,20 @@ def test_trava_ainda_dentro_do_prazo_nao_libera_sozinha():
         amb.inicio("triagem", sessao="a")
         _envelhecer_trava(amb, 10)
         resposta = amb.inicio("garimpo", sessao="b", esperado=3)
+        assert resposta["trava_ocupada"]["rotulo"] == "triagem"
+    finally:
+        amb.fechar()
+
+
+def test_prazo_em_outra_unidade_nao_vale_como_minutos():
+    amb = Ambiente()
+    try:
+        amb.escrever("Sistema/Regras do Butler.md", REGRAS.replace(
+            "## Caminhos", "## Modo sem supervisão\n\n- trava abandonada depois de: `2 h`\n\n## Caminhos"))
+        amb.preparar()
+        amb.inicio("triagem", sessao="a")
+        _envelhecer_trava(amb, 10)
+        resposta = amb.inicio("garimpo", sessao="b", esperado=3)  # `2 h` não é 2 minutos: prazo não declarado
         assert resposta["trava_ocupada"]["rotulo"] == "triagem"
     finally:
         amb.fechar()

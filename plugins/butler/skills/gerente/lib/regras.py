@@ -28,7 +28,8 @@ pela skill. Títulos de seção, comparados sem acento e sem maiúsculas:
 - `## Modo sem supervisão`: ausente, nada muda (uma trava de outra sessão só sai com `--forcar` depois de um sim,
   como sempre). Presente, com `- trava abandonada depois de: \\`<N> min\\``: uma trava mais velha que `<N>` minutos
   (pela `atualizado`) é tratada como abandonada e liberada sozinha pelo próprio `inicio`, sem pedir sim — pensado
-  para quando não há ninguém para responder esse sim (um serviço de pé). Trava `corrompida` nunca entra nessa conta
+  para quando não há ninguém para responder esse sim (um serviço de pé). Só minutos: um valor em outra unidade
+  (`2 h`) conta como não declarado. Trava `corrompida` nunca entra nessa conta
   (a idade não é confiável): continua exigindo `--forcar`. Vale só para a trava; não muda nenhuma outra parada.
 
 O `CLAUDE.md` da raiz e a própria nota de regras são sempre protegidos, estejam ou não na lista.
@@ -56,8 +57,12 @@ class Regras:
         self.colheita = {}
         self.nuvem_ignorada = []
         self.sem_supervisao = {}
-        secao = None
+        secao, em_codigo = None, False
         for linha in texto.splitlines():
+            if linha.lstrip().startswith(("```", "~~~")):
+                em_codigo = not em_codigo
+            if em_codigo:
+                continue  # um exemplo dentro de bloco de código não é regra
             titulo = re.match(r"^##\s+(.+?)\s*$", linha)
             if titulo:
                 secao = sem_acento(titulo.group(1))
@@ -72,7 +77,9 @@ class Regras:
                 if par:
                     destino = (self.caminhos if secao == "caminhos" else
                                self.sem_supervisao if secao == "modo sem supervisao" else self.colheita)
-                    destino[sem_acento(par.group(1))] = par.group(2).strip().strip("/")
+                    nome, valor = sem_acento(par.group(1)), par.group(2).strip().rstrip("/")
+                    # `nuvem` é absoluto: a barra do começo de um caminho do Linux fica.
+                    destino[nome] = valor if nome == "nuvem" else valor.lstrip("/")
                 continue
             if not codigos:
                 continue
@@ -112,7 +119,7 @@ class Regras:
     def prazo_trava_abandonada(self):
         """Minutos declarados em `## Modo sem supervisão` para liberar uma trava sozinho, ou None sem a seção."""
         valor = self.sem_supervisao.get("trava abandonada depois de")
-        numero = re.match(r"^\s*(\d+)", valor or "")
+        numero = re.fullmatch(r"\s*(\d+)\s*min(?:utos?)?\s*", valor or "", re.I)  # `2 h` não vira 2 minutos
         return int(numero.group(1)) if numero else None
 
     def como_dict(self):
@@ -121,6 +128,11 @@ class Regras:
                 "liberacoes": sorted(self.liberacoes),
                 "binarios_liberados": self.binarios_liberados, "caminhos": self.caminhos, "colheita": self.colheita,
                 "nuvem_ignorada": self.nuvem_ignorada, "sem_supervisao": self.sem_supervisao}
+
+
+def calado(regras, caminho, codigo):
+    """Uma exceção aprendida cala este achado nesta nota (sem regras, nada é calado)."""
+    return bool(regras and regras.calado(caminho, codigo))
 
 
 def _glob_para_regex(glob):
