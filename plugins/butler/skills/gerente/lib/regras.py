@@ -57,8 +57,12 @@ class Regras:
         self.colheita = {}
         self.nuvem_ignorada = []
         self.sem_supervisao = {}
-        secao = None
+        secao, em_codigo = None, False
         for linha in texto.splitlines():
+            if linha.lstrip().startswith(("```", "~~~")):
+                em_codigo = not em_codigo
+            if em_codigo:
+                continue  # um exemplo dentro de bloco de código não é regra
             titulo = re.match(r"^##\s+(.+?)\s*$", linha)
             if titulo:
                 secao = sem_acento(titulo.group(1))
