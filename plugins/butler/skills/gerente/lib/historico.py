@@ -161,9 +161,9 @@ class Historico:
             else:
                 estado = "alterado"
             itens.append((estado, caminho))
-        vistos = {caminho for _, caminho in itens}
+        vistos, pastas = {caminho for _, caminho in itens}, {}
         for caminho in self.rastreados():
-            if caminho not in vistos and not self.existe_exato(caminho):
+            if caminho not in vistos and not self.existe_exato(caminho, pastas):
                 itens.append(("apagado", caminho))
         return itens
 
@@ -173,15 +173,19 @@ class Historico:
         saida = self.git("ls-files", "-z").stdout.decode("utf-8", "replace")
         return [caminho for caminho in saida.split("\0") if caminho]
 
-    def existe_exato(self, caminho):
+    def existe_exato(self, caminho, pastas=None):
         """O arquivo existe com esta grafia exata. No Windows, `nota.md` "existe" quando o disco tem `Nota.md`, e o
-        git não percebe a renomeação só de maiúsculas sem esta conferência."""
+        git não percebe a renomeação só de maiúsculas sem esta conferência. `pastas` guarda a listagem de cada
+        pasta entre chamadas seguidas (quem confere o vault inteiro lista cada pasta uma vez, não uma por nota)."""
+        pastas = {} if pastas is None else pastas
         atual = self.vault
         for parte in caminho.split("/"):
-            try:
-                if parte not in os.listdir(atual):
-                    return False
-            except OSError:
+            if atual not in pastas:
+                try:
+                    pastas[atual] = set(os.listdir(atual))
+                except OSError:
+                    pastas[atual] = set()
+            if parte not in pastas[atual]:
                 return False
             atual = os.path.join(atual, parte)
         return True
@@ -248,6 +252,7 @@ class Historico:
         nao_gravados): um arquivo que o git não consegue ler (aberto por outro programa, por exemplo) fica de fora
         e vai para `nao_gravados` com o motivo, em vez de derrubar o ponto inteiro."""
         assert tipo in TIPOS
+        rotulo = " ".join(rotulo.split())  # uma linha só: é o assunto do commit, que `commits` lê de volta
         if self.tem_commit():
             self.git("reset", "-q")
         else:

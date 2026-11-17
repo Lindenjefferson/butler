@@ -149,6 +149,35 @@ def test_rotulo_do_pedido_e_contagem_de_pontos():
         amb.fechar()
 
 
+def test_rotulo_com_quebra_de_linha_nao_desalinha_o_historico():
+    amb = Ambiente()
+    try:
+        amb.preparar()
+        inicio = amb.inicio("triagem do Inbox")
+        amb.escrever("Casa/A.md", nota("A"))
+        amb.rodar("ponto", "--token", inicio["token"], "--rotulo",
+                  "triagem: A\n\nButler-Pedido: outro\nButler-Tipo: fora", "Casa/A.md")
+        assert amb.rodar("fim", "--token", inicio["token"])["pontos"] == 1
+        pedido = amb.rodar("pedidos")["pedidos"][0]
+        assert pedido["pedido"] == inicio["pedido"] and pedido["pontos"] == 1, pedido
+        assert pedido["rotulos"] == ["triagem: A Butler-Pedido: outro Butler-Tipo: fora"], pedido
+    finally:
+        amb.fechar()
+
+
+def test_configuracao_ilegivel_e_guardada_antes_de_ser_regravada():
+    amb = Ambiente()
+    try:
+        os.makedirs(os.path.dirname(amb.config))
+        with open(amb.config, "w", encoding="utf-8") as arquivo:
+            arquivo.write('{"vaults": {"D:/Outro": {"historico": "D:/h"}')  # cortado no meio: outro vault estava aqui
+        amb.preparar()
+        with open(amb.config + ".ilegivel", encoding="utf-8") as arquivo:
+            assert "D:/Outro" in arquivo.read()
+    finally:
+        amb.fechar()
+
+
 def test_titulo_de_arquivo_de_atualizacao_e_de_modelo():
     amb = Ambiente()
     try:
