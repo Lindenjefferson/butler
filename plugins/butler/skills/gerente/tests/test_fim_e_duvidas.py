@@ -102,6 +102,26 @@ def test_pergunta_pendente_sobrevive_ao_fim_do_pedido_seguinte():
         amb.fechar()
 
 
+def test_pergunta_respondida_sai_pelo_resumo_do_fim():
+    amb = Ambiente()
+    try:
+        amb.preparar()
+        token = amb.inicio("programas", sessao="s")["token"]
+        for pergunta, extra in (("Em que seção entra o X?", ["--nota", "Inventários/Geladeira.md"]),
+                                ("Qual o tamanho do lote?", []), ("Arquivo o projeto Y?", [])):
+            amb.rodar("duvida", "--token", token, "--pergunta", pergunta, *extra)
+        amb.rodar("fim", "--token", token)
+        assert len(amb.rodar("situacao")["perguntas"]) == 3  # quem chega depois vê o que espera resposta
+        # a nota citada continua no lugar: a pergunta só sai porque o pedido das respostas diz que foi respondida
+        respostas = amb.inicio("programas: respostas", sessao="s")["token"]
+        resumo = {"respondidas": [{"pergunta": "em que secao entra o X", "nota": "Inventários/Geladeira.md"},
+                                  {"pergunta": "Qual o tamanho do lote?"}]}
+        amb.rodar("fim", "--token", respostas, "--resumo", "-", entrada=json.dumps(resumo).encode("utf-8"))
+        assert [p["pergunta"] for p in amb.estado()["perguntas"]] == ["Arquivo o projeto Y?"]
+    finally:
+        amb.fechar()
+
+
 def test_duvida_com_token_errado_e_recusada():
     amb = Ambiente()
     try:

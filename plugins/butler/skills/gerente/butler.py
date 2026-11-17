@@ -13,13 +13,14 @@ Subcomandos:
       sensível nem binários, conferindo também a pasta `.obsidian`. Recusa uma pasta que já é o histórico de outro
       vault. `--so-conferir` só relata o que impediria ou ficaria de fora. Rodado de novo, só confere e completa.
   situacao
-      Só lê: histórico ok ou o motivo, trava, quantas mudanças de fora esperam, Inbox, pendências e os pontos do
-      pedido em andamento (para dizer onde um Lote parou). Num vault sem histórico nesta máquina, lista em
+      Só lê: histórico ok ou o motivo, trava, quantas mudanças de fora esperam, Inbox, pendências, as `perguntas`
+      que ainda esperam resposta e os pontos do pedido em andamento (para dizer onde um Lote parou). Num vault sem histórico nesta máquina, lista em
       `historicos_de_vaults_que_sumiram` os vaults registrados cuja pasta não existe mais (um vault movido).
   inicio --rotulo R [--sessao ID] [--continuando ARQUIVO ...]
       Pega a trava (a mesma sessão retoma a dela) e grava o ponto das mudanças de fora. Devolve `token`, `pedido`,
-      `rotulo` (numa retomada, o do pedido retomado, que pode não ser o `--rotulo` de agora), `historico_ok`, `motivo` e `mudancas_de_fora`, com os avisos que o aviso do início da sessão já tinha gravado
-      e nenhum pedido mostrou ainda. Sem histórico, pega a trava do mesmo jeito e diz o motivo. Numa retomada, traz
+      `rotulo` (numa retomada, o do pedido retomado, que pode não ser o `--rotulo` de agora), `historico_ok`,
+      `motivo` e `mudancas_de_fora`, com os avisos que o aviso do início da sessão já tinha gravado e nenhum pedido
+      mostrou ainda. Sem histórico, pega a trava do mesmo jeito e diz o motivo. Numa retomada, traz
       também `pontos_do_pedido` e as `duvidas` já anotadas; `--continuando` tira da varredura de mudança de fora os
       arquivos que já são sabidamente do próprio pedido, ainda sem ponto. Trava ocupada mais velha do que o prazo
       de `## Modo sem supervisão` (nota de regras) é liberada sozinha; a resposta traz `trava_abandonada_por_prazo`.
@@ -35,7 +36,9 @@ Subcomandos:
       mudou, sai com 6 e a lista em `sem_ponto`, sem soltar a trava: grave o ponto do que o pedido tocou e rode de
       novo; `--sem-ponto-ok` solta mesmo assim (o resto mudou por fora e entra no próximo pedido como mudança de
       fora). Depois grava o resumo no estado.json (campos `notas`, `garimpo`, `colhidos`, `perguntas`, estas
-      somadas às `duvidas` anotadas), limpa os avisos já mostrados e solta a trava.
+      somadas às `duvidas` anotadas e às de pedidos anteriores ainda sem resposta), limpa os avisos já mostrados e
+      solta a trava. `respondidas` no resumo (itens com `pergunta` e/ou `nota`) tira da lista as perguntas de
+      pedidos anteriores que já foram respondidas.
   aviso [--sessao ID]
       O aviso do início da sessão: com a trava livre, pega a trava em nome da sessão, grava as mudanças de fora e
       solta; devolve `linha`. Com BUTLER_SO_LEITURA=1 (uma consulta pelo painel, por exemplo), não grava nada.
@@ -291,6 +294,7 @@ def cmd_situacao(args):
     return saida({"vault": ctx.vault, "configurado": ctx.configurado, "historico_ok": ctx.ok, "motivo": ctx.motivo,
                   "trava": trava.descrever(atual), "mudancas_de_fora_pendentes": pendentes,
                   "inbox": _contar_inbox(ctx), "pendencias": _contar_pendencias(ctx),
+                  "perguntas": estado.ler(ctx.pasta_estado).get("perguntas") or [],
                   "pontos_do_pedido_em_andamento": _pontos_do_pedido(ctx, (atual or {}).get("pedido")),
                   "regras": ctx.regras.como_dict() if ctx.regras else None,
                   "historicos_de_vaults_que_sumiram": [] if ctx.configurado else config.sumidos()})
@@ -418,11 +422,14 @@ def cmd_fim(args):
     for pergunta in resumo.get("perguntas") if isinstance(resumo.get("perguntas"), list) else []:
         trava.somar_duvida(perguntas, pergunta)
     # As perguntas de um pedido anterior que ainda esperam resposta não saem de vista só porque este pedido
-    # terminou: continuam, enquanto a nota que elas citam ainda existir (resolvida ou não, se a nota some, a
-    # pergunta sobre ela deixou de fazer sentido).
+    # terminou: continuam, até o resumo de um pedido as trazer em `respondidas` ou a nota que elas citam deixar de
+    # existir (se a nota some, a pergunta sobre ela deixou de fazer sentido).
+    respondidas = resumo.get("respondidas") if isinstance(resumo.get("respondidas"), list) else []
     for pergunta in estado.ler(ctx.pasta_estado).get("perguntas") or []:
         nota_citada = pergunta.get("nota") if isinstance(pergunta, dict) else None
-        if nota_citada is None or os.path.isfile(notas.absoluto(ctx.vault, nota_citada)):
+        if nota_citada is not None and not os.path.isfile(notas.absoluto(ctx.vault, nota_citada)):
+            continue
+        if not any(trava.responde(resposta, pergunta) for resposta in respondidas):
             trava.somar_duvida(perguntas, pergunta)
     trava.soltar(ctx.pasta_estado, args.token)
     gravado = ctx.gravar_estado(trava=None, ultimo_pedido=ultimo, perguntas=perguntas,

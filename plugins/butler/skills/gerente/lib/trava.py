@@ -164,6 +164,14 @@ def somar_duvida(duvidas, duvida):
         duvidas.append(duvida)
 
 
+def responde(resposta, duvida):
+    """A `resposta` (`pergunta` e/ou `nota`) é desta dúvida: o que ela traz bate, comparado como em `somar_duvida`."""
+    if not isinstance(resposta, dict) or not isinstance(duvida, dict) or not (resposta.get("pergunta") or resposta.get("nota")):
+        return False
+    mesma_pergunta = not resposta.get("pergunta") or _chave_duvida(resposta)[0] == _chave_duvida(duvida)[0]
+    return mesma_pergunta and (not resposta.get("nota") or resposta["nota"] == duvida.get("nota"))
+
+
 def soltar(pasta, token):
     verificar(pasta, token)
     _remover(pasta)
