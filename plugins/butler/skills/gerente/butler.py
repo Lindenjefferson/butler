@@ -60,6 +60,7 @@ Subcomandos:
       Move a nota, reescreve os wikilinks que apontam para ela e grava tudo num ponto, com o filtro do `ponto`.
       `links_markdown: true` quer dizer que o vault usa links em Markdown, que ele não reescreve.
       `links_nao_conferidos` lista as notas que não são UTF-8: ficam como estão, com os links por conferir à mão.
+      `links_ambiguos` lista as notas com link só pelo nome antigo quando outra nota tem esse nome: não são trocados.
   apagar --token T --rotulo R [--fora-do-inbox] ARQUIVO...
       Apaga os arquivos e grava a saída deles num ponto: é por aqui que uma nota é apagada, nunca por um `rm`.
       Recusa tudo (saída 2, nada apagado) se algum não for um arquivo do vault, ficar fora do Inbox sem
@@ -607,7 +608,7 @@ def cmd_renomear(args):
     atual = _token(ctx, args)
     de, para = ctx.relativo(args.de), ctx.relativo(args.para)
     try:
-        tocadas, ilegiveis = operacoes.renomear(ctx.vault, de, para)
+        tocadas, ilegiveis, ambiguas = operacoes.renomear(ctx.vault, de, para)
     except (FileNotFoundError, FileExistsError) as erro:
         return saida({"ok": False, "erro": str(erro)}, USO)
     sha, recusados = None, []
@@ -621,7 +622,7 @@ def cmd_renomear(args):
                                           rotulo_pedido=atual["rotulo"])
             recusados += nao
     return saida({"ok": True, "de": de, "para": para, "links_atualizados": tocadas,
-                  "links_nao_conferidos": ilegiveis, "ponto": sha,
+                  "links_nao_conferidos": ilegiveis, "links_ambiguos": ambiguas, "ponto": sha,
                   "recusados": recusados, "historico_ok": ctx.ok,
                   "links_markdown": notas.usa_links_markdown(ctx.vault)})
 

@@ -120,6 +120,38 @@ def test_renomear_atualiza_links_com_apelido_e_secao():
         amb.fechar()
 
 
+def test_renomear_nao_mexe_em_link_dentro_de_codigo():
+    amb = Ambiente()
+    try:
+        corpo = "Sintaxe: `[[Geladeira]]`\n\n```\n[[Geladeira]]\n```\n\nDe verdade: [[Geladeira]]"
+        amb.escrever("Casa/Guia.md", nota("Guia", corpo))
+        amb.preparar()
+        token = amb.inicio("renomeia")["token"]
+        amb.rodar("renomear", "--token", token, "Inventários/Geladeira.md", "Inventários/Refrigerador.md")
+        texto = amb.ler("Casa/Guia.md")
+        assert "Sintaxe: `[[Geladeira]]`" in texto and "```\n[[Geladeira]]\n```" in texto
+        assert "De verdade: [[Refrigerador]]" in texto
+    finally:
+        amb.fechar()
+
+
+def test_renomear_nao_toma_link_solto_de_nota_homonima():
+    amb = Ambiente()
+    try:
+        amb.escrever("Doces/Bolo.md", nota("Bolo"))
+        amb.escrever("Salgados/Bolo.md", nota("Bolo"))
+        amb.escrever("Casa/Cardápio.md", nota("Cardápio", "Solto: [[Bolo]]. Com caminho: [[Doces/Bolo]] e [[Salgados/Bolo]]."))
+        amb.preparar()
+        token = amb.inicio("renomeia")["token"]
+        resposta = amb.rodar("renomear", "--token", token, "Doces/Bolo.md", "Doces/Torta.md")
+        texto = amb.ler("Casa/Cardápio.md")
+        # o solto pode ser de qualquer um dos dois: fica como está e a nota sai na lista para a pessoa conferir
+        assert "Solto: [[Bolo]]." in texto and "[[Torta]] e [[Salgados/Bolo]]" in texto
+        assert resposta["links_ambiguos"] == ["Casa/Cardápio.md"]
+    finally:
+        amb.fechar()
+
+
 def test_renomear_nao_regrava_nota_que_nao_e_utf8():
     amb = Ambiente()
     try:

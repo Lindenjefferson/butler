@@ -106,6 +106,13 @@ def sem_codigo(texto):
     return _CODIGO_INLINE.sub("", _CERCA.sub("", texto))
 
 
+def em_codigo(texto):
+    """Devolve a função que diz se uma posição do texto cai dentro de código (bloco cercado ou trecho entre crases)."""
+    trechos = [c.span() for c in _CERCA.finditer(texto)]
+    trechos += [c.span() for c in _CODIGO_INLINE.finditer(texto)]
+    return lambda posicao: any(inicio <= posicao < fim for inicio, fim in trechos)
+
+
 def wikilinks(texto):
     """Alvos dos wikilinks fora de código, sem `|apelido` nem `#seção`."""
     alvos = []

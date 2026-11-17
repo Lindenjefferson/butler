@@ -297,51 +297,55 @@ def publico(plano, conteudo=()):
 # -- renomear ----------------------------------------------------------------------------------------------------
 
 def renomear(vault, de, para):
-    """Move `de` para `para` e reescreve os wikilinks. Devolve (as notas cujos links mudaram, as notas que não são
-    UTF-8 e por isso não foram lidas nem tocadas)."""
+    """Move `de` para `para` e reescreve os wikilinks fora de código. Devolve três listas de notas: as que tiveram
+    link trocado; as que não são UTF-8, que não são lidas nem tocadas; e as que têm um link só com o nome antigo
+    quando outra nota tem esse mesmo nome (o link pode ser de qualquer uma das duas, então fica como está).
+
+    Todas as notas são lidas e os textos novos calculados antes de mover: um arquivo que não dá para ler (preso pelo
+    sincronizador) interrompe a operação sem nada ter mudado."""
     origem, destino = notas.absoluto(vault, de), notas.absoluto(vault, para)
     if not os.path.isfile(origem):
         raise FileNotFoundError(f"{de} não existe")
     if os.path.exists(destino) and os.path.normcase(origem) != os.path.normcase(destino):
         raise FileExistsError(f"{para} já existe")
-    lista = notas.arquivos(vault)
-    velho_nome = de.rsplit("/", 1)[-1]
-    velho_nome = velho_nome[:-3] if velho_nome.lower().endswith(".md") else velho_nome
-    velho_caminho = de[:-3] if de.lower().endswith(".md") else de
-    novo_nome = para.rsplit("/", 1)[-1]
-    novo_nome = novo_nome[:-3] if novo_nome.lower().endswith(".md") else novo_nome
-    novo_caminho = para[:-3] if para.lower().endswith(".md") else para
-    homonimos = [c for c in lista if c != de and c.rsplit("/", 1)[-1].lower() in (novo_nome.lower() + ".md",
-                                                                                  novo_nome.lower())]
-    novo_alvo = novo_caminho if homonimos else novo_nome
     nfc = lambda texto: unicodedata.normalize("NFC", texto).lower()
-    alvos_velhos = {nfc(velho_nome), nfc(velho_caminho), nfc(de)}
+    sem_md = lambda caminho: caminho[:-3] if caminho.lower().endswith(".md") else caminho
+    nome = lambda caminho: nfc(sem_md(caminho.rsplit("/", 1)[-1]))
+    lista = notas.arquivos(vault)
+    outras = {nome(c) for c in lista if c != de}
+    # Com outra nota de mesmo nome, o link só com o nome não diz de qual das duas é.
+    novo_alvo = sem_md(para) if nome(para) in outras else sem_md(para.rsplit("/", 1)[-1])
+    solto_ambiguo = "/" in de and nome(de) in outras
+    alvos_velhos = {nfc(sem_md(de)), nfc(de)} | (set() if solto_ambiguo else {nome(de)})
 
-    def trocar(casado):
+    def trocar(casado, codigo):
         inteiro, dentro = casado.group(0), casado.group(1)
         alvo, resto = re.match(r"^([^|#^]*)(.*)$", dentro, re.S).groups()
-        if nfc(alvo.strip()) not in alvos_velhos:
-            return inteiro
+        if nfc(alvo.strip()) not in alvos_velhos or codigo(casado.start()):
+            return inteiro  # outro alvo, ou um exemplo de sintaxe dentro de código, que a conferência também pula
         prefixo = "![[" if inteiro.startswith("!") else "[["
         return f"{prefixo}{novo_alvo}{resto}]]"
 
-    os.makedirs(os.path.dirname(destino), exist_ok=True)
-    os.replace(origem, destino)  # a pasta de origem fica, mesmo vazia: tirá-la é decisão do `CLAUDE.md`
-    tocadas, ilegiveis = [], []
-    for caminho in notas.arquivos(vault):
+    novos, ilegiveis, ambiguas = {}, [], []
+    for caminho in lista:
         if not caminho.lower().endswith(".md"):
             continue
-        absoluto = notas.absoluto(vault, caminho)
-        with open(absoluto, "rb") as arquivo:
+        with open(notas.absoluto(vault, caminho), "rb") as arquivo:
             bruto = arquivo.read()
         try:
             texto = bruto.decode("utf-8")
         except UnicodeDecodeError:
             ilegiveis.append(caminho)  # regravar trocaria por `?` o que não é UTF-8: a nota fica como está
             continue
-        novo = re.sub(r"!?\[\[([^\]\n]+?)\]\]", trocar, texto)
+        codigo = notas.em_codigo(texto)
+        novo = re.sub(r"!?\[\[([^\]\n]+?)\]\]", lambda casado: trocar(casado, codigo), texto)
         if novo != texto:
-            with open(absoluto, "wb") as arquivo:
-                arquivo.write(novo.encode("utf-8"))
-            tocadas.append(caminho)
-    return tocadas, ilegiveis
+            novos[para if caminho == de else caminho] = novo
+        if solto_ambiguo and any(nfc(alvo) == nome(de) for alvo in notas.wikilinks(texto)):
+            ambiguas.append(para if caminho == de else caminho)
+    os.makedirs(os.path.dirname(destino), exist_ok=True)
+    os.replace(origem, destino)  # a pasta de origem fica, mesmo vazia: tirá-la é decisão do `CLAUDE.md`
+    for caminho, novo in novos.items():
+        with open(notas.absoluto(vault, caminho), "wb") as arquivo:
+            arquivo.write(novo.encode("utf-8"))
+    return list(novos), ilegiveis, ambiguas
