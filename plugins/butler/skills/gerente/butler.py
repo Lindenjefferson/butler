@@ -99,8 +99,8 @@ class Contexto:
     def __init__(self, vault_arg):
         inicio = vault_arg or os.getcwd()
         self.vault = os.path.abspath(config.achar_vault(inicio) or inicio)
-        self.configurado = config.historico_de(self.vault) is not None
         pasta = config.historico_de(self.vault)
+        self.configurado = pasta is not None
         self.hist = Historico(self.vault, pasta) if pasta else None
         self.pasta_estado = config.pasta_de_estado(self.vault)
         self.regras = regras_mod.ler(self.vault)

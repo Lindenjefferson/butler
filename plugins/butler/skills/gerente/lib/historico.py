@@ -17,20 +17,11 @@ import os
 import subprocess
 import time
 
-EXCLUIR = [
-    ".obsidian/workspace.json",
-    ".obsidian/workspace-mobile.json",
-    ".obsidian/workspaces.json",
-    ".tmp.drivedownload/",
-    ".tmp.driveupload/",
-    ".trash/",
-    "desktop.ini",
-    "Thumbs.db",
-    ".DS_Store",
-    "~$*",
-    "*.tmp",
-    "*.crdownload",
-]
+from . import notas
+
+# A configuração do Obsidian entra no histórico, menos o estado das janelas; o resto é o que a conferência ignora.
+EXCLUIR = [".obsidian/workspace.json", ".obsidian/workspace-mobile.json", ".obsidian/workspaces.json",
+           *sorted(pasta + "/" for pasta in notas.IGNORAR_PASTAS - {".obsidian"}), *notas.IGNORAR_ARQUIVOS]
 CONFIG = {
     "core.autocrlf": "false",
     "core.safecrlf": "false",

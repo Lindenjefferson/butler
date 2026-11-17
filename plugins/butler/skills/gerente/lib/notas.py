@@ -1,11 +1,14 @@
 """Leitura do vault: arquivos, frontmatter e wikilinks. Só lê."""
+import fnmatch
 import json
 import os
 import re
 import unicodedata
 
+# O que não é do vault (lixo do sistema, do sincronizador e de programas): fica fora da conferência e, por
+# `historico.EXCLUIR`, que parte destas duas listas, fora do histórico.
 IGNORAR_PASTAS = {".obsidian", ".trash", ".git", ".tmp.drivedownload", ".tmp.driveupload"}
-IGNORAR_ARQUIVOS = {"desktop.ini", "thumbs.db", ".ds_store"}
+IGNORAR_ARQUIVOS = ("desktop.ini", "Thumbs.db", ".DS_Store", "~$*", "*.tmp", "*.crdownload")
 COPIA_CONFLITO = re.compile(r" \(\d{1,2}\)$")  # o contador do sincronizador; `(2021)` é um ano no nome
 _LINK = re.compile(r"!?\[\[([^\]\n]+?)\]\]")
 _CERCA = re.compile(r"^(```|~~~).*?^\1", re.S | re.M)
@@ -21,6 +24,10 @@ def absoluto(vault, relativo):
     return os.path.join(vault, *relativo.split("/"))
 
 
+def ignorado(nome):
+    return any(fnmatch.fnmatchcase(nome.lower(), padrao.lower()) for padrao in IGNORAR_ARQUIVOS)
+
+
 def arquivos(vault, com_obsidian=False):
     """Os arquivos do vault. `com_obsidian` inclui a configuração do Obsidian, que entra no histórico (menos o
     estado das janelas) e por isso passa pela detecção de dado sensível: um plugin pode guardar uma chave ali."""
@@ -29,7 +36,7 @@ def arquivos(vault, com_obsidian=False):
     for raiz, pastas, nomes in os.walk(vault):
         pastas[:] = sorted(p for p in pastas if p not in ignorar)
         for nome in sorted(nomes):
-            if nome.lower() in IGNORAR_ARQUIVOS:
+            if ignorado(nome):
                 continue
             if com_obsidian and rel(vault, raiz) == ".obsidian" and nome.startswith("workspace"):
                 continue
@@ -65,7 +72,7 @@ def pastas_vazias(vault, manter=()):
         tem = False
         for atual, subpastas, subnomes in os.walk(raiz):
             subpastas[:] = [p for p in subpastas if p not in IGNORAR_PASTAS]
-            if any(n.lower() not in IGNORAR_ARQUIVOS for n in subnomes):
+            if any(not ignorado(n) for n in subnomes):
                 tem = True
                 break
         if not tem and relativo.lower() not in manter:
