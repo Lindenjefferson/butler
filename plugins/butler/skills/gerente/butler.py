@@ -18,7 +18,7 @@ Subcomandos:
       `historicos_de_vaults_que_sumiram` os vaults registrados cuja pasta não existe mais (um vault movido).
   inicio --rotulo R [--sessao ID] [--continuando ARQUIVO ...]
       Pega a trava (a mesma sessão retoma a dela) e grava o ponto das mudanças de fora. Devolve `token`, `pedido`,
-      `historico_ok`, `motivo` e `mudancas_de_fora`, com os avisos que o aviso do início da sessão já tinha gravado
+      `rotulo` (numa retomada, o do pedido retomado, que pode não ser o `--rotulo` de agora), `historico_ok`, `motivo` e `mudancas_de_fora`, com os avisos que o aviso do início da sessão já tinha gravado
       e nenhum pedido mostrou ainda. Sem histórico, pega a trava do mesmo jeito e diz o motivo. Numa retomada, traz
       também `pontos_do_pedido` e as `duvidas` já anotadas; `--continuando` tira da varredura de mudança de fora os
       arquivos que já são sabidamente do próprio pedido, ainda sem ponto. Trava ocupada mais velha do que o prazo
@@ -323,7 +323,8 @@ def cmd_inicio(args):
     if not atual["retomada"]:
         diario.registrar(ctx.pasta_estado, quando=atual["inicio"], evento="inicio", pedido=atual["pedido"],
                          rotulo=atual["rotulo"], sessao=args.sessao)
-    resposta = {"ok": True, "token": atual["token"], "pedido": atual["pedido"], "retomada": atual["retomada"],
+    resposta = {"ok": True, "token": atual["token"], "pedido": atual["pedido"], "rotulo": atual["rotulo"],
+                "retomada": atual["retomada"],
                 "historico_ok": ctx.ok, "motivo": ctx.motivo, "mudancas_de_fora": None,
                 "trava_abandonada_por_prazo": abandonada}
     if ctx.ok:

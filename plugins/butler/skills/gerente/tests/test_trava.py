@@ -35,9 +35,12 @@ def test_mesma_sessao_retoma_a_trava_com_o_mesmo_pedido():
     try:
         amb.preparar()
         primeiro = amb.inicio("triagem", sessao="sessao-a")
-        segundo = amb.inicio("triagem", sessao="sessao-a")
+        segundo = amb.inicio("registra o óleo", sessao="sessao-a")
         assert segundo["retomada"] and segundo["pedido"] == primeiro["pedido"]
         assert segundo["token"] == primeiro["token"]
+        # O rótulo que volta é o do pedido retomado, não o que se pediu agora: é por ele que se vê um pedido
+        # anterior que ficou sem `fim`.
+        assert primeiro["rotulo"] == "triagem" and segundo["rotulo"] == "triagem"
     finally:
         amb.fechar()
 
