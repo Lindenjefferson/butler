@@ -104,7 +104,7 @@ O Butler funciona sozinho, pelo terminal. Um painel externo pode mostrar o vault
 
 ## Para onde vai
 
-As ideias em avaliação e as recusadas estão no [roadmap](docs/roadmap.md); o que cada versão entregou, no [histórico](plugins/butler/UPGRADING.md).
+As ideias em avaliação e as recusadas estão no [roadmap](docs/roadmap.md); o que cada versão entregou, no [histórico](plugins/butler/UPGRADING.md); como as peças se encaixam, na [arquitetura](docs/arquitetura.md).
 
 ## Para contribuir
 
