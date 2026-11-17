@@ -2,6 +2,36 @@
 
 O que cada versão entregou e o que muda para quem atualiza. O arquivo vai junto com cada versão instalada: a skill `atualizar` lê o **Ao atualizar** de cada versão pulada, da mais antiga para a mais nova. Termine o pedido em andamento no vault antes de atualizar (a skill `atualizar` confere). As ideias que ainda não viraram versão estão no [roadmap](../../docs/roadmap.md). O que é major, minor e patch está no [`CLAUDE.md`](../../CLAUDE.md).
 
+## Próxima versão — revisão geral: guarda mais simples, `apagar` e correções
+
+Ainda sem número: quem sobe a versão é o dono. Vem de uma revisão do plugin inteiro (código, skills, testes e documentação), cada item com o teste que falhava antes.
+
+- **A guarda só confere de quem é o pedido** (decisão do dono): sai a pergunta antes da escrita que deixava uma nota protegida, ou sobrescrita, com menos texto. Nota protegida e perda de informação continuam sendo paradas do `gerente`.
+- **`butler.py apagar`:** a única porta para apagar nota. Apaga e grava a saída num ponto; fora do Inbox, só com `--fora-do-inbox`; recusa o arquivo cuja versão o histórico não guarda. O `gerente`, a `triagem` e o `fichar` apontam para ele.
+- **Renomear:**
+  - não regrava nota que não é UTF-8 (antes os acentos dela se perdiam): ela sai em `links_nao_conferidos`;
+  - não troca link dentro de código;
+  - não toma o link só com o nome quando outra nota tem esse nome: a nota sai em `links_ambiguos`;
+  - lê tudo antes de mover, então um arquivo preso pelo sincronizador interrompe sem nada ter mudado.
+- **Pedido e perguntas:**
+  - o `inicio` devolve o `rotulo` do pedido retomado, e o `gerente` fecha um pedido que ficou sem `fim` antes de começar outro;
+  - o resumo do `fim` aceita `respondidas`, que tira da lista as perguntas já respondidas; o `situacao` mostra as que esperam.
+- **Nota de regras:**
+  - o prazo de `## Modo sem supervisão` só vale em minutos (`2 h` era lido como 2 minutos);
+  - o caminho absoluto de `nuvem` fica inteiro no Linux;
+  - um exemplo dentro de bloco de código não é lido como regra.
+- **Cópia de conflito:** `Filme (2021).md` deixa de contar (o contador tem um ou dois dígitos), e a exceção aprendida com `copia_conflito` ou `nome_nfd` cala também a revisão, os avisos das mudanças de fora e a preparação.
+- **Dado sensível:** pega token de bot do Telegram, chave do OpenRouter, cabeçalho de chave privada e atribuição de `api_key`, `secret` ou `token`.
+- **Sessão aberta fora da pasta do vault:** o fim da sessão solta a trava dela em qualquer vault desta máquina.
+- **Histórico e configuração:** rótulo de ponto numa linha só; `maquina.json` ilegível é copiado para `maquina.json.ilegivel` antes de ser regravado; a varredura lista cada pasta uma vez; a conferência e o histórico ignoram os mesmos arquivos.
+
+**Ao atualizar:**
+
+- A rede mecânica contra perda de texto saiu: uma escrita que encolhe uma nota protegida não gera mais a pergunta do Claude Code. Quem contava com ela passa a depender só das paradas do `gerente`.
+- Um arquivo que passe a casar com os padrões novos de dado sensível fica fora do histórico até sair da nota ou ser liberado; o primeiro pedido depois da atualização avisa em `fora_do_historico`.
+- Um prazo de `## Modo sem supervisão` escrito sem `min` deixa de valer: reescreva como `<N> min`.
+- Nada muda no `estado.json`: `perguntas` continua igual, só passa a encolher.
+
 ## 0.9.0 — skill `redigir`: a forma do texto, para quem lê
 
 Pedido do dono: depois de enxugar várias notas do vault em listas por tema, pediu uma skill de texto com foco em quem lê a nota — mais listas com subitens, menos texto corrido sem tópicos — que as outras skills seguissem e que também atendesse o pedido de melhorar uma nota que já existe.

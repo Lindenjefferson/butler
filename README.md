@@ -40,7 +40,7 @@ O passo a passo de um pedido, com o que você digita e o que vê, está em [Como
 - **Mudanças de fora**: tudo o que mudou no vault sem passar pelo Butler, gravado num ponto próprio antes de cada pedido.
 - **Nota protegida**: uma nota que deu trabalho para montar (um inventário, um histórico de manutenção, um perfil); trocar ou remover um dado dela sempre mostra antes.
 - **Formato rígido**: uma nota cujo formato vem de uma regra; o Butler segue a regra e não sugere nada.
-- **Trava**: o arquivo que garante um pedido por vez no vault, mesmo com várias sessões do Claude abertas.
+- **Trava**: o arquivo que garante um pedido por vez no vault, mesmo com várias sessões do Claude abertas. Como o histórico, fica nesta máquina: duas máquinas no mesmo vault sincronizado não se travam uma à outra.
 
 ## Começo rápido
 
@@ -91,8 +91,8 @@ O vault precisa de um `CLAUDE.md` na raiz com as regras dele (pastas, frontmatte
 | [`explorar`](plugins/butler/skills/explorar/SKILL.md) | Explora um pedaço já triado do vault (pasta, notas ou tema), pesquisa mais e propõe enxugar e organizar; aplica só o que o usuário aprovar, bloco por bloco |
 | [`programas`](plugins/butler/skills/programas/SKILL.md) | Atualiza o inventário de programas da máquina e o JSON do winget |
 | [`atualizar`](plugins/butler/skills/atualizar/SKILL.md) | Atualiza o plugin e aplica as notas de cada versão |
-| [`butler.py`](plugins/butler/skills/gerente/butler.py) | O que se confere sem modelo: histórico, trava, pontos, desfazer, renomear, conferência, revisão, dado sensível, `estado.json`, diário de pedidos |
-| [`hooks`](plugins/butler/hooks/hooks.json) | Aviso de uma linha no início da sessão num vault do Butler; guarda que nega escrita no vault fora de um pedido do gerente e pergunta antes da que perde linhas; trava solta no fim |
+| [`butler.py`](plugins/butler/skills/gerente/butler.py) | O que se confere sem modelo: histórico, trava, pontos, desfazer, renomear, apagar, conferência, revisão, dado sensível, `estado.json`, diário de pedidos |
+| [`hooks`](plugins/butler/hooks/hooks.json) | Aviso de uma linha no início da sessão num vault do Butler; guarda que nega escrita no vault fora de um pedido do gerente; trava solta no fim |
 
 ## O que sai da sua máquina
 
