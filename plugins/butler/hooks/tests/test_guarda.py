@@ -7,7 +7,7 @@ import sys
 AQUI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(AQUI)), "skills", "gerente", "tests"))
 
-from apoio import REGRAS, Ambiente, nota, rodar_testes  # noqa: E402
+from apoio import Ambiente, nota, rodar_testes  # noqa: E402
 
 SESSAO = os.path.join(os.path.dirname(AQUI), "sessao.py")
 
@@ -62,6 +62,24 @@ def test_escrita_com_o_pedido_desta_sessao_segue():
         amb.fechar()
 
 
+def test_a_guarda_nao_le_o_conteudo_da_escrita():
+    # Nota protegida que perde texto, por qualquer ferramenta: com o pedido da sessão, segue. A parada é da skill.
+    amb = Ambiente()
+    try:
+        amb.preparar()
+        amb.inicio("registra", sessao="sessao-teste")
+        alvo = amb.caminho("Veículo/Histórico de Manutenção.md")
+        assert guarda(amb, "Edit", {"file_path": alvo, "old_string": "- 2026-01-10 troca de óleo\n- 2026-03-02 pneus",
+                                    "new_string": "- 2026-03-02 pneus"}) is None
+        assert guarda(amb, "MultiEdit", {"file_path": alvo, "edits": [
+            {"old_string": "- 2026-01-10 troca de óleo\n", "new_string": ""}]}) is None
+        assert guarda(amb, "Write", {"file_path": alvo, "content": nota("Histórico de Manutenção")}) is None
+        assert guarda(amb, "NotebookEdit", {"notebook_path": amb.caminho("Inventários/Medidas.ipynb"),
+                                            "cell_id": "c1", "edit_mode": "delete", "new_source": ""}) is None
+    finally:
+        amb.fechar()
+
+
 def test_pedido_de_outra_sessao_nega():
     amb = Ambiente()
     try:
@@ -84,52 +102,6 @@ def test_trava_sem_sessao_nao_nega():
         amb.fechar()
 
 
-def test_nota_protegida_segue_mesmo_perdendo_texto():
-    amb = Ambiente()
-    try:
-        amb.preparar()
-        amb.inicio("registra", sessao="sessao-teste")
-        alvo = amb.caminho("Veículo/Histórico de Manutenção.md")
-        assert guarda(amb, "Edit", {"file_path": alvo, "old_string": "- 2026-01-10 troca de óleo\n- 2026-03-02 pneus",
-                                    "new_string": "- 2026-03-02 pneus"}) is None
-        assert guarda(amb, "MultiEdit", {"file_path": alvo, "edits": [
-            {"old_string": "- 2026-01-10 troca de óleo\n", "new_string": ""},
-            {"old_string": "- 2026-03-02 pneus", "new_string": "- 2026-03-02 pneus\n- 2026-04-01 alinhamento"}]}) \
-            is None
-    finally:
-        amb.fechar()
-
-
-def test_nota_protegida_que_troca_ou_acrescenta_segue():
-    amb = Ambiente()
-    try:
-        amb.preparar()
-        amb.inicio("registra", sessao="sessao-teste")
-        alvo = amb.caminho("Inventários/Geladeira.md")
-        assert guarda(amb, "Edit", {"file_path": alvo, "old_string": "- Voltagem: 127V",
-                                    "new_string": "- Voltagem: 220V"}) is None
-        assert guarda(amb, "Edit", {"file_path": alvo, "old_string": "- Voltagem: 127V",
-                                    "new_string": "- Voltagem: 127V\n- Cor: branca"}) is None
-        assert guarda(amb, "MultiEdit", {"file_path": alvo, "edits": [
-            {"old_string": "- Voltagem: 127V\n", "new_string": ""}]}) is None
-    finally:
-        amb.fechar()
-
-
-def test_write_que_sobrescreve_nota_e_perde_linhas_segue():
-    amb = Ambiente()
-    try:
-        amb.preparar()
-        amb.escrever("Casa/Lista.md", nota("Lista", "- um\n- dois\n- três"))
-        amb.inicio("altera", sessao="sessao-teste")
-        assert guarda(amb, "Write", {"file_path": amb.caminho("Casa/Lista.md"), "content": nota("Lista", "- um")}) \
-            is None
-        assert guarda(amb, "Write", {"file_path": amb.caminho("Casa/Lista.md"),
-                                     "content": nota("Lista", "- um\n- dois\n- três\n- quatro")}) is None
-    finally:
-        amb.fechar()
-
-
 def test_entrada_estranha_nao_quebra():
     amb = Ambiente()
     try:
@@ -147,43 +119,6 @@ def test_vault_sem_registro_com_pedido_aberto_de_uma_subpasta_segue():
         amb.rodar("inicio", "--rotulo", "anota", "--sessao", "sessao-teste", cwd=amb.caminho("Inventários"))
         assert guarda(amb, "Write", {"file_path": amb.caminho("Inbox/Nova.md"), "content": nota("Nova")},
                       cwd=amb.caminho("Inventários")) is None
-    finally:
-        amb.fechar()
-
-
-def test_reformatar_nota_sem_perder_palavras_segue():
-    amb = Ambiente()
-    try:
-        amb.preparar()
-        amb.escrever("Casa/Texto.md", nota("Texto", "Uma frase.\n\nOutra frase."))
-        amb.inicio("altera", sessao="sessao-teste")
-        assert guarda(amb, "Write", {"file_path": amb.caminho("Casa/Texto.md"),
-                                     "content": nota("Texto", "Uma frase. Outra frase.")}) is None
-    finally:
-        amb.fechar()
-
-
-def test_notebook_protegido_segue_mesmo_apagando_ou_encolhendo_celula():
-    amb = Ambiente()
-    try:
-        import json as _json
-        caderno = {"cells": [{"cell_type": "markdown", "id": "c1", "metadata": {},
-                              "source": ["Voltagem 127V e loja X"]}],
-                   "metadata": {}, "nbformat": 4, "nbformat_minor": 5}
-        amb.escrever("Sistema/Regras do Butler.md", REGRAS.replace(
-            "- `Inventários/*.md` — inventários", "- `Inventários/*.md` — inventários\n- `Inventários/*.ipynb` — medidas"))
-        amb.escrever("Inventários/Medidas.ipynb", _json.dumps(caderno))
-        amb.preparar()
-        amb.inicio("registra", sessao="sessao-teste")
-        alvo = amb.caminho("Inventários/Medidas.ipynb")
-        assert guarda(amb, "NotebookEdit", {"notebook_path": alvo, "cell_id": "c1", "edit_mode": "delete",
-                                            "new_source": ""}) is None
-        assert guarda(amb, "NotebookEdit", {"notebook_path": alvo, "cell_id": "c1",
-                                            "new_source": "127V"}) is None
-        assert guarda(amb, "NotebookEdit", {"notebook_path": alvo, "cell_id": "c1",
-                                            "new_source": "Voltagem 220V e loja X"}) is None
-        assert guarda(amb, "NotebookEdit", {"notebook_path": alvo, "edit_mode": "insert",
-                                            "new_source": "nova"}) is None
     finally:
         amb.fechar()
 
