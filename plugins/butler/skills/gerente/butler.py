@@ -57,6 +57,11 @@ Subcomandos:
       Move a nota, reescreve os wikilinks que apontam para ela e grava tudo num ponto, com o filtro do `ponto`.
       `links_markdown: true` quer dizer que o vault usa links em Markdown, que ele não reescreve.
       `links_nao_conferidos` lista as notas que não são UTF-8: ficam como estão, com os links por conferir à mão.
+  apagar --token T --rotulo R [--fora-do-inbox] ARQUIVO...
+      Apaga os arquivos e grava a saída deles num ponto: é por aqui que uma nota é apagada, nunca por um `rm`.
+      Recusa tudo (saída 2, nada apagado) se algum não for um arquivo do vault, ficar fora do Inbox sem
+      `--fora-do-inbox`, ou tiver uma versão que o histórico não guarda (sem ponto, ou fora dele por dado sensível
+      ou binário): o desfazer não o devolveria. A pasta fica, mesmo vazia.
   conferir ARQUIVO...
       A conferência do toque (ver lib/conferencia.py).
   sensivel ARQUIVO...
@@ -613,6 +618,31 @@ def cmd_renomear(args):
                   "links_markdown": notas.usa_links_markdown(ctx.vault)})
 
 
+def cmd_apagar(args):
+    ctx = Contexto(args.vault)
+    atual = _token(ctx, args)
+    inbox = ((ctx.regras.caminho("inbox") if ctx.regras else None) or "Inbox").strip("/").lower() + "/"
+    caminhos = list(dict.fromkeys(ctx.relativo(a) for a in args.arquivos))
+    for caminho in caminhos:  # confere todos antes de apagar o primeiro
+        absoluto = notas.absoluto(ctx.vault, caminho)
+        if ".." in caminho.split("/") or not os.path.isfile(absoluto) or notas.grafia_no_disco(ctx.vault, caminho) != caminho:
+            motivo = "não é um arquivo do vault com esta grafia"
+        elif not args.fora_do_inbox and not caminho.lower().startswith(inbox):
+            motivo = "fica fora do Inbox (use --fora-do-inbox, depois de mostrar ao usuário)"
+        elif ctx.ok and ctx.hist.conteudo("HEAD", caminho) != open(absoluto, "rb").read():
+            motivo = "o histórico não tem esta versão: grave o ponto dela antes, ou apague à mão o que fica fora dele"
+        else:
+            continue
+        return saida({"ok": False, "erro": f"{caminho}: {motivo}", "apagados": []}, USO)
+    for caminho in caminhos:
+        os.remove(notas.absoluto(ctx.vault, caminho))
+    sha, nao = None, []
+    if ctx.ok:
+        sha, _, nao = ctx.hist.gravar(caminhos, "nota", args.rotulo, atual["pedido"], rotulo_pedido=atual["rotulo"])
+    return saida({"ok": True, "apagados": caminhos, "ponto": sha, "recusados": nao, "historico_ok": ctx.ok,
+                  "estado_gravado": ctx.gravar_estado()})
+
+
 def cmd_conferir(args):
     ctx = Contexto(args.vault)
     lista = notas.arquivos(ctx.vault)
@@ -692,6 +722,11 @@ def main(argv=None):
     p.add_argument("--token", required=True)
     p.add_argument("de")
     p.add_argument("para")
+    p = novo("apagar", cmd_apagar)
+    p.add_argument("--token", required=True)
+    p.add_argument("--rotulo", required=True)
+    p.add_argument("--fora-do-inbox", action="store_true")
+    p.add_argument("arquivos", nargs="+")
     for nome, funcao in (("conferir", cmd_conferir), ("sensivel", cmd_sensivel)):
         p = novo(nome, funcao)
         p.add_argument("arquivos", nargs="+")
