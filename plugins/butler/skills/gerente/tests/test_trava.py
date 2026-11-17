@@ -91,6 +91,20 @@ def test_trava_ainda_dentro_do_prazo_nao_libera_sozinha():
         amb.fechar()
 
 
+def test_prazo_em_outra_unidade_nao_vale_como_minutos():
+    amb = Ambiente()
+    try:
+        amb.escrever("Sistema/Regras do Butler.md", REGRAS.replace(
+            "## Caminhos", "## Modo sem supervisão\n\n- trava abandonada depois de: `2 h`\n\n## Caminhos"))
+        amb.preparar()
+        amb.inicio("triagem", sessao="a")
+        _envelhecer_trava(amb, 10)
+        resposta = amb.inicio("garimpo", sessao="b", esperado=3)  # `2 h` não é 2 minutos: prazo não declarado
+        assert resposta["trava_ocupada"]["rotulo"] == "triagem"
+    finally:
+        amb.fechar()
+
+
 def test_trava_abandonada_sem_o_modo_declarado_continua_exigindo_forcar():
     amb = Ambiente()
     try:

@@ -28,7 +28,8 @@ pela skill. Títulos de seção, comparados sem acento e sem maiúsculas:
 - `## Modo sem supervisão`: ausente, nada muda (uma trava de outra sessão só sai com `--forcar` depois de um sim,
   como sempre). Presente, com `- trava abandonada depois de: \\`<N> min\\``: uma trava mais velha que `<N>` minutos
   (pela `atualizado`) é tratada como abandonada e liberada sozinha pelo próprio `inicio`, sem pedir sim — pensado
-  para quando não há ninguém para responder esse sim (um serviço de pé). Trava `corrompida` nunca entra nessa conta
+  para quando não há ninguém para responder esse sim (um serviço de pé). Só minutos: um valor em outra unidade
+  (`2 h`) conta como não declarado. Trava `corrompida` nunca entra nessa conta
   (a idade não é confiável): continua exigindo `--forcar`. Vale só para a trava; não muda nenhuma outra parada.
 
 O `CLAUDE.md` da raiz e a própria nota de regras são sempre protegidos, estejam ou não na lista.
@@ -112,7 +113,7 @@ class Regras:
     def prazo_trava_abandonada(self):
         """Minutos declarados em `## Modo sem supervisão` para liberar uma trava sozinho, ou None sem a seção."""
         valor = self.sem_supervisao.get("trava abandonada depois de")
-        numero = re.match(r"^\s*(\d+)", valor or "")
+        numero = re.fullmatch(r"\s*(\d+)\s*min(?:utos?)?\s*", valor or "", re.I)  # `2 h` não vira 2 minutos
         return int(numero.group(1)) if numero else None
 
     def como_dict(self):
