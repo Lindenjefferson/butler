@@ -8,7 +8,8 @@ regras), roda o `aviso` do gerente, que grava as mudanças de fora quando a trav
 Fora de um vault do Butler, não imprime nada. Uma falha do aviso nunca impede a sessão de abrir: vira uma linha
 dizendo que o Butler não respondeu.
 
-`sessao.py fim` (SessionEnd): solta a trava do vault se ela for desta sessão. A trava de outra sessão fica.
+`sessao.py fim` (SessionEnd): solta a trava que for desta sessão, no vault da pasta e nos outros vaults desta
+máquina (a sessão pode ter escrito num vault de outra pasta). A trava de outra sessão fica.
 
 `sessao.py guarda` (PreToolUse de Write, Edit, MultiEdit e NotebookEdit): confere a escrita num arquivo de um vault
 do Butler (o vault é achado pelo caminho do arquivo, não pela pasta da sessão, com a mesma busca do `butler.py`).
@@ -126,10 +127,14 @@ def fim(entrada):
     sessao = entrada.get("session_id")
     if not sessao:
         return
-    try:
-        _rodar(["soltar-sessao", "--vault", entrada.get("cwd") or os.getcwd(), "--sessao", sessao])
-    except Exception:
-        pass
+    from lib import config  # noqa: E402
+
+    # A sessão pode ter pegado a trava de um vault de outra pasta (com `--vault`): confere todos os desta máquina.
+    for pasta in {entrada.get("cwd") or os.getcwd(), *config.ler()["vaults"]}:
+        try:
+            _rodar(["soltar-sessao", "--vault", pasta, "--sessao", sessao])
+        except Exception:
+            pass
 
 
 if __name__ == "__main__":

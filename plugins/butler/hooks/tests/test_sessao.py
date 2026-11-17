@@ -65,5 +65,16 @@ def test_fim_solta_so_a_trava_da_sessao():
         amb.fechar()
 
 
+def test_fim_solta_a_trava_de_sessao_aberta_fora_do_vault():
+    amb = Ambiente()
+    try:
+        amb.preparar()
+        amb.inicio("anota de outra pasta", sessao="de-fora")  # pegou a trava com `--vault`, de outra pasta
+        hook(amb, "fim", amb.raiz, sessao="de-fora")
+        assert not os.path.exists(os.path.join(amb.historico, "trava.json"))
+    finally:
+        amb.fechar()
+
+
 if __name__ == "__main__":
     rodar_testes(globals())
