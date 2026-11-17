@@ -2,9 +2,9 @@
 
 O que cada versão entregou e o que muda para quem atualiza. O arquivo vai junto com cada versão instalada: a skill `atualizar` lê o **Ao atualizar** de cada versão pulada, da mais antiga para a mais nova. Termine o pedido em andamento no vault antes de atualizar (a skill `atualizar` confere). As ideias que ainda não viraram versão estão no [roadmap](../../docs/roadmap.md). O que é major, minor e patch está no [`CLAUDE.md`](../../CLAUDE.md).
 
-## Próxima versão — revisão geral: guarda mais simples, `apagar` e correções
+## 0.10.0 — revisão geral: guarda mais simples, `apagar` e correções
 
-Ainda sem número: quem sobe a versão é o dono. Vem de uma revisão do plugin inteiro (código, skills, testes e documentação), cada item com o teste que falhava antes.
+Vem de uma revisão do plugin inteiro (código, skills, testes e documentação), cada item com o teste que falhava antes.
 
 - **A guarda só confere de quem é o pedido** (decisão do dono): sai a pergunta antes da escrita que deixava uma nota protegida, ou sobrescrita, com menos texto. Nota protegida e perda de informação continuam sendo paradas do `gerente`.
 - **`butler.py apagar`:** a única porta para apagar nota. Apaga e grava a saída num ponto; fora do Inbox, só com `--fora-do-inbox`; recusa o arquivo cuja versão o histórico não guarda. O `gerente`, a `triagem` e o `fichar` apontam para ele.
