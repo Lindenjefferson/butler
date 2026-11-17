@@ -89,7 +89,7 @@ Todo pedido que altera o vault começa aqui, venha da conversa, do nome de uma s
 
 **Num Lote, não interrompa a cada nota.** A nota com dúvida fica como está, as outras seguem, e as perguntas vêm juntas no fim, cada uma com o que você faria. Anote cada dúvida na hora em que ela aparece, com `B duvida --token <token> --pergunta "<pergunta>" --proposta "<o que você faria>" --nota "<nota>"`: assim ela sobrevive a uma compactação e entra sozinha nas `perguntas` do `fim`. Na triagem, a nota com dúvida continua no Inbox.
 
-**A guarda de escrita** (o hook do plugin) confere cada Write e Edit no vault: nega a escrita sem o pedido desta sessão (rode o preâmbulo) e pergunta ao usuário antes de uma escrita que deixa uma nota protegida, ou uma nota sobrescrita inteira, com menos texto (menos palavras). Ela não substitui as paradas: é a rede para quando uma delas passou.
+**A guarda de escrita** (o hook do plugin) confere cada Write e Edit no vault: nega a escrita sem o pedido desta sessão em andamento (rode o preâmbulo). Não confere o conteúdo — nota protegida e perda de informação são paradas desta skill, pelo seu próprio julgamento, sem rede por trás.
 
 ## 5. Conferir antes de tocar
 

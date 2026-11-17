@@ -1,4 +1,4 @@
-"""Guarda das escritas: nada se escreve no vault sem o pedido desta sessão, e nota protegida que perde linhas pergunta."""
+"""Guarda das escritas: nada se escreve no vault sem o pedido desta sessão."""
 import json
 import os
 import subprocess
@@ -84,16 +84,18 @@ def test_trava_sem_sessao_nao_nega():
         amb.fechar()
 
 
-def test_nota_protegida_que_perde_linha_pergunta():
+def test_nota_protegida_segue_mesmo_perdendo_texto():
     amb = Ambiente()
     try:
         amb.preparar()
         amb.inicio("registra", sessao="sessao-teste")
         alvo = amb.caminho("Veículo/Histórico de Manutenção.md")
-        saida = guarda(amb, "Edit", {"file_path": alvo, "old_string": "- 2026-01-10 troca de óleo\n- 2026-03-02 pneus",
-                                     "new_string": "- 2026-03-02 pneus"})
-        assert saida["permissionDecision"] == "ask"
-        assert "protegida" in saida["permissionDecisionReason"]
+        assert guarda(amb, "Edit", {"file_path": alvo, "old_string": "- 2026-01-10 troca de óleo\n- 2026-03-02 pneus",
+                                    "new_string": "- 2026-03-02 pneus"}) is None
+        assert guarda(amb, "MultiEdit", {"file_path": alvo, "edits": [
+            {"old_string": "- 2026-01-10 troca de óleo\n", "new_string": ""},
+            {"old_string": "- 2026-03-02 pneus", "new_string": "- 2026-03-02 pneus\n- 2026-04-01 alinhamento"}]}) \
+            is None
     finally:
         amb.fechar()
 
@@ -109,33 +111,19 @@ def test_nota_protegida_que_troca_ou_acrescenta_segue():
         assert guarda(amb, "Edit", {"file_path": alvo, "old_string": "- Voltagem: 127V",
                                     "new_string": "- Voltagem: 127V\n- Cor: branca"}) is None
         assert guarda(amb, "MultiEdit", {"file_path": alvo, "edits": [
-            {"old_string": "- Voltagem: 127V\n", "new_string": ""}]})["permissionDecision"] == "ask"
+            {"old_string": "- Voltagem: 127V\n", "new_string": ""}]}) is None
     finally:
         amb.fechar()
 
 
-def test_multiedit_que_apaga_num_trecho_e_acrescenta_noutro_pergunta():
-    amb = Ambiente()
-    try:
-        amb.preparar()
-        amb.inicio("registra", sessao="sessao-teste")
-        alvo = amb.caminho("Veículo/Histórico de Manutenção.md")
-        saida = guarda(amb, "MultiEdit", {"file_path": alvo, "edits": [
-            {"old_string": "- 2026-01-10 troca de óleo\n", "new_string": ""},
-            {"old_string": "- 2026-03-02 pneus", "new_string": "- 2026-03-02 pneus\n- 2026-04-01 alinhamento"}]})
-        assert saida["permissionDecision"] == "ask"
-    finally:
-        amb.fechar()
-
-
-def test_write_que_sobrescreve_nota_e_perde_linhas_pergunta():
+def test_write_que_sobrescreve_nota_e_perde_linhas_segue():
     amb = Ambiente()
     try:
         amb.preparar()
         amb.escrever("Casa/Lista.md", nota("Lista", "- um\n- dois\n- três"))
         amb.inicio("altera", sessao="sessao-teste")
-        saida = guarda(amb, "Write", {"file_path": amb.caminho("Casa/Lista.md"), "content": nota("Lista", "- um")})
-        assert saida["permissionDecision"] == "ask"
+        assert guarda(amb, "Write", {"file_path": amb.caminho("Casa/Lista.md"), "content": nota("Lista", "- um")}) \
+            is None
         assert guarda(amb, "Write", {"file_path": amb.caminho("Casa/Lista.md"),
                                      "content": nota("Lista", "- um\n- dois\n- três\n- quatro")}) is None
     finally:
@@ -175,20 +163,7 @@ def test_reformatar_nota_sem_perder_palavras_segue():
         amb.fechar()
 
 
-def test_espalhar_menos_palavras_em_mais_linhas_pergunta():
-    amb = Ambiente()
-    try:
-        amb.preparar()
-        amb.inicio("registra", sessao="sessao-teste")
-        alvo = amb.caminho("Veículo/Histórico de Manutenção.md")
-        saida = guarda(amb, "Edit", {"file_path": alvo, "old_string": "- 2026-01-10 troca de óleo\n- 2026-03-02 pneus",
-                                     "new_string": "- 2026-03-02\n- pneus\n- ok"})
-        assert saida["permissionDecision"] == "ask"
-    finally:
-        amb.fechar()
-
-
-def test_notebook_protegido_que_apaga_ou_encolhe_celula_pergunta():
+def test_notebook_protegido_segue_mesmo_apagando_ou_encolhendo_celula():
     amb = Ambiente()
     try:
         import json as _json
@@ -201,11 +176,10 @@ def test_notebook_protegido_que_apaga_ou_encolhe_celula_pergunta():
         amb.preparar()
         amb.inicio("registra", sessao="sessao-teste")
         alvo = amb.caminho("Inventários/Medidas.ipynb")
-        apagar = guarda(amb, "NotebookEdit", {"notebook_path": alvo, "cell_id": "c1", "edit_mode": "delete",
-                                              "new_source": ""})
-        assert apagar["permissionDecision"] == "ask"
-        encolher = guarda(amb, "NotebookEdit", {"notebook_path": alvo, "cell_id": "c1", "new_source": "127V"})
-        assert encolher["permissionDecision"] == "ask"
+        assert guarda(amb, "NotebookEdit", {"notebook_path": alvo, "cell_id": "c1", "edit_mode": "delete",
+                                            "new_source": ""}) is None
+        assert guarda(amb, "NotebookEdit", {"notebook_path": alvo, "cell_id": "c1",
+                                            "new_source": "127V"}) is None
         assert guarda(amb, "NotebookEdit", {"notebook_path": alvo, "cell_id": "c1",
                                             "new_source": "Voltagem 220V e loja X"}) is None
         assert guarda(amb, "NotebookEdit", {"notebook_path": alvo, "edit_mode": "insert",

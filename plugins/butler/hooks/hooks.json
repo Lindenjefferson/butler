@@ -1,5 +1,5 @@
 {
-  "description": "Dá o aviso de uma linha no início de cada sessão aberta num vault do Butler (gravando as mudanças de fora) e diz à sessão que pedidos que alteram o vault passam pelo gerente; nega a escrita no vault sem o pedido desta sessão e pergunta antes da que deixa uma nota com menos texto; solta, no fim da sessão, a trava que for dela.",
+  "description": "Dá o aviso de uma linha no início de cada sessão aberta num vault do Butler (gravando as mudanças de fora) e diz à sessão que pedidos que alteram o vault passam pelo gerente; nega a escrita no vault sem o pedido desta sessão; solta, no fim da sessão, a trava que for dela.",
   "hooks": {
     "SessionStart": [
       {

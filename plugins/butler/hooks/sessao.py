@@ -14,10 +14,8 @@ dizendo que o Butler não respondeu.
 do Butler (o vault é achado pelo caminho do arquivo, não pela pasta da sessão, com a mesma busca do `butler.py`).
 - Sem pedido em andamento, ou com o pedido de outra sessão, nega (`deny`) e diz para começar pelo
   `butler:gerente`. Uma trava sem sessão (um `inicio` sem `--sessao`) não diz de quem é: não nega.
-- Com o pedido desta sessão, pergunta ao usuário (`ask`) quando a escrita deixa uma nota com menos palavras: um
-  Write que sobrescreve uma nota que já existe, ou um Edit, MultiEdit ou NotebookEdit numa nota protegida (as regras
-  do vault). Trocar um trecho por outro do mesmo tamanho e acrescentar seguem: a troca num dado protegido continua
-  sendo a parada da skill.
+- Com o pedido desta sessão, segue: a guarda não confere o conteúdo da escrita. Nota protegida e perda de
+  informação continuam sendo paradas da skill `butler:gerente`, pelo próprio julgamento dela.
 Fora de um vault, ou com qualquer erro, não diz nada: a guarda nunca impede uma escrita fora do Butler.
 Só as ferramentas do Claude passam por aqui: escritas pelo Bash (o `butler.py`, um `mv`) e as escritas toleradas do
 painel, que o próprio app grava esperando a trava sair, não.
@@ -86,55 +84,13 @@ ENTRADA_GERENTE = ("Escrita no vault do Butler sem um pedido desta sessão em an
                    "butler:gerente: o preâmbulo dela (`inicio --sessao <id desta sessão>`) pega a trava.")
 
 
-def _palavras(texto):
-    if isinstance(texto, list):  # a fonte de uma célula de notebook pode vir em linhas
-        texto = "".join(texto)
-    return len((texto or "").split())
-
-
-def _celula(absoluto, dados):
-    """A fonte da célula que um NotebookEdit troca ou apaga, ou None se não dá para achar."""
-    with open(absoluto, encoding="utf-8") as arquivo:
-        celulas = json.load(arquivo).get("cells") or []
-    alvo = dados.get("cell_id")
-    for indice, celula in enumerate(celulas):
-        if alvo is not None and (celula.get("id") == alvo or str(indice) == str(alvo)):
-            return celula.get("source")
-    return None
-
-
-def _perde_texto(ferramenta, dados, absoluto, protegida):
-    """A escrita deixa a nota com menos palavras: um Write sobre uma nota que existe, ou, numa protegida, um Edit,
-    um MultiEdit ou um NotebookEdit que troca ou apaga uma célula. Conta palavras, não linhas: juntar frases ou
-    tirar linha em branco não é perda, e espalhar menos palavras em mais linhas é. Num MultiEdit, cada troca conta
-    sozinha: apagar num trecho e acrescentar noutro ainda é perder. Trocar um dado por outro do mesmo tamanho segue
-    (é a parada da skill, que lê o sentido)."""
-    if ferramenta == "Write":
-        if not absoluto.lower().endswith(".md") or not os.path.isfile(absoluto):
-            return False
-        with open(absoluto, encoding="utf-8", errors="replace") as arquivo:
-            return _palavras(dados.get("content")) < _palavras(arquivo.read())
-    if not protegida:
-        return False
-    if ferramenta == "NotebookEdit":
-        modo = dados.get("edit_mode") or "replace"
-        if modo == "insert" or not os.path.isfile(absoluto):
-            return False
-        antes = _celula(absoluto, dados)
-        if modo == "delete":
-            return True
-        return antes is None or _palavras(dados.get("new_source")) < _palavras(antes)
-    trocas = [dados] if ferramenta == "Edit" else (dados.get("edits") or [])
-    return any(_palavras(t.get("new_string")) < _palavras(t.get("old_string")) for t in trocas)
-
-
 def _decisao(decisao, motivo):
     return {"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": decisao,
                                    "permissionDecisionReason": motivo}}
 
 
 def _conferir_escrita(entrada):
-    from lib import config, regras as regras_mod, trava  # noqa: E402
+    from lib import config, trava  # noqa: E402
 
     ferramenta = entrada.get("tool_name")
     dados = entrada.get("tool_input") or {}
@@ -154,13 +110,6 @@ def _conferir_escrita(entrada):
         return _decisao("deny", f"Outro pedido está em andamento neste vault ({atual.get('rotulo', '?')}), de outra "
                                 "sessão. Pergunte ao usuário se espera ou para, como o preâmbulo do butler:gerente "
                                 "manda; nunca force.")
-    relativo = os.path.relpath(absoluto, vault).replace(os.sep, "/")
-    regras = regras_mod.ler(vault)
-    protegida = regras.protegida(relativo) if regras else relativo in regras_mod.SEMPRE_PROTEGIDAS
-    if _perde_texto(ferramenta, dados, absoluto, protegida):
-        tipo = "a nota protegida" if protegida else "a nota"
-        return _decisao("ask", f"Butler: esta escrita deixa {tipo} {relativo} com menos texto (perda de "
-                               "informação). Confirme só se você pediu isso.")
     return None
 
 
