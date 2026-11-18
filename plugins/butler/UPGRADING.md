@@ -4,7 +4,7 @@ O que cada versão entregou e o que muda para quem atualiza. O arquivo vai junto
 
 ## 0.11.0 — pesquisa num subagente
 
-A pesquisa sai da conversa do vault (pedido do dono, para não encher o contexto). Design em [`2026-11-17-delegar-design.md`](../../docs/superpowers/specs/2026-11-17-delegar-design.md).
+A pesquisa sai da conversa do vault (pedido do dono, para não encher o contexto). Design em [`2026-11-17-delegar-design.md`](../../docs/superpowers/specs/2026-11-17-delegar-design.md). PR [#14](https://github.com/Lindenjefferson/butler/pull/14).
 
 - **Agente `butler:pesquisador`:**
   - só tem `Read`, `Grep`, `Glob`, `WebSearch` e `WebFetch`, sem ferramenta que grava ou roda comando;
