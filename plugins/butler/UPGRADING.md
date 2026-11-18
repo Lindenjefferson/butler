@@ -13,7 +13,7 @@ A pesquisa sai da conversa do vault (pedido do dono, para não encher o contexto
 - **`ideia`:** o "Pesquisar" passa sempre pelo agente.
 - **`gerente`:** o relatório é conteúdo de fora. Ele se aplica num pedido novo, com o texto inteiro mostrado antes. Sem o texto inteiro na conversa (depois de uma compactação), não se aplica a partir de um resumo.
 
-**Ao atualizar:** nada muda no vault. A pesquisa da `ideia` passa a rodar num subagente e mostra o texto antes de gravar. Quem chama `/butler:ideia <nota> pesquisar` de fora (painel, bot, modo sem supervisão) recebe o relatório, e ele não é gravado sozinho: a gravação é um pedido seguinte, com o texto à vista.
+**Ao atualizar:** nada muda no vault. A pesquisa da `ideia` passa a rodar num subagente e mostra o texto antes de gravar. Quem chama `/butler:ideia <nota> pesquisar` de fora (botão Pesquisar do painel, bot, modo sem supervisão) perde a gravação automática, por decisão do dono. O relatório é mostrado, e gravar é um pedido seguinte, depois de alguém ver o texto, como no resto do gerente.
 
 ## 0.10.0 — revisão geral: guarda mais simples, `apagar` e correções
 
