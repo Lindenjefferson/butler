@@ -14,7 +14,11 @@ Toda ideia passa pelo filtro do [`CLAUDE.md`](../CLAUDE.md) e termina numa desta
 
 - **Melhoria — salvos do Instagram** (a skill `garimpo` antes do plugin): ler a exportação dos salvos e garimpar o que ainda não está no registro de links. As decisões já tomadas estão em [`salvos-do-instagram.md`](superpowers/salvos-do-instagram.md). Ficou de fora da 0.1.0 porque falta uma decisão do dono: como ler os posts sem vídeo (carrosséis). A skill `fila` (0.6.0) já cobre o outro lado disso, conduzir o lote depois que a fila existe como nota — falta só a leitura da exportação em si. Esforço: M.
 
+- **Melhoria — pesquisa num subagente, `butler:pesquisador`** (pedido do dono): a pesquisa sai da conversa do vault. Um agente do plugin, que só lê, devolve o relatório, e a sessão do vault o aplica pelo gerente. Design em [`2026-11-17-delegar-design.md`](superpowers/specs/2026-11-17-delegar-design.md). Esforço: P.
+
 ## Em espera (voltam com um sinal)
+
+- **Delegar a uma sessão externa (outra conta, janela própria)** (pedido do dono, primeira versão do design do `butler:pesquisador`): abrir outra sessão do Claude Code pelo mecanismo do Foreman Hub (`wt.exe` com o ambiente limpo), numa pasta fora do vault, sem Bash. Saiu porque o motivo do dono era só o contexto da conversa, e o subagente já resolve isso. Volta quando o dono quiser delegar noutra conta ou acompanhar a pesquisa numa janela. Depende de o `abrir-conta.ps1` do Account Switcher repassar argumentos (modelo, ferramentas, prompt inicial) e tirar `NO_COLOR` e `GIT_TERMINAL_PROMPT`. Achados da revisão daquele desenho, para quando voltar: o `;` é separador de comandos do `wt` (nome fixo e argumentos em lista, sem shell); a guarda não vê escrita pelo Bash; e o `--sessao` do `inicio` vem de quem chama, então não serve de barreira. Esforço: G.
 
 - **Impressão digital com chave** (revisão do código da primeira versão): a `digital` é o SHA-256 sem chave de `<tipo>:<valor>`, e um valor curto (um PIN, um CPF) sai dela por tentativa. Ela aparece na conversa, no `estado.json` (local) e, numa liberação, na nota de regras. Quem vê a digital já tem acesso ao vault, onde o valor está (o dado sensível fica fora do histórico, não fora da nota), e numa liberação o valor é um alarme falso. Uma chave por máquina faria a liberação valer só naquela máquina. Volta se a digital passar a ir para fora da máquina (um painel na rede, um relatório compartilhado). Esforço: P.
 - **`fora_do_indice` com notas ligadas por outra nota** (ensaio numa cópia do vault do autor): a revisão aponta notas que o índice alcança por uma nota intermediária (um roteiro ligado pelo roadmap de um projeto). Volta se o ruído fizer a revisão ser ignorada. Esforço: P.
@@ -35,7 +39,7 @@ Toda ideia passa pelo filtro do [`CLAUDE.md`](../CLAUDE.md) e termina numa desta
 
 ## Recusado
 
-- **Vários agentes por persona com um despachante** (o hq): o "medir o pedido" do gerente já faz o mesmo roteamento em níveis, sem o custo de vários agentes.
+- **Vários agentes por persona com um despachante** (o hq): o "medir o pedido" do gerente já faz o mesmo roteamento em níveis, sem o custo de vários agentes. O `butler:pesquisador` é outra coisa: nenhum despachante decide sozinho para quem vai o pedido. O dono pede ou aceita cada pesquisa, e o agente só lê.
 - **Unir ou promover notas sozinho depois de um prazo** (o consolidate e o crystallize do AGENTS): contraria "parar pelo risco"; unir é sempre a parada 2.
 - **Log de ações dentro do vault** (o `log.md` do AGENTS): deixaria marca de alteração no vault; o histórico fora dele já é esse registro, e o `pedidos` o lê.
 - **Decompor notas em notas atômicas, Johnny Decimal, prefixos de tipo no nome** (zettelvault, puma-vault): são métodos de organização; as regras moram no vault, e o Butler não impõe método.
