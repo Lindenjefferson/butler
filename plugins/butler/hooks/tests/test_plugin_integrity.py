@@ -68,6 +68,35 @@ def test_cada_skill_tem_nome_e_descricao():
         assert descricao and len(descricao.group(1)) > 80, nome
 
 
+SO_LEITURA = {"Read", "Grep", "Glob", "WebSearch", "WebFetch"}
+CHAVES_DE_AGENTE = {"name", "description", "tools", "model"}
+
+
+def test_agentes_so_leem():
+    # Só os campos conhecidos: `memory` liga Read/Write/Edit, e `mcpServers`, `hooks` e `skills` abrem outras portas.
+    assert "agents" not in json.loads(_ler(os.path.join(PLUGIN, ".claude-plugin", "plugin.json"))), \
+        "agentes fora de agents/ escapam deste teste"
+    mercado = json.loads(_ler(os.path.join(REPO, ".claude-plugin", "marketplace.json")))
+    assert all("agents" not in p for p in mercado["plugins"] if p["name"] == "butler")
+    pasta = os.path.join(PLUGIN, "agents")
+    assert os.path.isfile(os.path.join(pasta, "pesquisador.md"))
+    for nome in sorted(os.listdir(pasta)):
+        caminho = os.path.join(pasta, nome)
+        assert nome.endswith(".md") and os.path.isfile(caminho), f"agents/{nome}: só arquivos .md, sem subpasta"
+        texto = _ler(caminho)
+        partes = texto.split("---", 2)
+        assert texto.startswith("---") and len(partes) == 3, f"{nome}: sem frontmatter"
+        linhas = [linha for linha in partes[1].splitlines() if linha.strip()]
+        assert all(re.match(r"^[A-Za-z]+: \S", linha) for linha in linhas), \
+            f"{nome}: frontmatter só com `chave: valor` em uma linha"
+        chaves = [linha.split(":", 1)[0] for linha in linhas]
+        assert sorted(chaves) == sorted(CHAVES_DE_AGENTE), f"{nome}: campos {chaves}, esperado {sorted(CHAVES_DE_AGENTE)}"
+        campos = dict(linha.split(": ", 1) for linha in linhas)
+        assert campos["name"] == nome[:-3], nome
+        lista = {f.strip() for f in campos["tools"].split(",")}
+        assert lista <= SO_LEITURA, f"{nome}: ferramenta fora da lista: {sorted(lista - SO_LEITURA)}"
+
+
 def test_caminhos_citados_existem():
     padrao = re.compile(r"\$\{CLAUDE_PLUGIN_ROOT\}/([^`\"\n\\]+)")
     for caminho in _arquivos(PLUGIN):
