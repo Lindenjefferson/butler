@@ -2,6 +2,19 @@
 
 O que cada versão entregou e o que muda para quem atualiza. O arquivo vai junto com cada versão instalada: a skill `atualizar` lê o **Ao atualizar** de cada versão pulada, da mais antiga para a mais nova. Termine o pedido em andamento no vault antes de atualizar (a skill `atualizar` confere). As ideias que ainda não viraram versão estão no [roadmap](../../docs/roadmap.md). O que é major, minor e patch está no [`CLAUDE.md`](../../CLAUDE.md).
 
+## 0.11.0 — pesquisa num subagente
+
+A pesquisa sai da conversa do vault (pedido do dono, para não encher o contexto). Design em [`2026-11-17-delegar-design.md`](../../docs/superpowers/specs/2026-11-17-delegar-design.md). PR #14.
+
+- **Agente `butler:pesquisador`:**
+  - só tem `Read`, `Grep`, `Glob`, `WebSearch` e `WebFetch`, sem ferramenta que grava ou roda comando;
+  - lê as notas indicadas e a web e devolve um relatório com fonte e grau de confiança por afirmação;
+  - um teste de integridade exige que todo agente do plugin tenha só os campos `name`, `description`, `tools` e `model`, com `tools` dentro dessa lista e `model: opus`.
+- **`ideia`:** o "Pesquisar" passa sempre pelo agente.
+- **`gerente`:** o relatório é conteúdo de fora. Ele se aplica num pedido novo, com o texto inteiro mostrado antes. Sem o texto inteiro na conversa (depois de uma compactação), não se aplica a partir de um resumo.
+
+**Ao atualizar:** nada muda no vault. A pesquisa da `ideia` passa a rodar num subagente e mostra o texto antes de gravar. Quem chama `/butler:ideia <nota> pesquisar` de fora (botão Pesquisar do painel, bot, modo sem supervisão) perde a gravação automática, por decisão do dono. O relatório é mostrado, e gravar é um pedido seguinte, depois de alguém ver o texto, como no resto do gerente.
+
 ## 0.10.0 — revisão geral: guarda mais simples, `apagar` e correções
 
 Vem de uma revisão do plugin inteiro (código, skills, testes e documentação), cada item com o teste que falhava antes.

@@ -3,7 +3,7 @@
   "diagram_type": "architecture",
   "meta": {
     "title": "butler — arquitetura do plugin",
-    "output": ".archify/architecture-butler-20261116-233230/butler-arquitetura.html",
+    "output": ".archify/architecture-butler-20261118-090839/butler-arquitetura.html",
     "quality_profile": "showcase",
     "locale": "pt",
     "translations": {
@@ -497,7 +497,8 @@
     "repository": {
       "provider": "github",
       "link_mode": "local-only",
-      "revision": "a04ac61d1cf010df0245f4681ade9e7dd61a9cef"
+      "revision": "3019c435430d855b3b1a39da03bf820329b34090",
+      "url": "https://github.com/Lindenjefferson/butler"
     }
   },
   "components": [
@@ -847,6 +848,27 @@
           "end_line": 10
         }
       ]
+    },
+    {
+      "id": "pesquisador",
+      "type": "backend",
+      "label": "agente pesquisador",
+      "sublabel": "só lê, devolve relatório",
+      "pos": [
+        260,
+        620
+      ],
+      "size": [
+        150,
+        64
+      ],
+      "sources": [
+        {
+          "path": "plugins/butler/agents/pesquisador.md",
+          "line": 1,
+          "end_line": 6
+        }
+      ]
     }
   ],
   "boundaries": [
@@ -998,6 +1020,18 @@
       "to": "painel",
       "label": "grava o resumo",
       "variant": "dashed"
+    },
+    {
+      "id": "sessao-pesquisador",
+      "from": "sessao",
+      "to": "pesquisador",
+      "label": "pesquisa → relatório"
+    },
+    {
+      "id": "pesquisador-vault",
+      "from": "pesquisador",
+      "to": "vault",
+      "label": "lê, sem ferramenta de escrita"
     }
   ],
   "cards": [
@@ -1007,7 +1041,8 @@
       "items": [
         "hooks/sessao.py avisa no início, guarda cada escrita (só a trava, desde a 0.10.0) e solta no fim",
         "A skill gerente pega a trava por butler.py inicio, grava pontos e solta em fim",
-        "consultar nunca passa pela trava: só lê o vault"
+        "consultar nunca passa pela trava: só lê o vault",
+        "O agente pesquisador só tem Read, Grep, Glob e busca na web: lê o vault, devolve o relatório, e a sessão o aplica pelo gerente"
       ]
     },
     {
