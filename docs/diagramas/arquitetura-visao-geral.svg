@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg viewBox="0 0 1393 767" role="img" lang="pt" aria-labelledby="archify-diagram-title archify-diagram-description" data-animation="trace" data-preset="classic" data-quality-profile="showcase" data-node-ui="" data-reader-fit="intrinsic-height" data-reader-min-text="7.5" data-reader-primary-text="14" style="--flow-cycle: 6.204s; width: 1393px; height: 767px; min-width: 0px;" width="1393" height="767" xmlns="http://www.w3.org/2000/svg" data-theme="light"><style>
+<svg viewBox="0 0 1393 771" role="img" lang="pt" aria-labelledby="archify-diagram-title archify-diagram-description" data-animation="trace" data-preset="classic" data-quality-profile="showcase" data-node-ui="" data-reader-fit="intrinsic-height" data-reader-min-text="7.5" data-reader-primary-text="14" style="--flow-cycle: 6.204s; width: 1393px; height: 771px; min-width: 0px;" width="1393" height="771" xmlns="http://www.w3.org/2000/svg" data-theme="light"><style>
 /*
 JetBrains Mono variable WOFF2 subsets from Google Fonts service revision v24.
 These fixed bytes are shared by the viewer and its SVG/raster exports.
@@ -632,6 +632,28 @@ svg[data-preset="editorial"] { --flow-halo-peak: 0.07; --flow-glow-peak: 0.28; -
   24.18% { opacity: var(--flow-peak, 0.3); }
   38.688%, 100% { stroke-dashoffset: 0px; opacity: 0; }
 }
+@keyframes archify-relay-comet-21 { 
+  0% { stroke-dashoffset: calc(var(--flow-len, 0px) + var(--flow-shift, 0px)); opacity: 0; animation-timing-function: cubic-bezier(0.45, 0.05, 0.35, 1); }
+  1.934% { opacity: var(--flow-peak, 0.9); }
+  24.18% { stroke-dashoffset: var(--flow-shift, 0px); opacity: var(--flow-peak, 0.9); }
+  26.759%, 100% { stroke-dashoffset: var(--flow-shift, 0px); opacity: 0; }
+}
+@keyframes archify-relay-wake-21 { 
+  0% { stroke-dashoffset: var(--flow-len, 0px); opacity: var(--flow-peak, 0.3); animation-timing-function: cubic-bezier(0.45, 0.05, 0.35, 1); }
+  24.18% { stroke-dashoffset: 0px; opacity: var(--flow-peak, 0.3); }
+  38.688%, 100% { stroke-dashoffset: 0px; opacity: 0; }
+}
+@keyframes archify-relay-comet-22 { 
+  0% { stroke-dashoffset: calc(var(--flow-len, 0px) + var(--flow-shift, 0px)); opacity: 0; animation-timing-function: cubic-bezier(0.45, 0.05, 0.35, 1); }
+  1.934% { opacity: var(--flow-peak, 0.9); }
+  24.18% { stroke-dashoffset: var(--flow-shift, 0px); opacity: var(--flow-peak, 0.9); }
+  26.759%, 100% { stroke-dashoffset: var(--flow-shift, 0px); opacity: 0; }
+}
+@keyframes archify-relay-wake-22 { 
+  0% { stroke-dashoffset: var(--flow-len, 0px); opacity: var(--flow-peak, 0.3); animation-timing-function: cubic-bezier(0.45, 0.05, 0.35, 1); }
+  24.18% { stroke-dashoffset: 0px; opacity: var(--flow-peak, 0.3); }
+  38.688%, 100% { stroke-dashoffset: 0px; opacity: 0; }
+}
 @keyframes archify-relay-node-0 { 
   0%, 100% { filter: var(--ambient-node-base-filter, none); }
   0% { filter: var(--ambient-node-base-filter, none); }
@@ -664,45 +686,45 @@ svg[data-preset="editorial"] { --flow-halo-peak: 0.07; --flow-glow-peak: 0.28; -
 }
 @keyframes archify-relay-node-5 { 
   0%, 100% { filter: var(--ambient-node-base-filter, none); }
+  24.18% { filter: var(--ambient-node-base-filter, none); }
+  26.114%, 30.95% { filter: var(--ambient-node-base-filter,) drop-shadow(0 0 10px var(--arrow-emphasis)); }
+  43.524% { filter: var(--ambient-node-base-filter, none); }
+}
+@keyframes archify-relay-node-6 { 
+  0%, 100% { filter: var(--ambient-node-base-filter, none); }
   11.341% { filter: var(--ambient-node-base-filter, none); }
   13.275%, 18.111% { filter: var(--ambient-node-base-filter,) drop-shadow(0 0 10px var(--arrow-emphasis)); }
   30.685% { filter: var(--ambient-node-base-filter, none); }
 }
-@keyframes archify-relay-node-6 { 
+@keyframes archify-relay-node-7 { 
   0%, 100% { filter: var(--ambient-node-base-filter, none); }
   37.132% { filter: var(--ambient-node-base-filter, none); }
   39.067%, 43.903% { filter: var(--ambient-node-base-filter,) drop-shadow(0 0 10px var(--arrow-emphasis)); }
   56.476% { filter: var(--ambient-node-base-filter, none); }
 }
-@keyframes archify-relay-node-7 { 
+@keyframes archify-relay-node-8 { 
   0%, 100% { filter: var(--ambient-node-base-filter, none); }
   27.345% { filter: var(--ambient-node-base-filter, none); }
   29.28%, 34.116% { filter: var(--ambient-node-base-filter,) drop-shadow(0 0 10px var(--arrow-emphasis)); }
   46.689% { filter: var(--ambient-node-base-filter, none); }
 }
-@keyframes archify-relay-node-8 { 
+@keyframes archify-relay-node-9 { 
   0%, 100% { filter: var(--ambient-node-base-filter, none); }
   34.767% { filter: var(--ambient-node-base-filter, none); }
   36.701%, 41.537% { filter: var(--ambient-node-base-filter,) drop-shadow(0 0 10px var(--arrow-emphasis)); }
   54.111% { filter: var(--ambient-node-base-filter, none); }
 }
-@keyframes archify-relay-node-9 { 
+@keyframes archify-relay-node-10 { 
   0%, 100% { filter: var(--ambient-node-base-filter, none); }
   27.345% { filter: var(--ambient-node-base-filter, none); }
   29.28%, 34.116% { filter: var(--ambient-node-base-filter,) drop-shadow(0 0 10px var(--arrow-emphasis)); }
   46.689% { filter: var(--ambient-node-base-filter, none); }
 }
-@keyframes archify-relay-node-10 { 
+@keyframes archify-relay-node-11 { 
   0%, 100% { filter: var(--ambient-node-base-filter, none); }
   33.908% { filter: var(--ambient-node-base-filter, none); }
   35.842%, 40.678% { filter: var(--ambient-node-base-filter,) drop-shadow(0 0 10px var(--arrow-emphasis)); }
   53.252% { filter: var(--ambient-node-base-filter, none); }
-}
-@keyframes archify-relay-node-11 { 
-  0%, 100% { filter: var(--ambient-node-base-filter, none); }
-  37.132% { filter: var(--ambient-node-base-filter, none); }
-  39.067%, 43.903% { filter: var(--ambient-node-base-filter,) drop-shadow(0 0 10px var(--arrow-emphasis)); }
-  56.476% { filter: var(--ambient-node-base-filter, none); }
 }
 @keyframes archify-relay-node-12 { 
   0%, 100% { filter: var(--ambient-node-base-filter, none); }
@@ -718,11 +740,17 @@ svg[data-preset="editorial"] { --flow-halo-peak: 0.07; --flow-glow-peak: 0.28; -
 }
 @keyframes archify-relay-node-14 { 
   0%, 100% { filter: var(--ambient-node-base-filter, none); }
+  37.132% { filter: var(--ambient-node-base-filter, none); }
+  39.067%, 43.903% { filter: var(--ambient-node-base-filter,) drop-shadow(0 0 10px var(--arrow-emphasis)); }
+  56.476% { filter: var(--ambient-node-base-filter, none); }
+}
+@keyframes archify-relay-node-15 { 
+  0%, 100% { filter: var(--ambient-node-base-filter, none); }
   49.972% { filter: var(--ambient-node-base-filter, none); }
   51.906%, 56.742% { filter: var(--ambient-node-base-filter,) drop-shadow(0 0 10px var(--arrow-emphasis)); }
   69.315% { filter: var(--ambient-node-base-filter, none); }
 }
-@keyframes archify-relay-node-15 { 
+@keyframes archify-relay-node-16 { 
   0%, 100% { filter: var(--ambient-node-base-filter, none); }
   45.515% { filter: var(--ambient-node-base-filter, none); }
   47.449%, 52.285% { filter: var(--ambient-node-base-filter,) drop-shadow(0 0 10px var(--arrow-emphasis)); }
@@ -748,7 +776,7 @@ svg[data-node-ui] g[data-edge-from] &gt; rect.c-mask { rx: 7px; stroke: var(--la
 svg[data-node-ui][data-preset="blueprint"] :is([data-graph-role="structural-frame-label-mask"], g[data-edge-from] &gt; rect.c-mask, .phase-chip) { rx: 2px; }
 svg[data-node-ui][data-preset="editorial"] :is([data-graph-role="structural-frame-label-mask"], g[data-edge-from] &gt; rect.c-mask, .phase-chip) { rx: 3px; }
 :root, svg { --bg: #f4f5f7; --grid: #e9edf2; --canvas-dot: #e2e7ec; --text: #111827; --text-muted: #5b6474; --text-dim: #9aa3b2; --text-faint: #6b7280; --panel: #ffffff; --panel-border: #e5e7eb; --lane-fill: rgba(248, 250, 252, 0.65); --lane-stroke: #cbd5e1; --arrow: #64748b; --arrow-emphasis: #059669; --mask: #ffffff; --frontend-fill: rgba(34, 211, 238, 0.15); --frontend-stroke: #0891b2; --backend-fill: rgba(52, 211, 153, 0.18); --backend-stroke: #059669; --database-fill: rgba(167, 139, 250, 0.2); --database-stroke: #7c3aed; --cloud-fill: rgba(251, 191, 36, 0.18); --cloud-stroke: #d97706; --security-fill: rgba(251, 113, 133, 0.15); --security-stroke: #e11d48; --messagebus-fill: rgba(251, 146, 60, 0.15); --messagebus-stroke: #ea580c; --external-fill: rgba(148, 163, 184, 0.18); --external-stroke: #64748b; --toolbar-bg: rgba(255, 255, 255, 0.92); --toolbar-border: #cbd5e1; --toolbar-text: #334155; --toolbar-hover: #ffffff; --toolbar-menu-bg: #ffffff; --flow-cycle: ; --flow-halo-peak: ; --flow-glow-peak: ; --flow-tail-peak: ; --flow-head-peak: ; --flow-wake-peak: ; --flow-ripple-peak: ; --flow-peak: ; }
-</style><rect x="0" y="0" width="1393" height="767" fill="#f4f5f7"/><metadata id="archify-software-notices">NOTICE
+</style><rect x="0" y="0" width="1393" height="771" fill="#f4f5f7"/><metadata id="archify-software-notices">NOTICE
 Archify
 Copyright (c) 2026 tt-a1i (Archify)
 Copyright (c) 2025 Cocoon AI
@@ -1141,8 +1169,8 @@ been cleared for every commercial, promotional, or redistributive use.</metadata
           <path data-edge-from="sessao" data-edge-to="gerente" data-edge-label="pedido" data-edge-key="1" data-edge-id="sessao-gerente" data-composition-points="174,104;174,186;260,186" data-composition-crossover="halo" data-composition-independent="true" d="M 174 104 L 174 178 Q 174 186 182 186 L 260 186" class="a-emphasis" data-animate="edge" style="--step: 1;" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:2">
-          <path data-graph-role="automatic-crossover-underlay" d="M 115 104 L 115 620" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="sessao" data-edge-to="consultar" data-edge-label="consulta" data-edge-key="2" data-edge-id="sessao-consultar" data-composition-points="115,104;115,620" data-composition-crossover="halo" data-composition-independent="true" d="M 115 104 L 115 620" class="a-dashed" data-animate="edge" style="--step: 2;" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 108 104 L 108 620" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="sessao" data-edge-to="consultar" data-edge-label="consulta" data-edge-key="2" data-edge-id="sessao-consultar" data-composition-points="108,104;108,620" data-composition-crossover="halo" data-composition-independent="true" d="M 108 104 L 108 620" class="a-dashed" data-animate="edge" style="--step: 2;" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:3">
           <path data-graph-role="automatic-crossover-underlay" d="M 420 65 L 920 65" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
@@ -1161,8 +1189,8 @@ been cleared for every commercial, promotional, or redistributive use.</metadata
           <path data-edge-from="outras_skills" data-edge-to="butlerpy" data-edge-label="ponto · apagar · renomear · desfazer" data-edge-key="6" data-edge-id="outras-butlerpy" data-composition-points="404,380;404,484;500,484" data-composition-crossover="halo" data-composition-independent="true" d="M 404 380 L 404 476 Q 404 484 412 484 L 500 484" class="a-default" data-animate="edge" style="--step: 6;" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:7">
-          <path data-graph-role="automatic-crossover-underlay" d="M 190 652 L 890 652 Q 898 652 898 644 L 898 136 Q 898 128 906 128 L 1248 128 Q 1256 128 1256 120 L 1256 104" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="consultar" data-edge-to="vault" data-edge-label="lê direto, sem trava" data-edge-key="7" data-edge-id="consultar-vault" data-composition-points="190,652;898,652;898,128;1256,128;1256,104" data-composition-crossover="halo" data-composition-independent="true" d="M 190 652 L 890 652 Q 898 652 898 644 L 898 136 Q 898 128 906 128 L 1248 128 Q 1256 128 1256 120 L 1256 104" class="a-dashed" data-animate="edge" style="--step: 7;" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 190 652 L 249 652 Q 257 652 257 644 L 257 603 Q 257 595 265 595 L 1120 595 Q 1128 595 1128 587 L 1128 153 Q 1128 145 1136 145 L 1241 145 Q 1249 145 1249 137 L 1249 104" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="consultar" data-edge-to="vault" data-edge-label="lê direto, sem trava" data-edge-key="7" data-edge-id="consultar-vault" data-composition-points="190,652;257,652;257,595;1128,595;1128,145;1249,145;1249,104" data-composition-crossover="halo" data-composition-independent="true" d="M 190 652 L 249 652 Q 257 652 257 644 L 257 603 Q 257 595 265 595 L 1120 595 Q 1128 595 1128 587 L 1128 153 Q 1128 145 1136 145 L 1241 145 Q 1249 145 1249 137 L 1249 104" class="a-dashed" data-animate="edge" style="--step: 7;" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:8">
           <path data-graph-role="automatic-crossover-underlay" d="M 571 170 L 571 87 Q 571 79 579 79 L 920 79" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
@@ -1197,12 +1225,12 @@ been cleared for every commercial, promotional, or redistributive use.</metadata
           <path data-edge-from="regras" data-edge-to="vault" data-edge-label="Regras do Butler.md" data-edge-key="15" data-edge-id="regras-vault" data-composition-points="1090,302;1140,302;1140,72;1190,72" data-composition-crossover="halo" data-composition-independent="true" d="M 1090 302 L 1132 302 Q 1140 302 1140 294 L 1140 80 Q 1140 72 1148 72 L 1190 72" class="a-default" data-animate="edge" style="--step: 12;" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:16">
-          <path data-graph-role="automatic-crossover-underlay" d="M 1005 500 L 1005 460 Q 1005 452 1013 452 L 1104 452 Q 1112 452 1112 444 L 1112 345 Q 1112 337 1120 337 L 1179 337 Q 1187 337 1187 329 L 1187 207 Q 1187 199 1195 199 L 1276 199 Q 1284 199 1284 191 L 1284 104" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="operacoes" data-edge-to="vault" data-edge-label="renomeia, desfaz" data-edge-key="16" data-edge-id="operacoes-vault" data-composition-points="1005,500;1005,452;1112,452;1112,337;1187,337;1187,199;1284,199;1284,104" data-composition-crossover="halo" data-composition-independent="true" d="M 1005 500 L 1005 460 Q 1005 452 1013 452 L 1104 452 Q 1112 452 1112 444 L 1112 345 Q 1112 337 1120 337 L 1179 337 Q 1187 337 1187 329 L 1187 207 Q 1187 199 1195 199 L 1276 199 Q 1284 199 1284 191 L 1284 104" class="a-default" data-animate="edge" style="--step: 12;" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 1005 500 L 1005 460 Q 1005 452 1013 452 L 1104 452 Q 1112 452 1112 444 L 1112 345 Q 1112 337 1120 337 L 1179 337 Q 1187 337 1187 329 L 1187 207 Q 1187 199 1195 199 L 1283 199 Q 1291 199 1291 191 L 1291 104" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="operacoes" data-edge-to="vault" data-edge-label="renomeia, desfaz" data-edge-key="16" data-edge-id="operacoes-vault" data-composition-points="1005,500;1005,452;1112,452;1112,337;1187,337;1187,199;1291,199;1291,104" data-composition-crossover="halo" data-composition-independent="true" d="M 1005 500 L 1005 460 Q 1005 452 1013 452 L 1104 452 Q 1112 452 1112 444 L 1112 345 Q 1112 337 1120 337 L 1179 337 Q 1187 337 1187 329 L 1187 207 Q 1187 199 1195 199 L 1283 199 Q 1291 199 1291 191 L 1291 104" class="a-default" data-animate="edge" style="--step: 12;" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:17">
-          <path data-graph-role="automatic-crossover-underlay" d="M 1005 615 L 1005 575 Q 1005 567 1013 567 L 1345 567 Q 1353 567 1353 559 L 1353 136 Q 1353 128 1345 128 L 1278 128 Q 1270 128 1270 120 L 1270 104" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="conferencia" data-edge-to="vault" data-edge-key="17" data-edge-id="conferencia-vault" data-composition-points="1005,615;1005,567;1353,567;1353,128;1270,128;1270,104" data-composition-crossover="halo" data-composition-independent="true" d="M 1005 615 L 1005 575 Q 1005 567 1013 567 L 1345 567 Q 1353 567 1353 559 L 1353 136 Q 1353 128 1345 128 L 1278 128 Q 1270 128 1270 120 L 1270 104" class="a-default" data-animate="edge" style="--step: 12;" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 1005 615 L 1005 575 Q 1005 567 1013 567 L 1345 567 Q 1353 567 1353 559 L 1353 136 Q 1353 128 1345 128 L 1285 128 Q 1277 128 1277 120 L 1277 104" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="conferencia" data-edge-to="vault" data-edge-key="17" data-edge-id="conferencia-vault" data-composition-points="1005,615;1005,567;1353,567;1353,128;1277,128;1277,104" data-composition-crossover="halo" data-composition-independent="true" d="M 1005 615 L 1005 575 Q 1005 567 1013 567 L 1345 567 Q 1353 567 1353 559 L 1353 136 Q 1353 128 1345 128 L 1285 128 Q 1277 128 1277 120 L 1277 104" class="a-default" data-animate="edge" style="--step: 12;" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:18">
           <path data-graph-role="automatic-crossover-underlay" d="M 1270 334 L 1270 385" fill="none" stroke="var(--mask)" stroke-width="5.8" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
@@ -1213,8 +1241,16 @@ been cleared for every commercial, promotional, or redistributive use.</metadata
           <path data-edge-from="config" data-edge-to="git_store" data-edge-label="aponta a pasta" data-edge-key="19" data-edge-id="config-gitstore" data-composition-points="1090,187;1114,187;1114,417;1190,417" data-composition-crossover="halo" data-composition-independent="true" d="M 1090 187 L 1106 187 Q 1114 187 1114 195 L 1114 409 Q 1114 417 1122 417 L 1190 417" class="a-default" data-animate="edge" style="--step: 12;" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:20">
-          <path data-graph-role="automatic-crossover-underlay" d="M 670 384 L 856.1999999999999 384 Q 864.1999999999999 384 864.1999999999999 392 L 864.1999999999999 604 Q 864.1999999999999 612 872.1999999999999 612 L 1158 612 Q 1166 612 1166 620 L 1166 639 Q 1166 647 1174 647 L 1190 647" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="butlerpy" data-edge-to="painel" data-edge-label="grava o resumo" data-edge-key="20" data-edge-id="butlerpy-painel" data-composition-points="670,384;864.1999999999999,384;864.1999999999999,612;1166,612;1166,647;1190,647" data-composition-crossover="halo" data-composition-independent="true" d="M 670 384 L 856.1999999999999 384 Q 864.1999999999999 384 864.1999999999999 392 L 864.1999999999999 604 Q 864.1999999999999 612 872.1999999999999 612 L 1158 612 Q 1166 612 1166 620 L 1166 639 Q 1166 647 1174 647 L 1190 647" class="a-dashed" data-animate="edge" style="--step: 12;" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 571 500 L 571 695 Q 571 703 579 703 L 1262 703 Q 1270 703 1270 695 L 1270 679" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="butlerpy" data-edge-to="painel" data-edge-label="grava o resumo" data-edge-key="20" data-edge-id="butlerpy-painel" data-composition-points="571,500;571,703;1270,703;1270,679" data-composition-crossover="halo" data-composition-independent="true" d="M 571 500 L 571 695 Q 571 703 579 703 L 1262 703 Q 1270 703 1270 695 L 1270 679" class="a-dashed" data-animate="edge" style="--step: 12;" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
+        </g>
+        <g data-graph-role="automatic-crossover" style="--step:21">
+          <path data-graph-role="automatic-crossover-underlay" d="M 122 104 L 122 588 Q 122 596 130 596 L 320 596 Q 328 596 328 604 L 328 620" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="sessao" data-edge-to="pesquisador" data-edge-label="pesquisa → relatório" data-edge-key="21" data-edge-id="sessao-pesquisador" data-composition-points="122,104;122,596;328,596;328,620" data-composition-crossover="halo" data-composition-independent="true" d="M 122 104 L 122 588 Q 122 596 130 596 L 320 596 Q 328 596 328 604 L 328 620" class="a-default" data-animate="edge" style="--step: 12;" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        </g>
+        <g data-graph-role="automatic-crossover" style="--step:22">
+          <path data-graph-role="automatic-crossover-underlay" d="M 342 620 L 342 567 Q 342 559 350 559 L 890 559 Q 898 559 898 551 L 898 136 Q 898 128 906 128 L 1255 128 Q 1263 128 1263 120 L 1263 104" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="pesquisador" data-edge-to="vault" data-edge-label="lê, sem ferramenta de escrita" data-edge-key="22" data-edge-id="pesquisador-vault" data-composition-points="342,620;342,559;898,559;898,128;1263,128;1263,104" data-composition-crossover="halo" data-composition-independent="true" d="M 342 620 L 342 567 Q 342 559 350 559 L 890 559 Q 898 559 898 551 L 898 136 Q 898 128 906 128 L 1255 128 Q 1263 128 1263 120 L 1263 104" class="a-default" data-animate="edge" style="--step: 12;" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         </g>
 
         <!-- Components -->
@@ -1278,7 +1314,7 @@ been cleared for every commercial, promotional, or redistributive use.</metadata
         <g id="node-butlerpy" data-node-id="butlerpy" data-node-label="butler.py" tabindex="0" role="button" aria-label="Focar butler.py, Contexto: roteia os subcomandos, Componente de arquitetura" aria-pressed="false" data-node-kind="backend" data-node-sublabel="Contexto: roteia os subcomandos" data-node-tag="sem depender de um modelo" data-node-context="Componente de arquitetura">
           <title>butler.py · Contexto: roteia os subcomandos · Componente de arquitetura · sem depender de um modelo</title>
           <rect x="500" y="170" width="170" height="330" rx="8" class="c-mask"/>
-          <rect x="500" y="170" width="170" height="330" rx="8" class="c-backend" data-animate="node" style="--step: 5; --flow-node-name: archify-relay-node-5;" stroke-width="1.5"/>
+          <rect x="500" y="170" width="170" height="330" rx="8" class="c-backend" data-animate="node" style="--step: 5; --flow-node-name: archify-relay-node-6;" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(506 176) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
@@ -1290,7 +1326,7 @@ been cleared for every commercial, promotional, or redistributive use.</metadata
         <g id="node-trava" data-node-id="trava" data-node-label="lib/trava.py" tabindex="0" role="button" aria-label="Focar lib/trava.py, 1 pedido por vez no vault, skills/gerente/lib/" aria-pressed="false" data-node-kind="security" data-node-sublabel="1 pedido por vez no vault" data-node-context="skills/gerente/lib/">
           <title>lib/trava.py · 1 pedido por vez no vault · skills/gerente/lib/</title>
           <rect x="920" y="40" width="170" height="64" rx="8" class="c-mask"/>
-          <rect x="920" y="40" width="170" height="64" rx="8" class="c-security" data-animate="node" style="--step: 4; --flow-node-name: archify-relay-node-6;" stroke-width="1.5"/>
+          <rect x="920" y="40" width="170" height="64" rx="8" class="c-security" data-animate="node" style="--step: 4; --flow-node-name: archify-relay-node-7;" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="security" class="semantic-sigil s-security" transform="translate(926 46) scale(0.6875)">
             <path d="M8 2.2 13 4v3.5c0 3.1-1.8 5.4-5 6.5-3.2-1.1-5-3.4-5-6.5V4Z"/>
             <path d="m5.8 8 1.5 1.5 3-3"/>
@@ -1302,7 +1338,7 @@ been cleared for every commercial, promotional, or redistributive use.</metadata
         <g id="node-config" data-node-id="config" data-node-label="lib/config.py" tabindex="0" role="button" aria-label="Focar lib/config.py, acha o vault e o histórico, skills/gerente/lib/" aria-pressed="false" data-node-kind="database" data-node-sublabel="acha o vault e o histórico" data-node-context="skills/gerente/lib/">
           <title>lib/config.py · acha o vault e o histórico · skills/gerente/lib/</title>
           <rect x="920" y="155" width="170" height="64" rx="8" class="c-mask"/>
-          <rect x="920" y="155" width="170" height="64" rx="8" class="c-database" data-animate="node" style="--step: 10; --flow-node-name: archify-relay-node-7;" stroke-width="1.5"/>
+          <rect x="920" y="155" width="170" height="64" rx="8" class="c-database" data-animate="node" style="--step: 10; --flow-node-name: archify-relay-node-8;" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="database" class="semantic-sigil s-database" transform="translate(926 161) scale(0.6875)">
             <ellipse cx="8" cy="4" rx="5" ry="2"/>
             <path d="M3 4v8c0 1.1 2.2 2 5 2s5-.9 5-2V4M3 8c0 1.1 2.2 2 5 2s5-.9 5-2"/>
@@ -1314,7 +1350,7 @@ been cleared for every commercial, promotional, or redistributive use.</metadata
         <g id="node-regras" data-node-id="regras" data-node-label="lib/regras.py" tabindex="0" role="button" aria-label="Focar lib/regras.py, lê Regras do Butler.md, skills/gerente/lib/" aria-pressed="false" data-node-kind="backend" data-node-sublabel="lê Regras do Butler.md" data-node-context="skills/gerente/lib/">
           <title>lib/regras.py · lê Regras do Butler.md · skills/gerente/lib/</title>
           <rect x="920" y="270" width="170" height="64" rx="8" class="c-mask"/>
-          <rect x="920" y="270" width="170" height="64" rx="8" class="c-backend" data-animate="node" style="--step: 11; --flow-node-name: archify-relay-node-8;" stroke-width="1.5"/>
+          <rect x="920" y="270" width="170" height="64" rx="8" class="c-backend" data-animate="node" style="--step: 11; --flow-node-name: archify-relay-node-9;" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(926 276) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
@@ -1325,7 +1361,7 @@ been cleared for every commercial, promotional, or redistributive use.</metadata
         <g id="node-sensivel" data-node-id="sensivel" data-node-label="lib/sensivel.py" tabindex="0" role="button" aria-label="Focar lib/sensivel.py, CPF, cartão, senha, token…, skills/gerente/lib/" aria-pressed="false" data-node-kind="security" data-node-sublabel="CPF, cartão, senha, token…" data-node-context="skills/gerente/lib/">
           <title>lib/sensivel.py · CPF, cartão, senha, token… · skills/gerente/lib/</title>
           <rect x="920" y="385" width="170" height="64" rx="8" class="c-mask"/>
-          <rect x="920" y="385" width="170" height="64" rx="8" class="c-security" data-animate="node" style="--step: 12; --flow-node-name: archify-relay-node-9;" stroke-width="1.5"/>
+          <rect x="920" y="385" width="170" height="64" rx="8" class="c-security" data-animate="node" style="--step: 12; --flow-node-name: archify-relay-node-10;" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="security" class="semantic-sigil s-security" transform="translate(926 391) scale(0.6875)">
             <path d="M8 2.2 13 4v3.5c0 3.1-1.8 5.4-5 6.5-3.2-1.1-5-3.4-5-6.5V4Z"/>
             <path d="m5.8 8 1.5 1.5 3-3"/>
@@ -1337,7 +1373,7 @@ been cleared for every commercial, promotional, or redistributive use.</metadata
         <g id="node-operacoes" data-node-id="operacoes" data-node-label="lib/operacoes.py" tabindex="0" role="button" aria-label="Focar lib/operacoes.py, fora do Butler · desfazer · renomear, skills/gerente/lib/" aria-pressed="false" data-node-kind="backend" data-node-sublabel="fora do Butler · desfazer · renomear" data-node-context="skills/gerente/lib/">
           <title>lib/operacoes.py · fora do Butler · desfazer · renomear · skills/gerente/lib/</title>
           <rect x="920" y="500" width="170" height="64" rx="8" class="c-mask"/>
-          <rect x="920" y="500" width="170" height="64" rx="8" class="c-backend" data-animate="node" style="--step: 12; --flow-node-name: archify-relay-node-10;" stroke-width="1.5"/>
+          <rect x="920" y="500" width="170" height="64" rx="8" class="c-backend" data-animate="node" style="--step: 12; --flow-node-name: archify-relay-node-11;" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(926 506) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
@@ -1348,7 +1384,7 @@ been cleared for every commercial, promotional, or redistributive use.</metadata
         <g id="node-conferencia" data-node-id="conferencia" data-node-label="lib/conferencia.py" tabindex="0" role="button" aria-label="Focar lib/conferencia.py, conferir e revisar notas, skills/gerente/lib/" aria-pressed="false" data-node-kind="backend" data-node-sublabel="conferir e revisar notas" data-node-context="skills/gerente/lib/">
           <title>lib/conferencia.py · conferir e revisar notas · skills/gerente/lib/</title>
           <rect x="920" y="615" width="170" height="64" rx="8" class="c-mask"/>
-          <rect x="920" y="615" width="170" height="64" rx="8" class="c-backend" data-animate="node" style="--step: 12; --flow-node-name: archify-relay-node-11;" stroke-width="1.5"/>
+          <rect x="920" y="615" width="170" height="64" rx="8" class="c-backend" data-animate="node" style="--step: 12; --flow-node-name: archify-relay-node-12;" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(926 621) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
@@ -1359,7 +1395,7 @@ been cleared for every commercial, promotional, or redistributive use.</metadata
         <g id="node-vault" data-node-id="vault" data-node-label="Vault do Obsidian" tabindex="0" role="button" aria-label="Focar Vault do Obsidian, notas em Markdown, Componente de arquitetura" aria-pressed="false" data-node-kind="external" data-node-sublabel="notas em Markdown" data-node-context="Componente de arquitetura">
           <title>Vault do Obsidian · notas em Markdown · Componente de arquitetura</title>
           <rect x="1190" y="40" width="160" height="64" rx="8" class="c-mask"/>
-          <rect x="1190" y="40" width="160" height="64" rx="8" class="c-external" data-animate="node" style="--step: 8; --flow-node-name: archify-relay-node-14;" stroke-width="1.5"/>
+          <rect x="1190" y="40" width="160" height="64" rx="8" class="c-external" data-animate="node" style="--step: 8; --flow-node-name: archify-relay-node-15;" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="external" class="semantic-sigil s-external" transform="translate(1196 46) scale(0.6875)">
             <rect x="2.5" y="5" width="8.5" height="8" rx="1.5"/>
             <path d="M8 2.5h5.5V8M13.5 2.5 7.5 8.5"/>
@@ -1371,7 +1407,7 @@ been cleared for every commercial, promotional, or redistributive use.</metadata
         <g id="node-historico" data-node-id="historico" data-node-label="lib/historico.py" tabindex="0" role="button" aria-label="Focar lib/historico.py, git fora do vault, sem remoto, Componente de arquitetura" aria-pressed="false" data-node-kind="database" data-node-sublabel="git fora do vault, sem remoto" data-node-context="Componente de arquitetura">
           <title>lib/historico.py · git fora do vault, sem remoto · Componente de arquitetura</title>
           <rect x="1190" y="270" width="160" height="64" rx="8" class="c-mask"/>
-          <rect x="1190" y="270" width="160" height="64" rx="8" class="c-database" data-animate="node" style="--step: 12; --flow-node-name: archify-relay-node-12;" stroke-width="1.5"/>
+          <rect x="1190" y="270" width="160" height="64" rx="8" class="c-database" data-animate="node" style="--step: 12; --flow-node-name: archify-relay-node-13;" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="database" class="semantic-sigil s-database" transform="translate(1196 276) scale(0.6875)">
             <ellipse cx="8" cy="4" rx="5" ry="2"/>
             <path d="M3 4v8c0 1.1 2.2 2 5 2s5-.9 5-2V4M3 8c0 1.1 2.2 2 5 2s5-.9 5-2"/>
@@ -1383,7 +1419,7 @@ been cleared for every commercial, promotional, or redistributive use.</metadata
         <g id="node-git_store" data-node-id="git_store" data-node-label="Histórico git" tabindex="0" role="button" aria-label="Focar Histórico git, pasta própria, nunca sincronizada, Componente de arquitetura" aria-pressed="false" data-node-kind="database" data-node-sublabel="pasta própria, nunca sincronizada" data-node-context="Componente de arquitetura">
           <title>Histórico git · pasta própria, nunca sincronizada · Componente de arquitetura</title>
           <rect x="1190" y="385" width="160" height="64" rx="8" class="c-mask"/>
-          <rect x="1190" y="385" width="160" height="64" rx="8" class="c-database" data-animate="node" style="--step: 12; --flow-node-name: archify-relay-node-15;" stroke-width="1.5"/>
+          <rect x="1190" y="385" width="160" height="64" rx="8" class="c-database" data-animate="node" style="--step: 12; --flow-node-name: archify-relay-node-16;" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="database" class="semantic-sigil s-database" transform="translate(1196 391) scale(0.6875)">
             <ellipse cx="8" cy="4" rx="5" ry="2"/>
             <path d="M3 4v8c0 1.1 2.2 2 5 2s5-.9 5-2V4M3 8c0 1.1 2.2 2 5 2s5-.9 5-2"/>
@@ -1395,13 +1431,24 @@ been cleared for every commercial, promotional, or redistributive use.</metadata
         <g id="node-painel" data-node-id="painel" data-node-label="estado.json" tabindex="0" role="button" aria-label="Focar estado.json, lido por outra ferramenta (painel), Componente de arquitetura" aria-pressed="false" data-node-kind="external" data-node-sublabel="lido por outra ferramenta (painel)" data-node-context="Componente de arquitetura">
           <title>estado.json · lido por outra ferramenta (painel) · Componente de arquitetura</title>
           <rect x="1190" y="615" width="160" height="64" rx="8" class="c-mask"/>
-          <rect x="1190" y="615" width="160" height="64" rx="8" class="c-external" data-animate="node" style="--step: 12; --flow-node-name: archify-relay-node-13;" stroke-width="1.5"/>
+          <rect x="1190" y="615" width="160" height="64" rx="8" class="c-external" data-animate="node" style="--step: 12; --flow-node-name: archify-relay-node-14;" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="external" class="semantic-sigil s-external" transform="translate(1196 621) scale(0.6875)">
             <rect x="2.5" y="5" width="8.5" height="8" rx="1.5"/>
             <path d="M8 2.5h5.5V8M13.5 2.5 7.5 8.5"/>
           </g>
           <text data-node-label="" x="1270" y="645" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">estado.json</text>
         <text x="1270" y="661" class="t-muted" font-size="7.4" text-anchor="middle">lido por outra ferramenta (painel)</text>
+        </g>
+
+        <g id="node-pesquisador" data-node-id="pesquisador" data-node-label="agente pesquisador" tabindex="0" role="button" aria-label="Focar agente pesquisador, só lê, devolve relatório, Componente de arquitetura" aria-pressed="false" data-node-kind="backend" data-node-sublabel="só lê, devolve relatório" data-node-context="Componente de arquitetura">
+          <title>agente pesquisador · só lê, devolve relatório · Componente de arquitetura</title>
+          <rect x="260" y="620" width="150" height="64" rx="8" class="c-mask"/>
+          <rect x="260" y="620" width="150" height="64" rx="8" class="c-backend" data-animate="node" style="--step: 12; --flow-node-name: archify-relay-node-5;" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(266 626) scale(0.6875)">
+            <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
+          </g>
+          <text data-node-label="" x="335" y="650" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">agente pesquisador</text>
+        <text x="335" y="666" class="t-muted" font-size="9" text-anchor="middle">só lê, devolve relatório</text>
         </g>
 
         <!-- Connection labels -->
@@ -1414,8 +1461,8 @@ been cleared for every commercial, promotional, or redistributive use.</metadata
           <text x="217" y="176" class="t-edge-emphasis" font-size="8" text-anchor="middle">pedido</text>
         </g>
         <g data-edge-from="sessao" data-edge-to="consultar" data-edge-label="consulta" data-edge-key="2" data-edge-id="sessao-consultar">
-          <rect x="60.599999999999994" y="355" width="48.4" height="14" rx="3" class="c-mask"/>
-          <text x="84.8" y="365" class="t-edge-dashed" font-size="8" text-anchor="middle">consulta</text>
+          <rect x="53.599999999999994" y="355" width="48.4" height="14" rx="3" class="c-mask"/>
+          <text x="77.8" y="365" class="t-edge-dashed" font-size="8" text-anchor="middle">consulta</text>
         </g>
         <g data-edge-from="hooks" data-edge-to="trava" data-edge-label="guarda: só a trava" data-edge-key="3" data-edge-id="hooks-trava">
           <rect x="621.8" y="45" width="96.39999999999999" height="14" rx="3" class="c-mask"/>
@@ -1434,8 +1481,8 @@ been cleared for every commercial, promotional, or redistributive use.</metadata
           <text x="306.6" y="435" class="t-edge-default" font-size="8" text-anchor="middle">ponto · apagar · renomear · desfazer</text>
         </g>
         <g data-edge-from="consultar" data-edge-to="vault" data-edge-label="lê direto, sem trava" data-edge-key="7" data-edge-id="consultar-vault">
-          <rect x="491" y="662" width="106" height="14" rx="3" class="c-mask"/>
-          <text x="544" y="672" class="t-edge-dashed" font-size="8" text-anchor="middle">lê direto, sem trava</text>
+          <rect x="204" y="603.5" width="106" height="14" rx="3" class="c-mask"/>
+          <text x="257" y="613.5" class="t-edge-dashed" font-size="8" text-anchor="middle">lê direto, sem trava</text>
         </g>
         <g data-edge-from="butlerpy" data-edge-to="trava" data-edge-label="pega · toca · solta" data-edge-key="8" data-edge-id="butlerpy-trava">
           <rect x="577" y="117.5" width="101.2" height="14" rx="3" class="c-mask"/>
@@ -1450,8 +1497,8 @@ been cleared for every commercial, promotional, or redistributive use.</metadata
           <text x="771.75" y="348" class="t-edge-default" font-size="8" text-anchor="middle">protegida? rígida?</text>
         </g>
         <g data-edge-from="butlerpy" data-edge-to="sensivel" data-edge-label="filtra o que entra" data-edge-key="11" data-edge-id="butlerpy-sensivel">
-          <rect x="746.8" y="411" width="96.39999999999999" height="14" rx="3" class="c-mask"/>
-          <text x="795" y="421" class="t-edge-security" font-size="8" text-anchor="middle">filtra o que entra</text>
+          <rect x="746.8" y="381" width="96.39999999999999" height="14" rx="3" class="c-mask"/>
+          <text x="795" y="391" class="t-edge-security" font-size="8" text-anchor="middle">filtra o que entra</text>
         </g>
 
 
@@ -1460,8 +1507,8 @@ been cleared for every commercial, promotional, or redistributive use.</metadata
           <text x="757.0374999999999" y="136" class="t-edge-emphasis" font-size="8" text-anchor="middle">grava o ponto</text>
         </g>
         <g data-edge-from="regras" data-edge-to="vault" data-edge-label="Regras do Butler.md" data-edge-key="15" data-edge-id="regras-vault">
-          <rect x="1089.4" y="167" width="101.2" height="14" rx="3" class="c-mask"/>
-          <text x="1140" y="177" class="t-edge-default" font-size="8" text-anchor="middle">Regras do Butler.md</text>
+          <rect x="1146" y="180" width="101.2" height="14" rx="3" class="c-mask"/>
+          <text x="1196.6" y="190" class="t-edge-default" font-size="8" text-anchor="middle">Regras do Butler.md</text>
         </g>
         <g data-edge-from="operacoes" data-edge-to="vault" data-edge-label="renomeia, desfaz" data-edge-key="16" data-edge-id="operacoes-vault">
           <rect x="912.2" y="469" width="86.8" height="14" rx="3" class="c-mask"/>
@@ -1477,8 +1524,16 @@ been cleared for every commercial, promotional, or redistributive use.</metadata
           <text x="1069.4" y="247.5" class="t-edge-default" font-size="8" text-anchor="middle">aponta a pasta</text>
         </g>
         <g data-edge-from="butlerpy" data-edge-to="painel" data-edge-label="grava o resumo" data-edge-key="20" data-edge-id="butlerpy-painel">
-          <rect x="728.4999999999999" y="364" width="77.2" height="14" rx="3" class="c-mask"/>
-          <text x="767.0999999999999" y="374" class="t-edge-dashed" font-size="8" text-anchor="middle">grava o resumo</text>
+          <rect x="881.9" y="683" width="77.2" height="14" rx="3" class="c-mask"/>
+          <text x="920.5" y="693" class="t-edge-dashed" font-size="8" text-anchor="middle">grava o resumo</text>
+        </g>
+        <g data-edge-from="sessao" data-edge-to="pesquisador" data-edge-label="pesquisa → relatório" data-edge-key="21" data-edge-id="sessao-pesquisador">
+          <rect x="172" y="576" width="106" height="14" rx="3" class="c-mask"/>
+          <text x="225" y="586" class="t-edge-default" font-size="8" text-anchor="middle">pesquisa → relatório</text>
+        </g>
+        <g data-edge-from="pesquisador" data-edge-to="vault" data-edge-label="lê, sem ferramenta de escrita" data-edge-key="22" data-edge-id="pesquisador-vault">
+          <rect x="348" y="567.25" width="149.2" height="14" rx="3" class="c-mask"/>
+          <text x="422.6" y="577.25" class="t-edge-default" font-size="8" text-anchor="middle">lê, sem ferramenta de escrita</text>
         </g>
 
         <!-- Boundary labels (foreground masks keep routes out of titles) -->
@@ -1489,22 +1544,22 @@ been cleared for every commercial, promotional, or redistributive use.</metadata
 
         <!-- Legend -->
         <g data-legend="">
-          <text x="40" y="731" class="t-primary" font-size="12" font-weight="650">Legenda</text>
-          <g data-legend-semantic-kind="backend" data-legend-x="40" data-legend-baseline="751" data-legend-width="87">
-            <rect x="40" y="742" width="16" height="10" rx="2.5" class="c-backend" stroke-width="1"/>
-            <text x="62" y="751" class="t-muted" font-size="10" font-weight="500">Backend</text>
+          <text x="40" y="735" class="t-primary" font-size="12" font-weight="650">Legenda</text>
+          <g data-legend-semantic-kind="backend" data-legend-x="40" data-legend-baseline="755" data-legend-width="87">
+            <rect x="40" y="746" width="16" height="10" rx="2.5" class="c-backend" stroke-width="1"/>
+            <text x="62" y="755" class="t-muted" font-size="10" font-weight="500">Backend</text>
           </g>
-          <g data-legend-semantic-kind="database" data-legend-x="149" data-legend-baseline="751" data-legend-width="130">
-            <rect x="149" y="742" width="16" height="10" rx="2.5" class="c-database" stroke-width="1"/>
-            <text x="171" y="751" class="t-muted" font-size="10" font-weight="500">Banco de dados</text>
+          <g data-legend-semantic-kind="database" data-legend-x="149" data-legend-baseline="755" data-legend-width="130">
+            <rect x="149" y="746" width="16" height="10" rx="2.5" class="c-database" stroke-width="1"/>
+            <text x="171" y="755" class="t-muted" font-size="10" font-weight="500">Banco de dados</text>
           </g>
-          <g data-legend-semantic-kind="security" data-legend-x="301" data-legend-baseline="751" data-legend-width="99">
-            <rect x="301" y="742" width="16" height="10" rx="2.5" class="c-security" stroke-width="1"/>
-            <text x="323" y="751" class="t-muted" font-size="10" font-weight="500">Segurança</text>
+          <g data-legend-semantic-kind="security" data-legend-x="301" data-legend-baseline="755" data-legend-width="99">
+            <rect x="301" y="746" width="16" height="10" rx="2.5" class="c-security" stroke-width="1"/>
+            <text x="323" y="755" class="t-muted" font-size="10" font-weight="500">Segurança</text>
           </g>
-          <g data-legend-semantic-kind="external" data-legend-x="422" data-legend-baseline="751" data-legend-width="87">
-            <rect x="422" y="742" width="16" height="10" rx="2.5" class="c-external" stroke-width="1"/>
-            <text x="444" y="751" class="t-muted" font-size="10" font-weight="500">Externo</text>
+          <g data-legend-semantic-kind="external" data-legend-x="422" data-legend-baseline="755" data-legend-width="87">
+            <rect x="422" y="746" width="16" height="10" rx="2.5" class="c-external" stroke-width="1"/>
+            <text x="444" y="755" class="t-muted" font-size="10" font-weight="500">Externo</text>
           </g>
         </g>
       </svg>
