@@ -84,15 +84,16 @@ def test_agentes_so_leem():
         caminho = os.path.join(pasta, nome)
         assert nome.endswith(".md") and os.path.isfile(caminho), f"agents/{nome}: só arquivos .md, sem subpasta"
         texto = _ler(caminho)
-        partes = texto.split("---", 2)
-        assert texto.startswith("---") and len(partes) == 3, f"{nome}: sem frontmatter"
-        linhas = [linha for linha in partes[1].splitlines() if linha.strip()]
+        partes = texto.split("\n---\n", 1)
+        assert texto.startswith("---\n") and len(partes) == 2, f"{nome}: sem frontmatter"
+        linhas = [linha for linha in partes[0][4:].splitlines() if linha.strip()]
         assert all(re.match(r"^[A-Za-z]+: \S", linha) for linha in linhas), \
             f"{nome}: frontmatter só com `chave: valor` em uma linha"
         chaves = [linha.split(":", 1)[0] for linha in linhas]
         assert sorted(chaves) == sorted(CHAVES_DE_AGENTE), f"{nome}: campos {chaves}, esperado {sorted(CHAVES_DE_AGENTE)}"
         campos = dict(linha.split(": ", 1) for linha in linhas)
         assert campos["name"] == nome[:-3], nome
+        assert campos["model"] == "opus", f"{nome}: pesquisa é tarefa analítica, roda no opus"
         lista = {f.strip() for f in campos["tools"].split(",")}
         assert lista <= SO_LEITURA, f"{nome}: ferramenta fora da lista: {sorted(lista - SO_LEITURA)}"
 

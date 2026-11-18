@@ -39,7 +39,7 @@ A nota do Inbox escrita pelo `butler:garimpo` guarda a trilha da pesquisa, e ali
 | **Contradito:** | Um aviso direto, com o que vale e o link de quem diz. |
 | **Não verificado:** | O que ficou sem resposta vira "não informado" no item. A história da busca sai. |
 
-A pesquisa de uma nota de ideia (`butler:ideia`) segue a regra de lá, com fonte e grau de confiança.
+A pesquisa de uma nota de ideia (`butler:ideia`) vem do agente `butler:pesquisador`, com fonte e grau de confiança (`${CLAUDE_PLUGIN_ROOT}/agents/pesquisador.md`).
 
 ### Quando não usar lista
 

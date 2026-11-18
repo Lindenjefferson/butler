@@ -9,11 +9,11 @@ A pesquisa sai da conversa do vault (pedido do dono, para não encher o contexto
 - **Agente `butler:pesquisador`:**
   - só tem `Read`, `Grep`, `Glob`, `WebSearch` e `WebFetch`, sem ferramenta que grava ou roda comando;
   - lê as notas indicadas e a web e devolve um relatório com fonte e grau de confiança por afirmação;
-  - um teste de integridade exige que todo agente do plugin declare essas ferramentas e mais nenhum campo.
+  - um teste de integridade exige que todo agente do plugin tenha só os campos `name`, `description`, `tools` e `model`, com `tools` dentro dessa lista e `model: opus`.
 - **`ideia`:** o "Pesquisar" passa sempre pelo agente.
 - **`gerente`:** o relatório é conteúdo de fora. Ele se aplica num pedido novo, com o texto inteiro mostrado antes. Sem o texto inteiro na conversa (depois de uma compactação), não se aplica a partir de um resumo.
 
-**Ao atualizar:** nada muda no vault. A pesquisa da `ideia` passa a rodar num subagente e mostra o texto antes de gravar.
+**Ao atualizar:** nada muda no vault. A pesquisa da `ideia` passa a rodar num subagente e mostra o texto antes de gravar. Quem chama `/butler:ideia <nota> pesquisar` de fora (painel, bot, modo sem supervisão) recebe o relatório, e ele não é gravado sozinho: a gravação é um pedido seguinte, com o texto à vista.
 
 ## 0.10.0 — revisão geral: guarda mais simples, `apagar` e correções
 

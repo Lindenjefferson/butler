@@ -1,4 +1,4 @@
-# Delegar a pesquisa a um subagente — design (rascunho para o dono)
+# Delegar a pesquisa a um subagente — design
 
 O Butler passa a entregar a pesquisa a um subagente próprio do plugin. Ele lê o vault e a web, não grava nada e devolve um relatório. A sessão do vault mostra o relatório ao dono e o aplica pelo gerente quando o dono pedir. Origem: pedido do dono, trazido pela sessão do vault (Segundo Cérebro).
 
